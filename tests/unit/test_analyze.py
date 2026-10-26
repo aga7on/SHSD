@@ -36,7 +36,12 @@ from shsd.memory import (
 )
 from shsd.sampling import AdaptiveSamplingController, EmbeddingNovelty
 from shsd.semantic import HypothesisAxis, HypothesisCandidate, MatchPolicy, SemanticMatcher
-from shsd.workers.scheduler import RuntimeLoadController
+from shsd.workers.scheduler import (
+    AdmissionDecision,
+    LoadMode,
+    RuntimeLoadController,
+    WorkPriority,
+)
 
 ROOT = Path(__file__).parents[2]
 
@@ -377,7 +382,11 @@ def test_speech_opt_in_emits_revisions_without_changing_audio_observations(
         lambda *_args, **_kwargs: lambda _samples: "Проверка отдельной ASR дорожки.",
     )
 
-    def run(name: str, enabled: bool) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    def run(
+        name: str,
+        enabled: bool,
+        controller: RuntimeLoadController | None = None,
+    ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         rows: list[dict[str, Any]] = []
         metrics = analyze_module.analyze_media(
             fixture,
@@ -391,11 +400,23 @@ def test_speech_opt_in_emits_revisions_without_changing_audio_observations(
             event_database=tmp_path / f"{name}.sqlite3",
             emit=rows.append,
             speech_enabled=enabled,
+            runtime_load_controller=controller,
+            load_source_id=f"source-{name}",
         )
         return rows, metrics
 
     baseline_rows, baseline_metrics = run("baseline", False)
     speech_rows, speech_metrics = run("speech", True)
+    pressure_controller = RuntimeLoadController()
+    original_admit = pressure_controller.admit
+
+    def deny_asr(priority: WorkPriority) -> AdmissionDecision:
+        if priority == WorkPriority.L2_ASR:
+            return AdmissionDecision(False, priority, LoadMode.CRITICAL, "load_critical")
+        return original_admit(priority)
+
+    monkeypatch.setattr(pressure_controller, "admit", deny_asr)
+    pressure_rows, pressure_metrics = run("speech-pressure", True, pressure_controller)
     audio_failure_rows: list[dict[str, Any]] = []
     failure_metrics: dict[str, Any]
 
@@ -416,6 +437,9 @@ def test_speech_opt_in_emits_revisions_without_changing_audio_observations(
         if row.get("record_type") == "observation" and row.get("modality") == "audio"
     ]
     segments = [row for row in speech_rows if row.get("record_type") == "speech_segment"]
+    pressure_segments = [
+        row for row in pressure_rows if row.get("record_type") == "speech_segment"
+    ]
     baseline_matches = [row for row in baseline_rows if row.get("record_type") == "window_match"]
     speech_matches = [row for row in speech_rows if row.get("record_type") == "window_match"]
     failure_matches = [
@@ -446,6 +470,9 @@ def test_speech_opt_in_emits_revisions_without_changing_audio_observations(
     assert segments[0]["end_ms"] == segments[1]["end_ms"]
     assert speech_metrics["speech_segment_count"] == 1
     assert speech_metrics["speech_error_count"] == 0
+    assert pressure_metrics["speech_worker"]["submitted"] == 1
+    assert pressure_metrics["speech_worker"]["admission_dropped"] == 0
+    assert [segment["status"] for segment in pressure_segments] == ["partial", "final"]
     audio_failed = [
         row for row in audio_failure_rows
         if row.get("record_type") == "observation" and row.get("modality") == "audio"

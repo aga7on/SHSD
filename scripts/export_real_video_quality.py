@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
@@ -163,14 +164,35 @@ def _semantic_summary(matches: list[dict[str, Any]]) -> str:
     lines = [
         (
             "| Axis | Modality | Windows | Decisions | "
-            "Best cosine min/mean/max | Top-two gap min/mean/max |"
+            "Best cosine min/mean/max | Margin basis | "
+            "Cosine below threshold | Margin below threshold | Margin min/mean/max |"
         ),
-        "|---|---|---:|---|---|---|",
+        "|---|---|---:|---|---|---|---:|---:|---|",
     ]
     for (axis, modality), rows in sorted(grouped.items()):
         scores = [float(row.get("raw_cosine", 0.0)) for row in rows]
         margins = [float(row.get("margin", 0.0)) for row in rows]
+        policies = [
+            row.get("thresholds")
+            if isinstance(row.get("thresholds"), dict)
+            else {}
+            for row in rows
+        ]
+        minimum_similarities = [
+            float(policy.get("minimum_similarity", 0.6)) for policy in policies
+        ]
+        minimum_margins = [float(policy.get("minimum_margin", 0.05)) for policy in policies]
+        margin_bases = sorted(
+            {str(policy.get("margin_basis", "unknown")) for policy in policies}
+        )
         decisions = dict(Counter(str(row.get("decision", "")) for row in rows))
+        below_similarity = sum(
+            score < threshold
+            for score, threshold in zip(scores, minimum_similarities, strict=True)
+        )
+        below_margin = sum(
+            margin < threshold for margin, threshold in zip(margins, minimum_margins, strict=True)
+        )
         score_stats = "/".join(
             f"{value:.3f}" for value in (min(scores), sum(scores) / len(scores), max(scores))
         )
@@ -184,7 +206,8 @@ def _semantic_summary(matches: list[dict[str, Any]]) -> str:
         )
         lines.append(
             f"| {axis} | {modality} | {len(rows)} | {decisions} | "
-            f"{score_stats} | {margin_stats} |"
+            f"{score_stats} | {', '.join(margin_bases)} | {below_similarity} | "
+            f"{below_margin} | {margin_stats} |"
         )
     return "\n".join(lines)
 
@@ -252,6 +275,11 @@ def main() -> int:
                 "decision": str(item.get("decision", "")),
                 "raw_cosine": str(item.get("raw_cosine", "")),
                 "margin": str(item.get("margin", "")),
+                "minimum_similarity": str(
+                    item.get("thresholds", {}).get("minimum_similarity", "")
+                ),
+                "minimum_margin": str(item.get("thresholds", {}).get("minimum_margin", "")),
+                "margin_basis": str(item.get("thresholds", {}).get("margin_basis", "")),
                 "text_ru": str(item.get("text_ru", "")),
                 "top_candidates_json": json.dumps(
                     item.get("top_candidates", []), ensure_ascii=False, sort_keys=True
@@ -268,7 +296,29 @@ def main() -> int:
         (str(item.get("status", "")), str(item.get("backend", "")))
         for item in captions
     )
-    speech_dropped = sum(item.get("status") == "dropped" for item in segments)
+    latest_speech_by_id: dict[str, dict[str, Any]] = {}
+    for item in segments:
+        segment_id = str(
+            item.get(
+                "segment_id",
+                f"{item.get('start_ms', '')}:{item.get('end_ms', '')}",
+            )
+        )
+        previous = latest_speech_by_id.get(segment_id)
+        if previous is None or int(item.get("revision", 1)) >= int(
+            previous.get("revision", 1)
+        ):
+            latest_speech_by_id[segment_id] = item
+    latest_speech_segments = sorted(
+        latest_speech_by_id.values(), key=lambda item: int(item.get("start_ms", 0))
+    )
+    speech_statuses = Counter(str(item.get("status", "")) for item in latest_speech_segments)
+    speech_dropped = speech_statuses.get("dropped", 0)
+    speech_transcribed = sum(
+        item.get("status") in {"partial", "final"}
+        and bool(str(item.get("text", "")).strip())
+        for item in latest_speech_segments
+    )
     issues = final_watermarks.get("issues", [])
     issue_counts = Counter(
         (item.get("stage"), item.get("level"), item.get("modality"), item.get("reason"))
@@ -285,6 +335,7 @@ def main() -> int:
     common_caption = max(caption_examples, key=caption_examples.get) if caption_examples else ""
     elapsed = metrics.get("end_to_end_elapsed")
     duration = analysis.get("source_duration_ms")
+    timeline_reference = Path(os.path.relpath(timeline, output_dir)).as_posix()
     report = (
         "# Real-video L1/L2/L3 output\n\n"
         "## Run\n\n"
@@ -300,8 +351,10 @@ def main() -> int:
         f"L1={level_counts.get('L1', 0)}, L2={level_counts.get('L2', 0)}; "
         f"latest L1/L2 rows are listed below ({len(events)} rows).\n\n"
         "## Semantic matcher scores\n\n"
-        "Cosines are scores, not probabilities. The required policy is read from "
-        "each raw match; see semantic_match_scores.csv for every candidate ranking.\n\n"
+        "Cosines are scores, not probabilities. The table counts rows below the "
+        "per-match similarity and margin thresholds; margin basis distinguishes "
+        "top-candidate gap from distance above the similarity threshold. The CSV "
+        "includes each row's exact policy and candidate ranking.\n\n"
         f"{_semantic_summary(matches)}\n\n"
         "## L1 and L2 events\n\n"
         "Descriptions below are the model's Russian claim text. The decision is kept "
@@ -312,20 +365,25 @@ def main() -> int:
         f"({caption_examples.get(common_caption, 0)} occurrences): {common_caption}\n\n"
         f"{_caption_table(captions)}\n\n"
         "## ASR and coverage\n\n"
-        f"Speech segments: {len(segments)}; dropped: {speech_dropped}; "
-        "recognized transcript text was not emitted for dropped segments.\n\n"
-        f"{_speech_table(segments)}\n\n"
+        f"Unique speech windows: {len(latest_speech_segments)}; latest statuses: "
+        f"{dict(speech_statuses)}; non-empty transcript text: "
+        f"{speech_transcribed}/{len(latest_speech_segments)}; dropped: {speech_dropped}. "
+        "speech_segments.csv retains every partial/final revision.\n\n"
+        f"{_speech_table(latest_speech_segments)}\n\n"
         f"Final watermarks: {watermark_text}\n\n"
         "Coverage issues:\n\n"
         + ("\n".join(issue_lines) if issue_lines else "- none")
         + "\n\n## Reading the result\n\n"
         "The run produces Russian event and caption strings, but the captions are "
         "repetitive scene-change descriptions and do not describe dialogue, music "
-        "development, or instruments. The ASR worker dropped its windows under "
-        "load_critical; uncertain L1 claims remain visible. This is a quality and "
-        "coverage failure on this clip, not a positive accuracy result.\n"
-        "\nMachine-readable files: timeline.jsonl, semantic_match_scores.csv, "
-        "events_l1_l2_latest.csv, captions_l3.csv, speech_segments.csv.\n"
+        "development, or instruments. ASR returned non-empty text for "
+        f"{speech_transcribed}/{len(latest_speech_segments)} unique windows; this is "
+        "raw model output and transcript accuracy has not been independently rated. "
+        "Uncertain semantic claims remain visible but are not verified facts. This is "
+        "a quality assessment, not a positive accuracy result.\n"
+        f"\nMachine-readable files: [{timeline_reference}]({timeline_reference}), "
+        "semantic_match_scores.csv, events_l1_l2_latest.csv, captions_l3.csv, "
+        "speech_segments.csv.\n"
     )
     (output_dir / "report_real_video_quality.md").write_text(
         report, encoding="utf-8", newline="\n"
@@ -336,7 +394,9 @@ def main() -> int:
                 "output_dir": str(output_dir),
                 "l1_l2_rows": len(events),
                 "captions": len(captions),
-                "speech_segments": len(segments),
+                "speech_windows": len(latest_speech_segments),
+                "speech_revisions": len(segments),
+                "speech_transcribed": speech_transcribed,
                 "speech_dropped": speech_dropped,
             },
             ensure_ascii=True,

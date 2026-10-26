@@ -1,0 +1,11 @@
+﻿start_ms,end_ms,status,language,text,error
+0,20000,partial,ru,"о, guy stolkng  ni. Stop by fald.",
+20000,40000,partial,ru,Да.,
+40000,60000,partial,ru,а.,
+60000,80000,partial,ru,"r you ready, Cose you ready your Rockstar. s  lok in boly. we chut have about th",
+80000,90000,partial,ru,Will det's perfect. Rlly one! All Systems go! Ya yo! go! goo!,
+0,20000,final,ru,"о, guy stolkng  ni. Stop by fald.",
+20000,40000,final,ru,Да.,
+40000,60000,final,ru,а.,
+60000,80000,final,ru,"r you ready, Cose you ready your Rockstar. s  lok in boly. we chut have about th",
+80000,90000,final,ru,Will det's perfect. Rlly one! All Systems go! Ya yo! go! goo!,

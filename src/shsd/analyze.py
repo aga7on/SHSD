@@ -1299,7 +1299,6 @@ def analyze_media(
     speech_worker: BoundedSpeechWorker | None = None
     progressive_workers: LiveLevelWorkers | None = None
     deferred_speech_tasks: deque[SpeechTask] = deque()
-    deferred_speech_capacity = 2
     speech_admission_drop_count = 0
     next_l1_job_id = 0
     publish_lock = RLock()
@@ -1309,6 +1308,15 @@ def analyze_media(
     l1_processed_frontiers: dict[str, int] = {}
     live_pending_coverage: list[tuple[int, int]] = []
     live_coverage_lock = RLock()
+    offline_speech_capacity = (
+        32
+        if source_duration_ms is None
+        else min(
+            32,
+            max(2, (source_duration_ms + ASR_WINDOW_MS - 1) // ASR_WINDOW_MS),
+        )
+    )
+    deferred_speech_capacity = 2 if remote_source else offline_speech_capacity
 
     def observe_runtime_load(*, force: bool = False) -> None:
         nonlocal host_metrics_available
@@ -1328,7 +1336,7 @@ def analyze_media(
             )
         if l1_worker is not None:
             queue_candidates.append((l1_worker.outstanding, l1_worker.queue_capacity))
-        if speech_worker is not None:
+        if speech_worker is not None and remote_source:
             queue_candidates.append(
                 (
                     speech_worker.outstanding + len(deferred_speech_tasks),
@@ -1369,7 +1377,8 @@ def analyze_media(
         load_controller.observe(sample, source_id=load_source_id)
         runtime_load_observation_count += 1
         if deferred_speech_tasks:
-            flush_deferred_speech()
+            if remote_source:
+                flush_deferred_speech()
 
     def publish(record: dict[str, Any]) -> None:
         progressive_event: TimelineEvent | None = None
@@ -1986,6 +1995,11 @@ def analyze_media(
             nonlocal speech_admission_drop_count
             if speech_worker is None:
                 return
+            if not remote_source:
+                # Local files are unpaced; using their capture lag to gate ASR
+                # can deadlock because ASR itself is part of the E watermark.
+                deferred_speech_tasks.append(task)
+                return
             decision = load_controller.admit(WorkPriority.L2_ASR)
             if decision.admitted and speech_worker.submit(task):
                 return
@@ -2005,9 +2019,10 @@ def analyze_media(
                 return
             while deferred_speech_tasks:
                 task = deferred_speech_tasks[0]
-                decision = load_controller.admit(WorkPriority.L2_ASR)
-                if not decision.admitted:
-                    return
+                if remote_source:
+                    decision = load_controller.admit(WorkPriority.L2_ASR)
+                    if not decision.admitted:
+                        return
                 if speech_worker.submit(task):
                     deferred_speech_tasks.popleft()
                     continue
@@ -2025,7 +2040,7 @@ def analyze_media(
                 GigaAMTranscriber(models_dir / "gigaam_v3_e2e_ctc"),
                 queue_capacity=2,
                 result_capacity=8,
-                load_controller=load_controller,
+                load_controller=load_controller if remote_source else None,
             )
             speech_assembler = SpeechWindowAssembler(window_ms=ASR_WINDOW_MS)
 
@@ -2477,14 +2492,21 @@ def analyze_media(
                 )
 
         if speech_worker is not None:
-            for attempt in range(3):
-                if not deferred_speech_tasks:
-                    break
-                speech_worker.drain(publish_speech_result)
-                observe_runtime_load(force=True)
-                flush_deferred_speech()
-                if deferred_speech_tasks and attempt < 2:
-                    time.sleep(0.25)
+            if not remote_source:
+                while deferred_speech_tasks:
+                    speech_worker.drain(publish_speech_result)
+                    flush_deferred_speech()
+                    if deferred_speech_tasks:
+                        time.sleep(0.02)
+            else:
+                for attempt in range(3):
+                    if not deferred_speech_tasks:
+                        break
+                    speech_worker.drain(publish_speech_result)
+                    observe_runtime_load(force=True)
+                    flush_deferred_speech()
+                    if deferred_speech_tasks and attempt < 2:
+                        time.sleep(0.25)
             while deferred_speech_tasks:
                 task = deferred_speech_tasks.popleft()
                 decision = load_controller.admit(WorkPriority.L2_ASR)
