@@ -153,3 +153,8 @@ Detailed feature comparisons are in [`benchmarks/reports/fullstack_feature_ab.md
 ## Quality and realtime status (2026-10-26)
 
 The 90-second offline `Tears of Steel` run yielded 1 policy-accepted, not independently verified percussion detail and 3 mostly generic Russian L3 captions ([review](benchmarks/reports/music_multiclass_l2_20261026/real_video_quality_review.md)). The 60-second 1x live Qwen v2 test reached only 41.828 seconds of capture, with 503 shared-prefetch drops and L1 median lag 22.27 seconds ([report](benchmarks/reports/live_qwen_v2_60s_20261026/report.md)). These are **not** proof of music accuracy or realtime. The new F7–F10 roadmap, including a **parallel trainable multimodal bridge R&D track** (training conditionally authorized after feasibility/data/budget GO), and evaluation protocol are in [Todo.md](Todo.md) and [the bridge pilot](docs/experiments/bridge-training-pilot.md).
+
+
+## Исполняемое обучение F10: изображения, видео, аудио и AV
+
+Актуальный [training design](docs/experiments/F10-multimodal-training-design.md) включает отдельные IMAGE-only, VIDEO-only, AUDIO-only и AV режимы, тензорные контракты, JSONL разметку, target-only CE, masks, начальные гиперпараметры и критерии независимого качества/CPU realtime. [Поручение coding-агенту](docs/experiments/F10-agent-handoff.md). Изменения документации не означают, что модель уже обучена или проверена.
