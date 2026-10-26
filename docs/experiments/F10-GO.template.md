@@ -35,3 +35,8 @@
 - Next-stage B2 budget gate: TBD
 
 **Decision: NOT EVALUATED (GO / NO-GO / BLOCKED)**. Evidence reviewer/date/SHA: TBD. Unknown не считается GO. Никаких production changes до independent held-out A/B и sustained CPU 1x.
+
+
+## Обязательный визуальный gate
+
+До GO отдельно проверить: IMAGE-only object/relation quality без вымышленных движений; VIDEO-only subject-action-object, entity continuity, shuffled frames и таймкоды; AUDIO-only instrument/layer/transition; AV shifted audio/false causality. Проверить missing modality masks, target-only CE и source-separated train/test для всех режимов. Недостаточное качество IMAGE или VIDEO нельзя компенсировать музыкой. Полный [training design](F10-multimodal-training-design.md).
