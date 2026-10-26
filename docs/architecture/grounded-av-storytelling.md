@@ -28,3 +28,8 @@
 Общие поля: source_id, epoch, PTS/time_base, evidence refs, model/preprocess revision, confidence_kind (cosine не вероятность), decision_state (observed/hypothesis/accepted_by_policy/human_verified/published), uncertainty reason, revision. Агент сохраняет CAS revisions, backward compatibility и bounded queues.
 
 **Приёмка:** human-verified source-separated visual action/entity/order и music layer/transition precision/recall, unsupported L3 claims/omissions, RU coherence; sustained 1x unique-media CPU pre-stop C/E/R lag slope, drops, RSS. Negative controls: swapped audio, shuffled time, missing modality, speech-only, video cut without action.
+
+
+## IMAGE и VIDEO — разные проверки
+
+Статическое IMAGE обеспечивает только видимые объекты, атрибуты и отношения. Действия с последовательностью во времени требуют VIDEO: нескольких кадров, исходных PTS, entity tracking и проверенного порядка до/после. AUDIO отдельно подтверждает музыку, речь, инструменты и музыкальные переходы. AV объединяет их лишь при подтверждённой синхронизации. Подробная спецификация обучения: [F10 design](../experiments/F10-multimodal-training-design.md).
