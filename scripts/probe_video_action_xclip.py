@@ -42,6 +42,7 @@ XCLIP_MODEL_ID = "microsoft/xclip-base-patch32"
 XCLIP_REVISION = "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963"
 XCLIP_LICENSE = "MIT"
 SOURCE_PTS_OFFSET_MS = 120_000
+PIXEL_CHANGE_SIZE = (128, 72)
 
 _CANDIDATES = (
     {
@@ -156,6 +157,21 @@ def _scan_intervals(
     if not starts or starts[-1] != last_start_ms:
         starts.append(last_start_ms)
     return tuple((window_start, window_start + window_ms) for window_start in starts)
+
+
+def _pixel_change_summary(left_rgb: np.ndarray, right_rgb: np.ndarray) -> dict[str, float]:
+    """Return raw mean absolute pixel change over the frame and its central half."""
+    left = np.asarray(left_rgb, dtype=np.float32)
+    right = np.asarray(right_rgb, dtype=np.float32)
+    if left.shape != right.shape or left.ndim != 3 or left.shape[2] != 3:
+        raise ValueError("pixel-change frames must have matching [height, width, 3] shapes")
+    delta = np.abs(right - left)
+    height, width, _ = delta.shape
+    center = delta[height // 4 : 3 * height // 4, width // 4 : 3 * width // 4]
+    return {
+        "full_frame_mean_abs_rgb_delta": float(np.mean(delta, dtype=np.float64)),
+        "center_crop_mean_abs_rgb_delta": float(np.mean(center, dtype=np.float64)),
+    }
 
 
 def main() -> int:
@@ -342,6 +358,35 @@ def main() -> int:
     )
     frame_pts_ms = tuple(sorted(images_by_pts))
     frames_by_pts = tuple(images_by_pts[pts_ms] for pts_ms in frame_pts_ms)
+    resized_frames = {
+        pts_ms: np.asarray(
+            frame.convert("RGB").resize(PIXEL_CHANGE_SIZE),
+            dtype=np.uint8,
+        )
+        for frame, pts_ms in zip(frames_by_pts, frame_pts_ms, strict=True)
+    }
+    pixel_change_pairs: list[dict[str, Any]] = []
+    for left_pts_ms, right_pts_ms in zip(frame_pts_ms, frame_pts_ms[1:], strict=False):
+        pixel_change_pairs.append(
+            {
+                "timeline_interval_ms": [left_pts_ms, right_pts_ms],
+                "source_interval_ms": [
+                    left_pts_ms + args.source_pts_offset_ms,
+                    right_pts_ms + args.source_pts_offset_ms,
+                ],
+                "method_version": "rgb_pixel_delta_128x72_v1",
+                "unit": "mean_absolute_rgb_channel_delta_0_to_255",
+                **_pixel_change_summary(resized_frames[left_pts_ms], resized_frames[right_pts_ms]),
+            }
+        )
+    for result in window_results:
+        window_source_pts = set(result["source_frame_pts_ms"])
+        result["pixel_change_pairs"] = [
+            pair
+            for pair in pixel_change_pairs
+            if pair["source_interval_ms"][0] in window_source_pts
+            and pair["source_interval_ms"][1] in window_source_pts
+        ]
     frame_records = tuple(
         feature_provider.encode_frame_features(np.asarray(frame.convert("RGB")), pts_ms)
         for frame, pts_ms in zip(frames_by_pts, frame_pts_ms, strict=True)
@@ -401,6 +446,8 @@ def main() -> int:
             "source_pts_offset_ms": args.source_pts_offset_ms,
             "frame_pts_ms": list(frame_pts_ms),
             "source_frame_pts_ms": [pts_ms + args.source_pts_offset_ms for pts_ms in frame_pts_ms],
+            "pixel_change_method_version": "rgb_pixel_delta_128x72_v1",
+            "pixel_change_pairs": pixel_change_pairs,
             "video_metadata": (
                 window_results[0]["video_metadata"]
                 if len(window_results) == 1
@@ -433,6 +480,7 @@ def main() -> int:
             "The model output is an unverified candidate, not a human-verified event.",
             "The top-two margin and candidate-set softmax are not calibrated confidence.",
             "Overlapping windows may keep ranking an action after its visible onset or offset.",
+            "RGB pixel deltas are raw frame differences, not optical flow or action evidence.",
             (
                 "The output is an external diagnostic baseline and is not integrated into "
                 "the default analyze route."
