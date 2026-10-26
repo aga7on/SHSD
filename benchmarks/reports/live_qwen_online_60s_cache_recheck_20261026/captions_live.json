@@ -1,0 +1,397 @@
+[
+  {
+    "backend": "qwen",
+    "caption_ru": "Обнаружено заметное изменение изображения.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "589d073575344ff3be2ddf6313601743",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 1682.508,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "generated",
+    "time_range": {
+      "end_ms": 7265,
+      "start_ms": 6265
+    },
+    "tokens_per_second": 63.0,
+    "used_claim_ids": [
+      "589d073575344ff3be2ddf6313601743:claim-scene-cut-scene-cut:6265:7265"
+    ],
+    "warnings": []
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "ac4f55693734448287bc4ef1de84edf6",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 2018.45,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "fallback",
+    "time_range": {
+      "end_ms": 7306,
+      "start_ms": 6265
+    },
+    "tokens_per_second": 59.3,
+    "used_claim_ids": [
+      "ac4f55693734448287bc4ef1de84edf6:claim-ac4f55693734448287bc4ef1de84edf6"
+    ],
+    "warnings": [
+      "unsupported_terms"
+    ]
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Обнаружено заметное изменение изображения.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "9d9220163e8f435da41718385d869448",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 2119.585,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "generated",
+    "time_range": {
+      "end_ms": 9265,
+      "start_ms": 8265
+    },
+    "tokens_per_second": 56.5,
+    "used_claim_ids": [
+      "9d9220163e8f435da41718385d869448:claim-scene-cut-scene-cut:8265:9265"
+    ],
+    "warnings": []
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "841d9cb7e62a49d98a879c08b2129abc",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 1962.386,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "fallback",
+    "time_range": {
+      "end_ms": 9296,
+      "start_ms": 8265
+    },
+    "tokens_per_second": 61.8,
+    "used_claim_ids": [
+      "841d9cb7e62a49d98a879c08b2129abc:claim-841d9cb7e62a49d98a879c08b2129abc"
+    ],
+    "warnings": [
+      "unsupported_terms"
+    ]
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "29585fec1d50474e87f08b9976052f2f",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 1963.541,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "fallback",
+    "time_range": {
+      "end_ms": 17265,
+      "start_ms": 16265
+    },
+    "tokens_per_second": 61.4,
+    "used_claim_ids": [
+      "29585fec1d50474e87f08b9976052f2f:claim-29585fec1d50474e87f08b9976052f2f"
+    ],
+    "warnings": [
+      "unsupported_terms"
+    ]
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "a3e8a394b64a4b71b57ca89cc7331cd7",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 1978.414,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "fallback",
+    "time_range": {
+      "end_ms": 22336,
+      "start_ms": 21265
+    },
+    "tokens_per_second": 62.0,
+    "used_claim_ids": [
+      "a3e8a394b64a4b71b57ca89cc7331cd7:claim-a3e8a394b64a4b71b57ca89cc7331cd7"
+    ],
+    "warnings": [
+      "unsupported_terms"
+    ]
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Обнаружено заметное изменение изображения.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "2ddcdcaf7d7c4ebdae02e7a516d60784",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 1693.03,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "generated",
+    "time_range": {
+      "end_ms": 25265,
+      "start_ms": 22265
+    },
+    "tokens_per_second": 62.6,
+    "used_claim_ids": [
+      "2ddcdcaf7d7c4ebdae02e7a516d60784:claim-scene-cut-scene-cut:22265:25265"
+    ],
+    "warnings": []
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "cdc9854280c14e4a94c9ef3055843ab2",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 1989.984,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "fallback",
+    "time_range": {
+      "end_ms": 25326,
+      "start_ms": 22265
+    },
+    "tokens_per_second": 60.9,
+    "used_claim_ids": [
+      "cdc9854280c14e4a94c9ef3055843ab2:claim-cdc9854280c14e4a94c9ef3055843ab2"
+    ],
+    "warnings": [
+      "unsupported_terms"
+    ]
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "f633c49d38564c21935ee16c31018016",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 2027.354,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "fallback",
+    "time_range": {
+      "end_ms": 26326,
+      "start_ms": 25265
+    },
+    "tokens_per_second": 61.6,
+    "used_claim_ids": [
+      "f633c49d38564c21935ee16c31018016:claim-f633c49d38564c21935ee16c31018016"
+    ],
+    "warnings": [
+      "unsupported_terms"
+    ]
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "49892f69dc234d909bcc5a0607b7b14e",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 2043.394,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "fallback",
+    "time_range": {
+      "end_ms": 27265,
+      "start_ms": 26265
+    },
+    "tokens_per_second": 59.3,
+    "used_claim_ids": [
+      "49892f69dc234d909bcc5a0607b7b14e:claim-49892f69dc234d909bcc5a0607b7b14e"
+    ],
+    "warnings": [
+      "unsupported_terms"
+    ]
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "0809d557263f4ad68fdef64b0aeced13",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 2000.093,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "fallback",
+    "time_range": {
+      "end_ms": 28296,
+      "start_ms": 27265
+    },
+    "tokens_per_second": 61.8,
+    "used_claim_ids": [
+      "0809d557263f4ad68fdef64b0aeced13:claim-0809d557263f4ad68fdef64b0aeced13"
+    ],
+    "warnings": [
+      "unsupported_terms"
+    ]
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "c59f3ee2756a4ed0812034d2cd2b05c5",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 1972.911,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "fallback",
+    "time_range": {
+      "end_ms": 29326,
+      "start_ms": 28265
+    },
+    "tokens_per_second": 60.6,
+    "used_claim_ids": [
+      "c59f3ee2756a4ed0812034d2cd2b05c5:claim-c59f3ee2756a4ed0812034d2cd2b05c5"
+    ],
+    "warnings": [
+      "unsupported_terms"
+    ]
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Обнаружено заметное изменение изображения.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "6fa22ca58bad492c8437c20dd2103cda",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 1658.53,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "generated",
+    "time_range": {
+      "end_ms": 35265,
+      "start_ms": 30265
+    },
+    "tokens_per_second": 62.2,
+    "used_claim_ids": [
+      "6fa22ca58bad492c8437c20dd2103cda:claim-scene-cut-scene-cut:30265:35265"
+    ],
+    "warnings": []
+  }
+]

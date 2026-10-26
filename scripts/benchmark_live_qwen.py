@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import shutil
 import socket
+import statistics
 import subprocess
 import sys
 import time
@@ -18,7 +20,7 @@ import urllib.error
 import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = ROOT / "benchmarks" / "fixtures" / "real_poc" / "tears_of_steel_120_210s.mp4"
@@ -46,7 +48,7 @@ def _request_json(
         headers={"Content-Type": "application/json"} if payload is not None else {},
     )
     with urllib.request.urlopen(request, timeout=timeout) as response:
-        return json.loads(response.read().decode("utf-8"))
+        return cast(dict[str, Any], json.loads(response.read().decode("utf-8")))
 
 
 def _wait_for_port(port: int, process: subprocess.Popen[Any], timeout: float = 30) -> None:
@@ -112,6 +114,43 @@ def _record_snapshot(
     return sample, payload
 
 
+def _caption_key(caption: dict[str, Any]) -> str:
+    return json.dumps(
+        {
+            "caption_ru": caption.get("caption_ru"),
+            "event_revisions": caption.get("event_revisions", []),
+            "status": caption.get("status"),
+            "time_range": caption.get("time_range", {}),
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+    )
+
+
+def _observe_captions(
+    payload: dict[str, Any],
+    *,
+    elapsed_s: float,
+    first_seen: dict[str, float],
+) -> None:
+    for caption in payload.get("captions", []):
+        if isinstance(caption, dict):
+            first_seen.setdefault(_caption_key(caption), elapsed_s)
+
+
+def _latency_summary(values: list[int]) -> dict[str, int | float]:
+    if not values:
+        return {"count": 0}
+    ordered = sorted(values)
+    p95 = ordered[max(0, math.ceil(0.95 * len(ordered)) - 1)]
+    return {
+        "count": len(ordered),
+        "median_ms": statistics.median(ordered),
+        "p95_ms": p95,
+        "max_ms": max(ordered),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mediamtx", type=Path, required=True)
@@ -119,6 +158,7 @@ def main() -> int:
     parser.add_argument("--shsd", type=Path, default=ROOT / ".venv" / "Scripts" / "shsd.exe")
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--cache-dir", type=Path)
     parser.add_argument("--threads", type=int, default=4)
     parser.add_argument("--window-ms", type=int, default=5_000)
     parser.add_argument("--poll-seconds", type=float, default=1.0)
@@ -139,7 +179,7 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
     run_id = datetime.now(UTC).strftime("run_%Y%m%dT%H%M%S%f")
     state_dir = output_dir / "state" / run_id
-    cache_dir = output_dir / "cache" / run_id
+    cache_dir = args.cache_dir.resolve() if args.cache_dir else output_dir / "cache" / run_id
     state_dir.mkdir(parents=True, exist_ok=True)
     cache_dir.mkdir(parents=True, exist_ok=True)
 
@@ -174,6 +214,7 @@ def main() -> int:
     terminal_payload: dict[str, Any] = {}
     terminal_watermark: dict[str, Any] = {}
     terminal_status: dict[str, Any] = {}
+    caption_first_seen: dict[str, float] = {}
     try:
         mediamtx = subprocess.Popen(
             [str(mediamtx_path), str(config_path)],
@@ -274,6 +315,11 @@ def main() -> int:
                 api_url, stream_id, publisher_elapsed_s=time.monotonic() - publisher_started
             )
             samples.append(sample)
+            _observe_captions(
+                payload,
+                elapsed_s=sample["publisher_elapsed_s"],
+                first_seen=caption_first_seen,
+            )
             if sample["capture_C_ms"] > 0:
                 break
             if publisher.poll() is not None:
@@ -285,6 +331,11 @@ def main() -> int:
                 api_url, stream_id, publisher_elapsed_s=time.monotonic() - publisher_started
             )
             samples.append(sample)
+            _observe_captions(
+                payload,
+                elapsed_s=sample["publisher_elapsed_s"],
+                first_seen=caption_first_seen,
+            )
             if pre_stop_refine_result is None and sample["capture_C_ms"] >= 10_000:
                 pre_stop_watermark = _watermark_snapshot(api_url, stream_id)
                 pre_stop_caption_count = len(payload.get("captions", []))
@@ -316,6 +367,11 @@ def main() -> int:
                 api_url, stream_id, publisher_elapsed_s=time.monotonic() - publisher_started
             )
             samples.append(sample)
+            _observe_captions(
+                payload,
+                elapsed_s=sample["publisher_elapsed_s"],
+                first_seen=caption_first_seen,
+            )
             terminal_status = _request_json(f"{api_url}/v1/streams/{stream_id}")
             if terminal_status.get("status") in {"completed", "failed", "stopped"}:
                 break
@@ -337,6 +393,33 @@ def main() -> int:
 
         source_events = terminal_payload.get("events", [])
         captions = terminal_payload.get("captions", [])
+        live_caption_latencies: list[dict[str, Any]] = []
+        for caption in captions:
+            if not isinstance(caption, dict):
+                continue
+            first_seen_s = caption_first_seen.get(_caption_key(caption))
+            interval = caption.get("time_range", {})
+            source_end_ms = interval.get("end_ms") if isinstance(interval, dict) else None
+            if (
+                first_seen_s is None
+                or first_seen_s > publisher_elapsed_s
+                or not isinstance(source_end_ms, (int, float))
+            ):
+                continue
+            live_caption_latencies.append(
+                {
+                    "status": caption.get("status"),
+                    "source_start_ms": interval.get("start_ms"),
+                    "source_end_ms": source_end_ms,
+                    "first_observed_elapsed_s": round(first_seen_s, 3),
+                    "observed_output_lag_ms": round(first_seen_s * 1000 - source_end_ms),
+                    "poll_resolution_ms": round(args.poll_seconds * 1000),
+                    "caption_ru": caption.get("caption_ru", ""),
+                }
+            )
+        live_caption_lag_ms = [
+            int(item["observed_output_lag_ms"]) for item in live_caption_latencies
+        ]
         event_latencies: list[dict[str, Any]] = []
         for event in source_events:
             updated = event.get("updated_at_utc")
@@ -423,6 +506,10 @@ def main() -> int:
                 for level in ("L1", "L2", "L3")
             },
             "caption_count": len(captions),
+            "live_caption_count": len(live_caption_latencies),
+            "post_stop_caption_count": len(captions) - len(live_caption_latencies),
+            "live_caption_output_lag_ms": live_caption_latencies,
+            "live_caption_output_lag_summary_ms": _latency_summary(live_caption_lag_ms),
             "captions": captions,
             "event_latency_samples": event_latencies,
             "watermark_samples": samples,
@@ -451,6 +538,9 @@ def main() -> int:
                         "pre_stop_last_sample",
                         "event_count_by_level",
                         "caption_count",
+                        "live_caption_count",
+                        "post_stop_caption_count",
+                        "live_caption_output_lag_summary_ms",
                         "live_event_count_by_level",
                         "first_caption_after_stop_s",
                         "post_stop_wait_s",
