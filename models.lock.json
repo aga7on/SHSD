@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-10-25",
+  "runtime_target": "cpu",
+  "models": {
+    "embeddinggemma2": {
+      "repo_id": "google/embeddinggemma-2",
+      "revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+      "format": "sentence-transformers / safetensors",
+      "quantization": null,
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "model.safetensors",
+          "size_bytes": 1488915288,
+          "sha256": "197a32965d4b1105faf060417baa899e193fb73cd401f42ec9295234d5553d79"
+        },
+        {
+          "path": "tokenizer.json",
+          "size_bytes": 32170510,
+          "sha256": "4d777ef5bdc1aa36227abdfb77c3e49e7b9c892d16e1b6bda41c393504828be4"
+        },
+        {
+          "path": "tokenizer.model",
+          "size_bytes": 4689013,
+          "sha256": "e594c8a90eb08d8bda498ff4747977dc827ae0c3c56b5c0d41a605a22d02ef03"
+        }
+      ]
+    },
+    "qwen3_0_6b": {
+      "repo_id": "ggml-org/Qwen3-0.6B-GGUF",
+      "revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+      "file": "Qwen3-0.6B-Q8_0.gguf",
+      "size_bytes": 804753632,
+      "sha256": "361cc68159042c36ebff7715dc5a2e4612153e88f3e9c9c234820849d6dc9e1d",
+      "quantization": "Q8_0",
+      "license": "Apache-2.0"
+    },
+    "gigaam_v3_e2e_ctc": {
+      "repo_id": "ai-sage/GigaAM-v3",
+      "revision": "cec030b4c4f35d928e4a9044a3bdb29ebd499fac",
+      "variant": "v3_e2e_ctc",
+      "format": "PyTorch checkpoint",
+      "quantization": null,
+      "license": "MIT",
+      "files": [
+        {
+          "path": "config.json",
+          "size_bytes": 1623,
+          "sha256": "3dbcd2ebe1a572cb9a9945eeb3faf8b59180d408e61a61ecda44db30421e7251"
+        },
+        {
+          "path": "modeling_gigaam.py",
+          "size_bytes": 49135,
+          "sha256": "269be43b635b1e510115baa2a843c5cbaa052e8adf0be30dc133a2ba5b5f2d86"
+        },
+        {
+          "path": "pytorch_model.bin",
+          "size_bytes": 442405251,
+          "sha256": "9801f83ef3979779982c4f83ec1c234d7571e8c1a5aa2bfc0b09ceb97a16cd75"
+        },
+        {
+          "path": "tokenizer.model",
+          "size_bytes": 240941,
+          "sha256": "0b9a1960898fbfdf5424ab852ea17445eb3da960fba23e977ff100eb0054fbc8"
+        }
+      ],
+      "official_python_api": {
+        "repo": "https://github.com/salute-developers/GigaAM",
+        "revision": "7447938d791c4f3e643386ee22c33777004293a5",
+        "version": "0.2.0",
+        "license": "MIT"
+      },
+      "enabled_by_default": false
+    }
+  },
+  "runtimes": {
+    "llama_cpp": {
+      "repo": "ggml-org/llama.cpp",
+      "version": "b11886",
+      "prerelease": true,
+      "asset": "llama-b11886-bin-win-cpu-x64.zip",
+      "size_bytes": 24219343,
+      "sha256": "65fa1ba898730a1566a0b85bc231d4675900adc50b61c7f9ddebd674916af1d1",
+      "license": "MIT"
+    }
+  }
+}

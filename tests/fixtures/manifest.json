@@ -1,0 +1,428 @@
+{
+  "schema_version": 1,
+  "generated_by": "scripts/generate_fixtures.py",
+  "network_required": false,
+  "ffmpeg_version": "ffmpeg version 8.1.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+  "speech_generator": "eSpeak NG text-to-speech: 1.52.0  Data at: C:\\Program Files\\eSpeak NG\\/espeak-ng-data",
+  "license": "Synthetic local test media; no third-party source recordings.",
+  "assets": [
+    {
+      "file": "av_sync_20s.mp4",
+      "sha256": "9b56aa125b73000e8138246eb815e210faa7d33b5a07c9dc6686265d43297134",
+      "bytes": 196723,
+      "duration_ms": 20000,
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "mpeg4",
+          "codec_type": "video",
+          "width": 320,
+          "height": 180,
+          "time_base": "1/90000",
+          "start_pts": 0,
+          "start_time": "0.000000",
+          "duration_ts": 1800000,
+          "duration": "20.000000"
+        },
+        {
+          "index": 1,
+          "codec_name": "aac",
+          "codec_type": "audio",
+          "sample_rate": "48000",
+          "channels": 1,
+          "time_base": "1/48000",
+          "start_pts": 0,
+          "start_time": "0.000000",
+          "duration_ts": 960000,
+          "duration": "20.000000"
+        }
+      ],
+      "expected_intervals_ms": [
+        {
+          "start_ms": 0,
+          "end_ms": 5000,
+          "tracks": [
+            "audio",
+            "video"
+          ],
+          "label": "video: solid blue-gray scene; audio: digital silence"
+        },
+        {
+          "start_ms": 5000,
+          "end_ms": 10000,
+          "tracks": [
+            "audio",
+            "video"
+          ],
+          "label": "video: solid green scene; audio: two harmonic tones, pulsed"
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 15000,
+          "tracks": [
+            "audio",
+            "video"
+          ],
+          "label": "video: solid red scene; audio: digital silence"
+        },
+        {
+          "start_ms": 15000,
+          "end_ms": 20000,
+          "tracks": [
+            "audio",
+            "video"
+          ],
+          "label": "video: solid purple scene; audio: pulsed 330 Hz tone"
+        }
+      ],
+      "manual_label": "Synthetic audiovisual PTS fixture generated with FFmpeg lavfi.",
+      "must_not_claim": [
+        "speech",
+        "real music",
+        "real scene semantics"
+      ]
+    },
+    {
+      "file": "av_sync_20s.mkv",
+      "sha256": "3d1f0039f67aea0a53549658d9ad99b58fa28d20b03deab8c461175a3890dd3d",
+      "bytes": 535604,
+      "duration_ms": 20000,
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "mpeg4",
+          "codec_type": "video",
+          "width": 320,
+          "height": 180,
+          "time_base": "1/1000",
+          "start_pts": 0,
+          "start_time": "0.000000"
+        },
+        {
+          "index": 1,
+          "codec_name": "flac",
+          "codec_type": "audio",
+          "sample_rate": "48000",
+          "channels": 1,
+          "time_base": "1/1000",
+          "start_pts": 0,
+          "start_time": "0.000000"
+        }
+      ],
+      "expected_intervals_ms": [
+        {
+          "start_ms": 0,
+          "end_ms": 5000,
+          "tracks": [
+            "audio",
+            "video"
+          ],
+          "label": "video: solid blue-gray scene; audio: digital silence"
+        },
+        {
+          "start_ms": 5000,
+          "end_ms": 10000,
+          "tracks": [
+            "audio",
+            "video"
+          ],
+          "label": "video: solid green scene; audio: two harmonic tones, pulsed"
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 15000,
+          "tracks": [
+            "audio",
+            "video"
+          ],
+          "label": "video: solid red scene; audio: digital silence"
+        },
+        {
+          "start_ms": 15000,
+          "end_ms": 20000,
+          "tracks": [
+            "audio",
+            "video"
+          ],
+          "label": "video: solid purple scene; audio: pulsed 330 Hz tone"
+        }
+      ],
+      "manual_label": "Synthetic audiovisual PTS fixture generated with FFmpeg lavfi in Matroska.",
+      "must_not_claim": [
+        "speech",
+        "real music",
+        "real scene semantics"
+      ]
+    },
+    {
+      "file": "audio_music_10s.wav",
+      "sha256": "1c947b6d59c7a613f093f0e1abd8e70d48110c2477479a9a0d29af9c055ee775",
+      "bytes": 960078,
+      "duration_ms": 10000,
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "pcm_s16le",
+          "codec_type": "audio",
+          "sample_rate": "48000",
+          "channels": 1,
+          "time_base": "1/48000",
+          "duration_ts": 480000,
+          "duration": "10.000000"
+        }
+      ],
+      "expected_intervals_ms": [
+        {
+          "start_ms": 0,
+          "end_ms": 10000,
+          "tracks": [
+            "audio"
+          ],
+          "label": "synthetic 440/660 Hz tones with 2 Hz amplitude modulation"
+        }
+      ],
+      "manual_label": "Synthetic signal generated with FFmpeg lavfi; not a recording or music sample.",
+      "must_not_claim": [
+        "real music",
+        "specific instrument",
+        "tonality"
+      ]
+    },
+    {
+      "file": "audio_speech_ru.wav",
+      "sha256": "dd3812888fca7e96a1407e191ed8144256fe026e180cf76f8af19a1ad7e57baa",
+      "bytes": 221244,
+      "duration_ms": 5016,
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "pcm_s16le",
+          "codec_type": "audio",
+          "sample_rate": "22050",
+          "channels": 1,
+          "time_base": "1/22050",
+          "duration_ts": 110600,
+          "duration": "5.015873"
+        }
+      ],
+      "expected_intervals_ms": [
+        {
+          "start_ms": 0,
+          "end_ms": 5016,
+          "tracks": [
+            "audio"
+          ],
+          "label": "Russian synthetic speech: Это короткая синтетическая русская речь для проверки временных меток."
+        }
+      ],
+      "manual_label": "Synthetic speech generated locally with eSpeak NG text-to-speech: 1.52.0  Data at: C:\\Program Files\\eSpeak NG\\/espeak-ng-data and the Russian voice; the TTS engine is not bundled.",
+      "must_not_claim": [
+        "natural speaker",
+        "speaker identity",
+        "emotion"
+      ]
+    },
+    {
+      "file": "audio_silence_5s.wav",
+      "sha256": "98416fcd2ac0fcd8e9d1d86482f51bf83e1c1aa3973854f252900f31355d8e7e",
+      "bytes": 480078,
+      "duration_ms": 5000,
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "pcm_s16le",
+          "codec_type": "audio",
+          "sample_rate": "48000",
+          "channels": 1,
+          "time_base": "1/48000",
+          "duration_ts": 240000,
+          "duration": "5.000000"
+        }
+      ],
+      "expected_intervals_ms": [
+        {
+          "start_ms": 0,
+          "end_ms": 5000,
+          "tracks": [
+            "audio"
+          ],
+          "label": "digital silence"
+        }
+      ],
+      "manual_label": "Zero-valued synthetic PCM generated with FFmpeg lavfi.",
+      "must_not_claim": [
+        "speech",
+        "music",
+        "environmental sound"
+      ]
+    },
+    {
+      "file": "audio_sine_5s.wav",
+      "sha256": "d2f4ce6888edc47796edd2f70bd637746cd79e3a55feabcfe8066afc9d017b94",
+      "bytes": 480078,
+      "duration_ms": 5000,
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "pcm_s16le",
+          "codec_type": "audio",
+          "sample_rate": "48000",
+          "channels": 1,
+          "time_base": "1/48000",
+          "duration_ts": 240000,
+          "duration": "5.000000"
+        }
+      ],
+      "expected_intervals_ms": [
+        {
+          "start_ms": 0,
+          "end_ms": 5000,
+          "tracks": [
+            "audio"
+          ],
+          "label": "440 Hz sine wave"
+        }
+      ],
+      "manual_label": "Synthetic sine wave generated with FFmpeg lavfi.",
+      "must_not_claim": [
+        "speech",
+        "music",
+        "instrument"
+      ]
+    },
+    {
+      "file": "video_motion_8s.mp4",
+      "sha256": "16b5bcb9172bee7c564f0818530ac3d3d05fc24ad8c47a13b5ed5722376b28fc",
+      "bytes": 347259,
+      "duration_ms": 8000,
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "mpeg4",
+          "codec_type": "video",
+          "width": 320,
+          "height": 180,
+          "time_base": "1/10240",
+          "start_pts": 0,
+          "start_time": "0.000000",
+          "duration_ts": 81920,
+          "duration": "8.000000"
+        }
+      ],
+      "expected_intervals_ms": [
+        {
+          "start_ms": 0,
+          "end_ms": 8000,
+          "tracks": [
+            "video"
+          ],
+          "label": "moving test pattern"
+        }
+      ],
+      "manual_label": "Synthetic moving test pattern generated with FFmpeg lavfi.",
+      "must_not_claim": [
+        "people",
+        "objects",
+        "real scene semantics",
+        "audio"
+      ]
+    },
+    {
+      "file": "video_scene_cuts_8s.mp4",
+      "sha256": "e64474b5528ffd2369d3cf2fa5e6574af6f34f525901a7725af576d1056c2a3f",
+      "bytes": 42675,
+      "duration_ms": 8000,
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "mpeg4",
+          "codec_type": "video",
+          "width": 320,
+          "height": 180,
+          "time_base": "1/10240",
+          "start_pts": 0,
+          "start_time": "0.000000",
+          "duration_ts": 81920,
+          "duration": "8.000000"
+        }
+      ],
+      "expected_intervals_ms": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "tracks": [
+            "video"
+          ],
+          "label": "blue-gray solid scene"
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 4000,
+          "tracks": [
+            "video"
+          ],
+          "label": "green solid scene"
+        },
+        {
+          "start_ms": 4000,
+          "end_ms": 6000,
+          "tracks": [
+            "video"
+          ],
+          "label": "red solid scene"
+        },
+        {
+          "start_ms": 6000,
+          "end_ms": 8000,
+          "tracks": [
+            "video"
+          ],
+          "label": "purple solid scene"
+        }
+      ],
+      "manual_label": "Synthetic scene cuts generated with FFmpeg lavfi.",
+      "must_not_claim": [
+        "people",
+        "objects",
+        "real scene semantics",
+        "audio"
+      ]
+    },
+    {
+      "file": "video_static_3s.mp4",
+      "sha256": "814a9fd7e43cac3bb35481165c609bcd3da0062d81d5aca25e43db78a4766c72",
+      "bytes": 5633,
+      "duration_ms": 3000,
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "mpeg4",
+          "codec_type": "video",
+          "width": 320,
+          "height": 180,
+          "time_base": "1/10240",
+          "start_pts": 0,
+          "start_time": "0.000000",
+          "duration_ts": 30720,
+          "duration": "3.000000"
+        }
+      ],
+      "expected_intervals_ms": [
+        {
+          "start_ms": 0,
+          "end_ms": 3000,
+          "tracks": [
+            "video"
+          ],
+          "label": "static solid scene"
+        }
+      ],
+      "manual_label": "Synthetic static video generated with FFmpeg lavfi.",
+      "must_not_claim": [
+        "motion",
+        "people",
+        "audio"
+      ]
+    }
+  ]
+}

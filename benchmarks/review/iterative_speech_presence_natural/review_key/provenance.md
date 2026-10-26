@@ -1,0 +1,21 @@
+# Source provenance for the blinded speech review pack
+
+Open this file after the independent listening labels are complete.
+
+The excerpts are derived from the local evaluation corpus. The source file hashes below are from the corpus manifest; clip-specific hashes are in `answer_key.csv`.
+
+| Source | License / attribution | SHA-256 |
+|---|---|---|
+| Gettysburg by Britton.ogg | [Worldwide public-domain dedication by recording author; attribution requested as courtesy.](https://commons.wikimedia.org/wiki/File:Gettysburg_by_Britton.ogg) | `fa7698e48e9ba03173d79fcd7b14bcac3325f20a840ed129cc3cb05952c72a8f` |
+| William McKinley Voice (1896).ogg | [Creative Commons Public Domain Mark 1.0; historical speech recording.](https://commons.wikimedia.org/wiki/File:William_McKinley_Voice_(1896).ogg) | `ad8d35017a5452f583f696cf087f3b4ecf3af03e072e43ec9759fa114de0fc17` |
+| Alexander Graham Bell's Voice.ogg | [Creative Commons Public Domain Mark 1.0; historical wax-cylinder recording.](https://commons.wikimedia.org/wiki/File:Alexander_Graham_Bell%27s_Voice.ogg) | `83d960243d3c359cef66e86bab719d95cf665ab77a572517d62d54c656334ff4` |
+| Minuet in G (Beethoven), piano.ogg | [Recording author released the performance worldwide into the public domain; composition is public domain.](https://commons.wikimedia.org/wiki/File:Minuet_in_G_(Beethoven),_piano.ogg) | `8147dc55f9ac85bb742cc56f1a27ead6f6fe637eaf09c5d1d591f3b3ac45b8eb` |
+| Erik Satie - gymnopedies - la 1 ere. lent et douloureux.ogg | [Recording author released the performance worldwide into the public domain.](https://commons.wikimedia.org/wiki/File:Erik_Satie_-_gymnopedies_-_la_1_ere._lent_et_douloureux.ogg) | `419e37656856224227086df32d6d481a00a738961e08fca9f6147e472beea53e` |
+| Rain and thunder.ogg | [Recording author released the recording worldwide into the public domain.](https://commons.wikimedia.org/wiki/File:Rain_and_thunder.ogg) | `cbfd7b7504bc4e53d6e56ac8d933ba56f97cc28f15a46800c74c2d8eccb3fa89` |
+| Windchimes.ogg | [Recording author released the recording worldwide into the public domain.](https://commons.wikimedia.org/wiki/File:Windchimes.ogg) | `5d93b31e9a40d0de54daeb97ffbaa1f12b56ab97710bf9bc196b8efe16a7da09` |
+| Group discussion 1.ogg | [Worldwide public-domain dedication by recording author ezwa; the source description identifies a naturally recorded group discussion.](https://commons.wikimedia.org/wiki/File:Group_discussion_1.ogg) | `7cb3f52a7693d99f5b7faddb4197fbec44d678b8485b0a8d3b78bc2a5445e273` |
+| Christian mass singing hallelujah.ogg | [Worldwide public-domain dedication by recording author stephan; source description identifies parishioners singing Hallelujah with organ.](https://commons.wikimedia.org/wiki/File:Christian_mass_singing_hallelujah.ogg) | `95318ee764013f8c21dab39bc21b4b90ab1efd7b2bb6ad1ca41547b0ee6b1b32` |
+| Christmas market in Ljubljana city centre - part 3.webm | [Creative Commons Attribution 3.0 Unported (CC BY 3.0). Credit: Sounds of Changes; sound recording Du?an Oblak; video recording Barbara Rezar Grilc; photo Irena Maru?i?.](https://commons.wikimedia.org/wiki/File:Christmas_market_in_Ljubljana_city_centre_-_part_3.webm) | `bbfd2b5bd12a276f229cd7a8a7429de67632b5e6eddd23e1dbc4a0eccca42bd5` |
+| Urban Street on a Rainy Afternoon.flac | [CC0 1.0 Universal, released by author Extemporalist; source description identifies moderate traffic, rain on hard surfaces, and crows.](https://commons.wikimedia.org/wiki/File:Urban_Street_on_a_Rainy_Afternoon.flac) | `8013f4f4b1a2f945cec6803c8b2b77845749f6cc07e289afad3d89c3c3d01eda` |
+| Urban Street on a Rainy Afternoon.flac | [CC0 1.0 Universal, released by author Extemporalist; source description identifies moderate traffic, rain on hard surfaces, and crows.](https://commons.wikimedia.org/wiki/File:Urban_Street_on_a_Rainy_Afternoon.flac) | `fb4357a4578b05503577db2fe19e76ba3427b3e9fdcc38eb6b90df0ce7f4cb96` |
+| Urban Street on a Rainy Afternoon.flac | [CC0 1.0 Universal, released by author Extemporalist; source description identifies moderate traffic, rain on hard surfaces, and crows.](https://commons.wikimedia.org/wiki/File:Urban_Street_on_a_Rainy_Afternoon.flac) | `d6e210d7ab2566350d9a7af85d2bd9adb79c66cae2463960a4046d67c47dde36` |

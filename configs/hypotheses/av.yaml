@@ -1,0 +1,40 @@
+schema_version: 1
+profile_id: av
+profile_version: 1
+model_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+embedding_language: en
+display_language: ru
+unknown:
+  id: unknown
+  decision: uncertain
+  embedding: false
+  emit_when: no_candidate_passes_policy
+axes:
+  audio_visual_correspondence:
+    modality: joint
+    mutually_exclusive: true
+    candidates:
+      - id: aligned_event
+        text_en: The audible event corresponds in time to a visible event.
+        text_ru: Слышимое событие совпадает по времени с видимым событием.
+        polarity: positive
+        opposes: [no_clear_alignment]
+      - id: no_clear_alignment
+        text_en: No clear time alignment between audible and visible events is supported.
+        text_ru: Нет достаточных оснований утверждать временное совпадение звуковых и видимых событий.
+        polarity: negative
+        opposes: [aligned_event]
+  speech_visual_correspondence:
+    modality: joint
+    mutually_exclusive: true
+    candidates:
+      - id: visible_speech_activity
+        text_en: Visible mouth movement aligns with an audible speech segment.
+        text_ru: Видимое движение губ совпадает с фрагментом слышимой речи.
+        polarity: positive
+        opposes: [no_speech_visual_alignment]
+      - id: no_speech_visual_alignment
+        text_en: No clear visible mouth movement aligns with audible speech.
+        text_ru: Не обнаружено отчётливого совпадения движения губ со слышимой речью.
+        polarity: negative
+        opposes: [visible_speech_activity]

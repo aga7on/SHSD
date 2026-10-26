@@ -1,0 +1,171 @@
+Metadata-Version: 2.4
+Name: shsd
+Version: 0.1.0
+Summary: CPU-first streaming hierarchical semantic decoder for audio and video.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: av<20,>=19.0.1
+Requires-Dist: numpy<3,>=1.26
+Requires-Dist: PyYAML<7,>=6.0
+Provides-Extra: dev
+Requires-Dist: fastapi<1,>=0.115; extra == "dev"
+Requires-Dist: huggingface-hub<2,>=1.3; extra == "dev"
+Requires-Dist: httpx<1,>=0.27; extra == "dev"
+Requires-Dist: mypy>=1.11; extra == "dev"
+Requires-Dist: psutil<8,>=6; extra == "dev"
+Requires-Dist: py-cpuinfo<10,>=9; extra == "dev"
+Requires-Dist: pytest>=8.3; extra == "dev"
+Requires-Dist: requests<3,>=2.32; extra == "dev"
+Requires-Dist: ruff>=0.6; extra == "dev"
+Requires-Dist: types-PyYAML>=6.0; extra == "dev"
+Provides-Extra: embedding
+Requires-Dist: sentence-transformers[image]<7,>=6.2; extra == "embedding"
+Requires-Dist: transformers<6,>=5; extra == "embedding"
+Requires-Dist: huggingface-hub<2,>=1.3; extra == "embedding"
+Provides-Extra: asr
+Requires-Dist: hydra-core<1.4,>=1.3; extra == "asr"
+Requires-Dist: huggingface-hub<2,>=1.3; extra == "asr"
+Requires-Dist: omegaconf<2.4,>=2.3; extra == "asr"
+Requires-Dist: sentencepiece<0.3,>=0.2; extra == "asr"
+Requires-Dist: torch<3,>=2.6; extra == "asr"
+Requires-Dist: torchaudio<3,>=2.6; extra == "asr"
+Requires-Dist: transformers<6,>=5; extra == "asr"
+Provides-Extra: api
+Requires-Dist: fastapi<1,>=0.115; extra == "api"
+Requires-Dist: psutil<8,>=6; extra == "api"
+Requires-Dist: uvicorn<1,>=0.30; extra == "api"
+
+# SHSD
+
+SHSD (Streaming Hierarchical Semantic Decoder) is a local, CPU-first audio/video timeline PoC. The project specification and implementation rules are in [Workspace.md](Workspace.md), [Todo.md](Todo.md), and [Agents.md](Agents.md).
+
+The current implementation includes exact rational PTS conversion, a streaming PyAV reader for audio/video packets, a bounded 600-second media ring, fast/realtime replay control, model-free change detectors, a CPU EmbeddingGemma provider, semantic candidate matching with abstention, a revisioned SQLite timeline, a local bounded Qwen narrator, separate asynchronous L1/L2/L3 job queues, and interval-based progressive watermarks. `shsd analyze` runs a local L0/L1/L2/L3 file pass and writes evidence, revision, caption, and watermark JSONL records.
+
+## Requirements and platform scope
+
+- Python 3.11 or newer.
+- PyAV 19.x (installed as a package dependency).
+- Initial v0 target platforms: Windows x86_64 and Linux x86_64.
+- macOS and ARM64 are outside the initial target and have not been validated.
+- The package does not require CUDA. Model runtimes and weights are installed separately and remain local to the machine.
+
+## CPU-only development install
+
+PowerShell on Windows:
+
+```powershell
+py -3.11 -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+```
+
+Linux:
+
+```bash
+python3.11 -m venv .venv
+. .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e '.[dev]'
+```
+
+The `dev` extra installs Ruff, pytest, mypy, and the explicit artifact-download helper dependency. It does not install CUDA or download model weights. Model IDs, revisions, licenses, file sizes, and checksums are recorded in `models.lock.json`.
+
+For EmbeddingGemma analysis, install the CPU PyTorch pair, then the optional image/audio embedding stack:
+
+```powershell
+python -m pip install torch==2.14.0 torchvision==0.29.0 --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -e ".[embedding]"
+```
+
+This installs PyTorch/TorchVision CPU wheels; no CUDA runtime is used. The model weights remain a separate explicit download.
+
+## Synthetic media fixtures
+
+The small fixture set is generated locally and contains no source recordings. It covers synthetic speech, silence, tones, movement, scene cuts, audio-only, video-only, and 20-second AV sync in MP4 and MKV. The manifest records checksums, stream time bases, expected intervals, labels, and facts the tests must not claim.
+
+To regenerate it, install `ffmpeg`/`ffprobe` and eSpeak NG, then run:
+
+```powershell
+python scripts/generate_fixtures.py
+```
+
+`python -m pytest` checks the fixture manifest and demuxes all 9 files without network access.
+
+## Local model files
+
+Model downloads are explicit and checksum-verified. For example:
+
+```powershell
+python scripts/download_models.py --model qwen3_0_6b
+python scripts/download_models.py --runtime llama_cpp
+python scripts/smoke_models.py --model qwen3_0_6b --offline
+python scripts/download_models.py --model embeddinggemma2
+python scripts/smoke_models.py --model embeddinggemma2 --offline
+shsd analyze tests/fixtures/media/av_sync_20s.mp4 --levels L0,L1,L2,L3 --cpu-only --offline --output benchmarks/reports/poc_av_sync_20s.jsonl
+python -m pip install -e '.[asr]'
+python scripts/download_models.py --model gigaam_v3_e2e_ctc
+python scripts/smoke_models.py --model gigaam_v3_e2e_ctc --offline
+shsd analyze tests/fixtures/media/audio_speech_ru.wav --levels L0,L1 --speech --cpu-only --offline --output runs/speech-demo.jsonl
+```
+
+The downloader stores files in the ignored `models/` directory. The smoke script loads from local paths and reports missing or incorrect files instead of fetching them. Model inference results are recorded only after the real CPU smoke runs complete. The optional `--speech` flag runs GigaAM-v3-e2e-CTC locally on bounded 20-second windows; the default stays off. Transcript rows carry source/model metadata and coarse window timestamps, not word timing or diarization. The analyze command embeds fixed-duration audio windows and sampled video frames, reports the top candidates and raw cosine values, and emits `unknown` when configured gates are not met. Similarity values are not probabilities; default thresholds are provisional and can be set with `--minimum-similarity` and `--minimum-margin`.
+
+`shsd analyze` stores normalized vectors in the local model cache. Pass `--cache-dir PATH` to isolate a run or use a separate cache location.
+
+The L0–L3 file pass emits `watermark` JSONL rows containing `C`, `E`, `D`, `R`, per-level backlog, and visible `skipped`/`unavailable` issues. When `--output` is set, concise cursor progress is also printed to stderr. Requesting L2 or L3 enables the lower semantic prerequisites. Non-exclusive instrument-family candidates are scored independently and every accepted candidate must persist across windows before becoming a separate event; `top_k` only limits the displayed ranking. Captions keep the exact L2 event revisions they describe; if no accepted evidence survives the gates, the output says `narration_skipped` and advances R[L3] with a visible skipped interval. The current file command runs L2 and L3 after its media evidence pass; the independent asynchronous queues are available as a separate worker API.
+
+When both tracks are available, bounded PTS correlation checks scene cuts against audio onsets within 250 ms. Confirmed matches become `cross_modal_coincidence` events with references to both observations and an explicit note that timing does not prove causality. Missing tracks are reported as unavailable; memory-cap overflow is visible as truncated coverage.
+
+The first full PoC has JSONL results for eight local synthetic fixtures in [`benchmarks/reports`](benchmarks/reports), with a human-readable review in [`poc_manual_review.md`](benchmarks/reports/poc_manual_review.md). Those fixtures exercise tones, synthetic speech, silence, motion, scene cuts, and missing modalities; they do not validate real instrument or environmental-noise recognition.
+
+Experimental dynamic hypotheses are opt-in: `shsd analyze clip.wav --levels L1 --iterative-axis instrument_family --cpu-only`. Qwen may propose up to six strings once for that axis; EmbeddingGemma scores them against the media under the same threshold and margin, and duplicate vectors are discarded. The JSONL records both fixed and iterated decisions. With hand-reviewed labels, compare them using `python scripts/evaluate_iterative_hypotheses.py run.jsonl labels.jsonl`; no quality gain has been established yet, so the default stays fixed and Qwen refinement is disabled unless requested.
+
+## Local REST and WebSocket API
+
+Install the optional server dependencies with `python -m pip install -e ".[api]"`, then run `shsd serve`. The server binds to `127.0.0.1:8765` by default, accepts local media files, and stores revision history under `runs/shsd/`. REST endpoints expose stream status, current/history timeline rows, event revisions, watermarks, metrics, and post-analysis L2/L3 refinement. Refine work uses a bounded 32-entry priority queue (L2 before L3), coalesces touching queued L3 ranges for the same stream, and responds with HTTP 429 when saturated. Connect to `/v1/streams/{id}/ws?after_seq=N` to replay retained messages after a client sequence number; if the bounded message window expired, the server sends `stream.gap_detected` and points to REST backfill.
+
+The API currently runs local files only. Live URL ingestion, pause/resume/seek control, and replay across a server restart are still open.
+
+Open `http://127.0.0.1:8765/ui/` after starting `shsd serve` to use the local rolling timeline. The dashboard shows Video, Music, Sound, Speech, and L1–L3 lanes, the C/E/D/R cursors, selected-level backlog, event evidence and revision history, and a manual L2/L3 refine form. The source form has an opt-in GigaAM ASR switch; transcript windows appear on the Speech lane and remain separate from music and visual events. The timeline follows the latest processed media time and shows at most ten minutes.
+
+Completed streams can be exported without rerunning inference: use the dashboard's JSON, JSONL, or Markdown buttons, or request `/v1/streams/{id}/export?format=json|jsonl|markdown`. JSON includes current events and can include revisions with `include_history=true`; all formats include saved captions, current ASR segments, and warnings for missing coverage, failed ASR windows, or uncertain claims. The `/v1/streams/{id}/speech` endpoint returns persisted transcript segments. Captions and stream metadata are stored in SQLite and survive API restarts. Queued/running jobs are reported as interrupted after restart and are not resumed.
+
+To verify local Qwen narration from a fixed accepted-claim input, run
+`python scripts/smoke_narrator.py --threads 4`. The report is written to
+`benchmarks/reports/narrator_smoke.json`; each generation is bounded by token, timeout, and input-size limits.
+
+EmbeddingGemma smoke encodes local text, image, audio, and video inputs. GigaAM is an optional Russian ASR profile; its PyTorch and torchaudio CPU builds are installed separately, and ASR remains disabled in the default runtime profile.
+
+## Local media replay
+
+The installed CLI can read local media as fast as possible or pace packets against source time:
+
+```powershell
+shsd replay tests/fixtures/media/av_sync_20s.mkv --fast
+shsd replay tests/fixtures/media/video_static_3s.mp4 --simulate-realtime
+```
+
+Realtime replay also accepts `--speed` to scale the wall-clock pacing. The replay summary reports packet counts, source-time bounds, and epoch.
+
+## Repository layout
+
+- `src/shsd/` — installable Python package and CLI.
+- `configs/` — runtime, hypothesis, and prompt configuration as those features are implemented.
+- `tests/` — unit, integration, regression, and fixture areas.
+- `scripts/` — local development and maintenance scripts.
+- `benchmarks/` — benchmark fixtures and measured reports.
+- `docs/adr/` — accepted or proposed architectural decisions.
+- `Workspace.md` — target module layout and API/data contracts.
+
+The planned runtime separates media ingestion/clocking, cheap signal detectors, CPU embedding workers, semantic matching, optional ASR, narration, and a single timeline writer. Async code handles scheduling and I/O; heavy CPU inference belongs in a bounded process pool. Bounded queues and explicit gaps/backpressure are part of the design. The planned module tree is recorded in `Workspace.md`; empty implementation modules are added with their corresponding tasks.
+
+## Development checks
+
+```bash
+python -m pytest
+ruff check .
+mypy
+```
+
+The unit tests cover package import/version, help output, PTS/epoch behavior, all media fixtures, offline artifact errors, and ring capacity/leases.

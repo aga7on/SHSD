@@ -1,0 +1,68 @@
+schema_version: 1
+profile_id: visual
+profile_version: 1
+model_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+embedding_language: en
+display_language: ru
+unknown:
+  id: unknown
+  decision: uncertain
+  embedding: false
+  emit_when: no_candidate_passes_policy
+axes:
+  scene_setting:
+    modality: image
+    mutually_exclusive: true
+    candidates:
+      - id: indoor_setting
+        text_en: The image shows an indoor setting.
+        text_ru: На изображении показано помещение.
+        polarity: positive
+        opposes: [outdoor_setting]
+      - id: outdoor_setting
+        text_en: The image shows an outdoor setting.
+        text_ru: На изображении показано пространство под открытым небом.
+        polarity: negative
+        opposes: [indoor_setting]
+  person_presence:
+    modality: image
+    mutually_exclusive: true
+    candidates:
+      - id: person_visible
+        text_en: A person is visible in the image.
+        text_ru: На изображении виден человек.
+        polarity: positive
+        opposes: [person_not_visible]
+      - id: person_not_visible
+        text_en: No person is visible in the image.
+        text_ru: На изображении не видно людей.
+        polarity: negative
+        opposes: [person_visible]
+  screen_text_presence:
+    modality: image
+    mutually_exclusive: true
+    candidates:
+      - id: screen_text_visible
+        text_en: Readable text is visible in the image.
+        text_ru: На изображении виден читаемый текст.
+        polarity: positive
+        opposes: [screen_text_absent]
+      - id: screen_text_absent
+        text_en: No readable text is visible in the image.
+        text_ru: На изображении не видно читаемого текста.
+        polarity: negative
+        opposes: [screen_text_visible]
+  scene_style:
+    modality: image
+    mutually_exclusive: false
+    candidates:
+      - id: natural_scene
+        text_en: The image is dominated by a natural landscape or vegetation.
+        text_ru: На изображении преобладает природный пейзаж или растительность.
+        polarity: positive
+        opposes: []
+      - id: built_environment
+        text_en: The image is dominated by buildings or a built environment.
+        text_ru: На изображении преобладают здания или городская среда.
+        polarity: positive
+        opposes: []

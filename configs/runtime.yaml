@@ -1,0 +1,17 @@
+runtime:
+  device: cpu
+  offline: false
+
+models:
+  embeddinggemma2:
+    repo_id: google/embeddinggemma-2
+    revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+  qwen3_0_6b:
+    repo_id: ggml-org/Qwen3-0.6B-GGUF
+    revision: 13ac06624948e4d8589cb4b6f90100837342fcb8
+    file: Qwen3-0.6B-Q8_0.gguf
+  gigaam:
+    enabled: false
+    repo_id: ai-sage/GigaAM-v3
+    revision: cec030b4c4f35d928e4a9044a3bdb29ebd499fac
+    variant: v3_e2e_ctc

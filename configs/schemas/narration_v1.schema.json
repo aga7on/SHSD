@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "record_type": {"type": "string", "const": "caption"},
+    "caption_ru": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "used_claim_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "new_unsupported_claims": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "time_range": {
+      "type": "object",
+      "properties": {
+        "start_ms": {"type": "integer", "minimum": 0},
+        "end_ms": {"type": "integer", "minimum": 1}
+      },
+      "required": ["start_ms", "end_ms"],
+      "additionalProperties": false
+    },
+    "warnings": {
+      "type": "array",
+      "items": {"type": "string", "maxLength": 500},
+      "maxItems": 8
+    },
+    "status": {"type": "string", "enum": ["generated", "fallback"]},
+    "backend": {"type": "string", "enum": ["qwen", "template"]},
+    "model_revision": {"type": "string", "minLength": 1},
+    "prompt_version": {
+      "type": "string",
+      "enum": ["narrator-ru-v1", "template-source-only-v1"]
+    },
+    "event_revisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "event_id": {"type": "string", "minLength": 1},
+          "revision": {"type": "integer", "minimum": 1}
+        },
+        "required": ["event_id", "revision"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "latency_ms": {"type": "number", "minimum": 0},
+    "generated_token_count": {"type": ["integer", "null"], "minimum": 0},
+    "generation_ms": {"type": ["number", "null"], "minimum": 0},
+    "tokens_per_second": {"type": ["number", "null"], "minimum": 0}
+  },
+  "required": [
+    "schema_version",
+    "record_type",
+    "caption_ru",
+    "used_claim_ids",
+    "new_unsupported_claims",
+    "time_range",
+    "warnings",
+    "status",
+    "model_revision",
+    "prompt_version",
+    "event_revisions",
+    "latency_ms"
+  ],
+  "additionalProperties": false
+}

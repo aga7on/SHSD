@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>SHSD - временная шкала</title>
+    <link rel="stylesheet" href="/ui/styles.css" />
+    <script defer src="/ui/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">К содержимому</a>
+    <header class="topbar">
+      <a class="brand" href="/ui/" aria-label="SHSD - главная">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <span class="brand-name">SHSD<span class="brand-separator">/</span><span>Studio</span></span>
+      </a>
+      <div class="topbar-center">
+        <span class="local-indicator" aria-hidden="true"></span>
+        <span>Локальная обработка</span>
+        <span class="topbar-divider" aria-hidden="true"></span>
+        <span id="connection-label" class="connection-label">Подключение к API</span>
+      </div>
+      <button id="theme-toggle" class="icon-button theme-toggle" type="button" aria-pressed="true" aria-label="Переключить светлую и тёмную тему">
+        <span class="theme-glyph" aria-hidden="true"></span>
+        <span class="theme-toggle-label">Тёмная тема</span>
+      </button>
+    </header>
+
+    <main id="main-content" class="workspace">
+      <aside class="sidebar" aria-label="Панель управления потоками">
+        <section class="panel source-panel" aria-labelledby="source-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">НОВЫЙ ПРОГОН</p>
+              <h1 id="source-title">Источник</h1>
+            </div>
+            <span class="section-index">01</span>
+          </div>
+          <form id="create-form" class="source-form">
+            <label class="field-label" for="source-path">Путь к локальному файлу</label>
+            <input id="source-path" name="source" type="text" required autocomplete="off" placeholder="X:\\media\\clip.mp4" aria-describedby="source-help" />
+            <p id="source-help" class="field-hint">Видео или аудио на этом компьютере</p>
+            <fieldset class="level-fieldset">
+              <legend>Уровни обработки</legend>
+              <div class="level-checks">
+                <label><input type="checkbox" name="levels" value="L1" checked /><span>L1</span></label>
+                <label><input type="checkbox" name="levels" value="L2" checked /><span>L2</span></label>
+                <label><input type="checkbox" name="levels" value="L3" checked /><span>L3</span></label>
+              </div>
+              <p class="field-hint">Зависимые нижние уровни включатся автоматически.</p>
+            </fieldset>
+            <fieldset class="level-fieldset speech-fieldset">
+              <legend>Распознавание речи</legend>
+              <div class="level-checks">
+                <label class="speech-toggle"><input type="checkbox" name="speech_enabled" value="true" /><span>GigaAM ASR</span></label>
+              </div>
+              <p class="field-hint">Русская транскрипция выполняется отдельно от анализа музыки и видео.</p>
+            </fieldset>
+            <button class="button button-primary create-button" type="submit">
+              <span class="button-symbol" aria-hidden="true">+</span>
+              <span>Запустить анализ</span>
+            </button>
+            <p id="create-feedback" class="form-feedback" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section class="panel streams-panel" aria-labelledby="streams-title">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">ИСТОРИЯ</p>
+              <h2 id="streams-title">Потоки</h2>
+            </div>
+            <button id="refresh-streams" class="text-button" type="button" aria-label="Обновить список потоков">Обновить</button>
+          </div>
+          <div id="stream-list" class="stream-list" role="group" aria-label="Локальные потоки">
+            <p class="empty-list">Загружаю потоки…</p>
+          </div>
+        </section>
+
+        <section class="sidebar-note" aria-label="О состоянии распознавания речи">
+          <span class="note-mark" aria-hidden="true">i</span>
+          <p><strong>Речь / ASR</strong><br />Включите GigaAM в форме источника. Если ASR выключен или недоступен, дорожка Speech показывает это явно.</p>
+        </section>
+      </aside>
+
+      <section class="main-column" aria-label="Рабочая область временной шкалы">
+        <section class="overview panel" aria-labelledby="overview-title">
+          <div class="overview-heading">
+            <div>
+              <p class="eyebrow">ПРОГРЕССИВНЫЙ АНАЛИЗ <span class="eyebrow-dot" aria-hidden="true"></span> МЕДИАВРЕМЯ</p>
+              <h2 id="overview-title">Временная шкала</h2>
+              <p id="active-source" class="active-source">Выберите поток или запустите новый анализ</p>
+            </div>
+            <div class="overview-actions">
+              <div class="stream-state">
+                <span id="status-dot" class="status-dot" aria-hidden="true"></span>
+                <span id="stream-status">Нет активного потока</span>
+                <span id="epoch-label" class="epoch-label"></span>
+              </div>
+              <div class="export-actions" role="group" aria-label="Экспорт сохранённых данных">
+                <button type="button" class="export-button" data-export="json" disabled>JSON</button>
+                <button type="button" class="export-button" data-export="jsonl" disabled>JSONL</button>
+                <button type="button" class="export-button" data-export="markdown" disabled>Markdown</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="metrics-grid" aria-label="Курсоры обработки">
+            <article class="metric metric-capture">
+              <div class="metric-top"><span class="metric-key">C</span><span class="metric-caption">Захват</span></div>
+              <strong id="metric-c">-</strong>
+              <div class="metric-track" role="progressbar" aria-label="Захват относительно горизонта" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="metric-bar-c"></span></div>
+            </article>
+            <article class="metric metric-embed">
+              <div class="metric-top"><span class="metric-key">E</span><span class="metric-caption">Эмбеддинги</span></div>
+              <strong id="metric-e">-</strong>
+              <div class="metric-track" role="progressbar" aria-label="Эмбеддинги относительно горизонта" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="metric-bar-e"></span></div>
+            </article>
+            <article class="metric metric-draft">
+              <div class="metric-top"><span class="metric-key">D <span id="metric-level-d">L2</span></span><span class="metric-caption">Черновик</span></div>
+              <strong id="metric-d">-</strong>
+              <div class="metric-track" role="progressbar" aria-label="Черновик выбранного уровня относительно горизонта" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="metric-bar-d"></span></div>
+            </article>
+            <article class="metric metric-read">
+              <div class="metric-top"><span class="metric-key">R <span id="metric-level-r">L2</span></span><span class="metric-caption">Описание</span></div>
+              <strong id="metric-r">-</strong>
+              <div class="metric-track" role="progressbar" aria-label="Описание выбранного уровня относительно горизонта" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="metric-bar-r"></span></div>
+            </article>
+            <div class="backlog-readout"><span>Отставание <b id="backlog-value">-</b></span><span id="backlog-note">R выбранного уровня до горизонта C</span></div>
+          </div>
+        </section>
+
+        <section class="timeline-panel panel" aria-labelledby="timeline-title">
+          <div class="timeline-toolbar">
+            <div class="timeline-title-group">
+              <div>
+                <p class="eyebrow">ROLLING WINDOW <span id="window-label">10 МИН</span></p>
+                <h2 id="timeline-title">Наблюдения и описания</h2>
+              </div>
+              <div id="time-window-label" class="time-window-label">Ожидание данных</div>
+            </div>
+            <div class="toolbar-controls">
+              <fieldset class="level-switcher" aria-label="Уровень чтения">
+                <legend class="visually-hidden">Выбрать уровень для R</legend>
+                <button type="button" data-level="L1" aria-pressed="false">L1</button>
+                <button type="button" data-level="L2" aria-pressed="true">L2</button>
+                <button type="button" data-level="L3" aria-pressed="false">L3</button>
+              </fieldset>
+              <fieldset class="cursor-toggles" aria-label="Дополнительные курсоры">
+                <legend class="visually-hidden">Показать курсоры эмбеддингов и черновиков</legend>
+                <label><input id="show-e" type="checkbox" /><span>E</span></label>
+                <label><input id="show-d" type="checkbox" /><span>D</span></label>
+              </fieldset>
+            </div>
+          </div>
+
+          <div id="timeline-empty" class="timeline-empty" hidden>
+            <span class="empty-orbit" aria-hidden="true"></span>
+            <div><strong>Временная шкала пока пуста</strong><p>Добавьте локальный медиафайл, чтобы увидеть события и ход обработки.</p></div>
+          </div>
+          <div class="timeline-scroll" tabindex="0" aria-label="Прокручиваемая временная шкала">
+            <div id="timeline-chart" class="timeline-chart" aria-describedby="timeline-legend">
+              <div class="time-axis">
+                <div class="track-label axis-spacer" aria-hidden="true">ДОРОЖКА</div>
+                <div id="axis-ticks" class="axis-ticks" aria-hidden="true"></div>
+              </div>
+              <div id="timeline-body" class="timeline-body">
+                <div id="track-rows" class="track-rows"></div>
+                <div id="cursor-layer" class="cursor-layer" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="timeline-legend" class="timeline-footer">
+            <div class="legend-items" aria-label="Легенда состояний">
+              <span><i class="legend-swatch swatch-committed" aria-hidden="true"></i>Committed</span>
+              <span><i class="legend-swatch swatch-draft" aria-hidden="true"></i>Draft</span>
+              <span><i class="legend-swatch swatch-pending" aria-hidden="true"></i>Pending</span>
+              <span><i class="legend-swatch swatch-missing" aria-hidden="true"></i>Gap / missing</span>
+              <span><i class="legend-swatch swatch-unavailable" aria-hidden="true"></i>Unavailable</span>
+              <span><i class="legend-swatch swatch-dropped" aria-hidden="true"></i>Dropped</span>
+              <span><i class="legend-swatch swatch-superseded" aria-hidden="true"></i>Superseded</span>
+            </div>
+            <div class="cursor-legend" aria-label="Легенда курсоров"><span><i class="cursor-sample cursor-sample-c"></i>C захват</span><span><i class="cursor-sample cursor-sample-r"></i>R выбранного уровня</span></div>
+          </div>
+        </section>
+
+        <section class="bottom-grid" aria-label="Детали события и уточнение">
+          <article class="panel detail-panel" aria-labelledby="detail-title">
+            <div class="section-heading compact-heading">
+              <div><p class="eyebrow">СОБЫТИЕ</p><h2 id="detail-title">Детали и revisions</h2></div>
+              <span id="detail-revision-badge" class="revision-badge">-</span>
+            </div>
+            <div id="event-placeholder" class="detail-placeholder">Выберите событие на дорожке, чтобы увидеть caption, evidence и историю изменений.</div>
+            <div id="event-details" class="event-details" hidden></div>
+          </article>
+
+          <article class="panel refine-panel" aria-labelledby="refine-title">
+            <div class="section-heading compact-heading">
+              <div><p class="eyebrow">ПРИОРИТЕТНАЯ ЗАДАЧА</p><h2 id="refine-title">Уточнить интервал</h2></div>
+              <span class="section-index">02</span>
+            </div>
+            <p class="refine-intro">Запросите повторную обработку диапазона после завершения файлового прохода.</p>
+            <form id="refine-form" class="refine-form">
+              <div class="range-fields">
+                <label for="refine-start">Начало <span>сек</span><input id="refine-start" type="number" min="0" step="0.1" value="0" required /></label>
+                <span class="range-arrow" aria-hidden="true">→</span>
+                <label for="refine-end">Конец <span>сек</span><input id="refine-end" type="number" min="0.1" step="0.1" value="5" required /></label>
+              </div>
+              <label class="field-label" for="refine-level">Уровень задачи</label>
+              <select id="refine-level" name="level"><option value="L2">L2 · состояние</option><option value="L3">L3 · связное описание</option></select>
+              <button id="refine-submit" class="button button-secondary" type="submit" disabled>Поставить в очередь</button>
+              <p id="refine-feedback" class="form-feedback" aria-live="polite">Выберите завершённый поток.</p>
+            </form>
+          </article>
+        </section>
+        <div id="live-announcement" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
+      </section>
+    </main>
+  </body>
+</html>

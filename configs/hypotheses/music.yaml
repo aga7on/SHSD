@@ -1,0 +1,115 @@
+schema_version: 1
+profile_id: music
+profile_version: 1
+model_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+embedding_language: en
+display_language: ru
+unknown:
+  id: unknown
+  decision: uncertain
+  embedding: false
+  emit_when: no_candidate_passes_policy
+axes:
+  music_presence:
+    modality: audio
+    mutually_exclusive: true
+    candidates:
+      - id: music_present
+        text_en: Music is audible in the audio.
+        text_ru: В аудио слышна музыка.
+        polarity: positive
+        opposes: [music_absent]
+      - id: music_absent
+        text_en: No music is audible in the audio.
+        text_ru: В аудио не слышно музыки.
+        polarity: negative
+        opposes: [music_present]
+  vocal_presence:
+    modality: audio
+    mutually_exclusive: true
+    candidates:
+      - id: vocals_present
+        text_en: Singing or vocal sounds are audible in the music.
+        text_ru: В музыке слышны вокал или голосовые звуки.
+        polarity: positive
+        opposes: [vocals_absent]
+      - id: vocals_absent
+        text_en: The music contains no audible singing or vocal sounds.
+        text_ru: В музыке не слышно вокала или голосовых звуков.
+        polarity: negative
+        opposes: [vocals_present]
+  percussion_presence:
+    modality: audio
+    mutually_exclusive: true
+    candidates:
+      - id: percussion_present
+        text_en: Percussive rhythmic sounds are audible in the music.
+        text_ru: В музыке слышны ритмичные ударные звуки.
+        polarity: positive
+        opposes: [percussion_absent]
+      - id: percussion_absent
+        text_en: No clear percussive rhythmic sounds are audible in the music.
+        text_ru: В музыке не слышно отчётливых ритмичных ударных звуков.
+        polarity: negative
+        opposes: [percussion_present]
+  bass_presence:
+    modality: audio
+    mutually_exclusive: true
+    candidates:
+      - id: bass_present
+        text_en: A distinct low-frequency bass part is audible in the music.
+        text_ru: В музыке слышна отчётливая низкочастотная басовая партия.
+        polarity: positive
+        opposes: [bass_not_distinct]
+      - id: bass_not_distinct
+        text_en: No distinct low-frequency bass part is audible in the music.
+        text_ru: В музыке не слышно отчётливой низкочастотной басовой партии.
+        polarity: negative
+        opposes: [bass_present]
+  energy:
+    modality: audio
+    mutually_exclusive: true
+    candidates:
+      - id: high_energy
+        text_en: The music sounds energetic and intense.
+        text_ru: Музыка звучит энергично и интенсивно.
+        polarity: positive
+        opposes: [low_energy]
+      - id: low_energy
+        text_en: The music sounds calm and low in energy.
+        text_ru: Музыка звучит спокойно и сдержанно.
+        polarity: negative
+        opposes: [high_energy]
+  tempo_feel:
+    modality: audio
+    mutually_exclusive: true
+    candidates:
+      - id: fast_feel
+        text_en: The musical pulse feels fast.
+        text_ru: Музыкальный пульс воспринимается быстрым.
+        polarity: positive
+        opposes: [slow_feel]
+      - id: slow_feel
+        text_en: The musical pulse feels slow.
+        text_ru: Музыкальный пульс воспринимается медленным.
+        polarity: negative
+        opposes: [fast_feel]
+  instrument_family:
+    modality: audio
+    mutually_exclusive: false
+    candidates:
+      - id: electronic_timbre
+        text_en: The music has a prominent electronic or synthesized timbre.
+        text_ru: В музыке заметен электронный или синтезированный тембр.
+        polarity: positive
+        opposes: []
+      - id: acoustic_strings
+        text_en: The music has a prominent acoustic string timbre.
+        text_ru: В музыке заметен тембр акустических струнных инструментов.
+        polarity: positive
+        opposes: []
+      - id: percussion_timbre
+        text_en: The music has prominent acoustic or electronic percussion timbres.
+        text_ru: В музыке заметны акустические или электронные ударные тембры.
+        polarity: positive
+        opposes: []

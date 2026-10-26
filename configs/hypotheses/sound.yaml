@@ -1,0 +1,54 @@
+schema_version: 1
+profile_id: sound
+profile_version: 1
+model_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
+embedding_language: en
+display_language: ru
+unknown:
+  id: unknown
+  decision: uncertain
+  embedding: false
+  emit_when: no_candidate_passes_policy
+axes:
+  speech_presence:
+    modality: audio
+    mutually_exclusive: true
+    candidates:
+      - id: speech_present
+        text_en: A person is speaking in the audio.
+        text_ru: В аудио слышна речь человека.
+        polarity: positive
+        opposes: [speech_absent]
+      - id: speech_absent
+        text_en: No human speech is audible in the audio.
+        text_ru: В аудио не слышно речи человека.
+        polarity: negative
+        opposes: [speech_present]
+  ambient_sound:
+    modality: audio
+    mutually_exclusive: true
+    candidates:
+      - id: ambient_sound_present
+        text_en: A continuous environmental background sound is audible.
+        text_ru: Слышен непрерывный фоновый звук окружающей среды.
+        polarity: positive
+        opposes: [ambient_sound_absent]
+      - id: ambient_sound_absent
+        text_en: No clear continuous environmental background sound is audible.
+        text_ru: Не слышно отчётливого непрерывного фонового звука окружающей среды.
+        polarity: negative
+        opposes: [ambient_sound_present]
+  impact_sound:
+    modality: audio
+    mutually_exclusive: true
+    candidates:
+      - id: impact_present
+        text_en: One or more brief impact sounds are audible.
+        text_ru: Слышен один или несколько коротких ударных звуков.
+        polarity: positive
+        opposes: [impact_absent]
+      - id: impact_absent
+        text_en: No clear brief impact sounds are audible.
+        text_ru: Не слышно отчётливых коротких ударных звуков.
+        polarity: negative
+        opposes: [impact_present]
