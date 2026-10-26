@@ -52,3 +52,8 @@ Human review русских captions проводить по blind source/timeco
 Писать `benchmarks/reports/music_quality_v2/` и `benchmarks/reports/live_cpu_v2/`: `manifest.json` (git/model revisions, CPU, source IDs, windows, configs), `labels.jsonl`, `claims.jsonl`, `captions.jsonl`, `metrics.json`, `errors.md`, `report.md` с точными командами запуска. Не коммитить чужие приватные медиа или персональные диалоги.
 
 **Gate P0:** на independent labels нет опубликованных деталей с одной лишь слабой music premise; expressed/omitted claim IDs правдивы; ошибки и abstention измеримы. **Gate live:** sustained 1x подтверждён или явно `not met`. **Gate F10:** API+deployment smoke tests, conditional owner approval already recorded in ADR-002; technical/data/budget GO до training, независимые source-separated data, held-out A/B и CPU live. Дальнейшие архитектурные решения — по этим данным, а не по количеству чекбоксов.
+
+
+## Четыре отдельные линии оценивания F10
+
+IMAGE: видимые объекты, свойства, отношения; ложные действия на одиночном кадре. VIDEO: устойчивость объектов, кто/что сделал, правильный порядок и контрпример с перестановкой кадров. AUDIO: музыкальные инструменты/слои, речь поверх музыки и переходы. AV: синхронизация звука с видимой историей, ошибки причинности. Ни одна из четырёх линий не заменяет другую; нужен независимый held-out и CPU live. Формат данных и loss описаны в [F10 training design](F10-multimodal-training-design.md).
