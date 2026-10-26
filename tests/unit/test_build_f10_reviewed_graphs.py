@@ -9,6 +9,7 @@ from typing import Any
 
 import pytest
 from scripts.build_f10_reviewed_graphs import (
+    add_qwen_narrations,
     build_reviewed_audio_bundle,
     build_reviewed_video_bundle,
     visual_sequence_from_payload,
@@ -166,6 +167,36 @@ def test_audio_review_refuses_to_call_presence_a_transition() -> None:
             _audio_clip(),
             guide_version="f10-blind-review-v1",
         )
+
+
+def test_reviewed_bundle_runs_qwen_on_rehydrated_accepted_claims() -> None:
+    class FakeNarrationResult:
+        def to_dict(self) -> dict[str, Any]:
+            return {"caption_ru": "Мужчина встаёт рядом с кроватью.", "status": "generated"}
+
+    class FakeNarrator:
+        def __init__(self) -> None:
+            self.requests = []
+
+        def narrate(self, request: Any) -> FakeNarrationResult:
+            self.requests.append(request)
+            return FakeNarrationResult()
+
+    bundle = build_reviewed_video_bundle(
+        _video_row(),
+        _video_clip(),
+        guide_version="f10-blind-review-v1",
+        sequence=visual_sequence_from_payload(_sequence_payload()),
+    )
+    narrator = FakeNarrator()
+
+    result = add_qwen_narrations(bundle, narrator)
+
+    assert len(narrator.requests) == 1
+    assert narrator.requests[0].claims[0].text_ru == _video_row()["action_sequence_ru"]
+    assert result["l3_captions"] == [
+        {"caption_ru": "Мужчина встаёт рядом с кроватью.", "status": "generated"}
+    ]
 
 
 def test_direct_builder_cli_loads_validator_and_refuses_blank_labels(tmp_path: Path) -> None:

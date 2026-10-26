@@ -299,12 +299,58 @@ def _write_json(path: Path, value: dict[str, Any]) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def _narration_request_from_payload(value: dict[str, Any]) -> Any:
+    from shsd.captions import (
+        NarrationASRQuote,
+        NarrationClaim,
+        NarrationEventRef,
+        NarrationRequest,
+    )
+
+    return NarrationRequest(
+        stream_id=str(value["stream_id"]),
+        epoch=int(value["epoch"]),
+        event_refs=tuple(NarrationEventRef(**item) for item in value["event_refs"]),
+        claims=tuple(
+            NarrationClaim(
+                **{
+                    **item,
+                    "evidence_refs": tuple(item.get("evidence_refs", ())),
+                }
+            )
+            for item in value["claims"]
+        ),
+        asr_quotes=tuple(NarrationASRQuote(**item) for item in value.get("asr_quotes", ())),
+        state=value.get("state"),
+        delta=value.get("delta"),
+    )
+
+
+def add_qwen_narrations(bundle: dict[str, Any], narrator: Any) -> dict[str, Any]:
+    """Run CPU Qwen on the accepted B0 facts and retain coverage/fallback metadata."""
+    requests = bundle.get("narration_requests")
+    if not isinstance(requests, list) or not requests:
+        raise ValueError("reviewed B0 bundle has no narration requests")
+    bundle["l3_captions"] = [
+        narrator.narrate(_narration_request_from_payload(request)).to_dict() for request in requests
+    ]
+    return bundle
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--labels", type=Path, default=DEFAULT_LABELS)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--video-sequence-report", type=Path, default=DEFAULT_VIDEO_REPORT)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument(
+        "--narrate-qwen",
+        action="store_true",
+        help="also run the pinned local CPU Qwen narrator and save actual L3 captions",
+    )
+    parser.add_argument("--threads", type=int, default=4)
+    parser.add_argument("--max-tokens", type=int, default=96)
+    parser.add_argument("--timeout-seconds", type=float, default=45.0)
     args = parser.parse_args()
 
     errors = validate_review_labels(args.labels, args.manifest)
@@ -330,6 +376,30 @@ def main() -> int:
     audio_bundle = build_reviewed_audio_bundle(
         rows["audio_01"], manifest["audio"], guide_version=guide_version
     )
+    if args.narrate_qwen:
+        from shsd.captions import QwenNarrator
+
+        lock = json.loads((DEFAULT_ROOT / "models.lock.json").read_text(encoding="utf-8"))
+        narrator = QwenNarrator(
+            lock["models"]["qwen3_0_6b"],
+            DEFAULT_ROOT / "models",
+            DEFAULT_ROOT,
+            threads=args.threads,
+            max_tokens=args.max_tokens,
+            timeout_seconds=args.timeout_seconds,
+        )
+        video_bundle = add_qwen_narrations(video_bundle, narrator)
+        audio_bundle = add_qwen_narrations(audio_bundle, narrator)
+        narration_config = {
+            "backend": "qwen_llama_cpp_cpu",
+            "model_id": "qwen3_0_6b",
+            "model_revision": str(lock["models"]["qwen3_0_6b"]["revision"]),
+            "threads": args.threads,
+            "max_tokens": args.max_tokens,
+            "timeout_seconds": args.timeout_seconds,
+        }
+        video_bundle["narration_config"] = narration_config
+        audio_bundle["narration_config"] = narration_config
     video_path = args.output_dir / "video_only_reviewed_b0.json"
     audio_path = args.output_dir / "audio_only_reviewed_b0.json"
     _write_json(video_path, video_bundle)
