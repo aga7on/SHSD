@@ -159,6 +159,14 @@ def test_video_review_rejects_source_or_frame_evidence_mismatch() -> None:
         )
 
 
+def test_serialized_sequence_rejects_source_pts_offset_mismatch() -> None:
+    payload = _sequence_payload()
+    payload["frames"][1]["source_pts_ms"] = 121_001
+
+    with pytest.raises(ValueError, match="source PTS does not match timeline PTS plus offset"):
+        visual_sequence_from_payload(payload)
+
+
 def test_audio_review_refuses_to_call_presence_a_transition() -> None:
     row = {**_audio_row(), "music_layer_state": "present"}
     with pytest.raises(ValueError, match="does not confirm a music-layer transition"):

@@ -59,13 +59,25 @@ def visual_sequence_from_payload(value: dict[str, Any]) -> VisualSequenceEvidenc
         or len(interval) != 2
     ):
         raise ValueError("serialized visual sequence is missing interval or frame evidence")
+    source_pts_offset_ms = int(value["source_pts_offset_ms"])
+    timeline_pts: list[int] = []
+    for frame in frames:
+        if not isinstance(frame, dict):
+            raise ValueError("serialized visual sequence contains an invalid frame record")
+        timeline_pts_ms = int(frame["timeline_pts_ms"])
+        source_pts_ms = int(frame["source_pts_ms"])
+        if source_pts_ms != timeline_pts_ms + source_pts_offset_ms:
+            raise ValueError(
+                "serialized visual frame source PTS does not match timeline PTS plus offset"
+            )
+        timeline_pts.append(timeline_pts_ms)
     return VisualSequenceEvidence(
         sequence_id=str(value["sequence_id"]),
         source_id=str(value["source_id"]),
         epoch=int(value["epoch"]),
         timeline_interval_ms=(int(interval[0]), int(interval[1])),
-        source_pts_offset_ms=int(value["source_pts_offset_ms"]),
-        frame_pts_ms=tuple(int(frame["timeline_pts_ms"]) for frame in frames),
+        source_pts_offset_ms=source_pts_offset_ms,
+        frame_pts_ms=tuple(timeline_pts),
         frame_token_shapes=tuple(
             tuple(int(size) for size in frame["token_shape"]) for frame in frames
         ),
