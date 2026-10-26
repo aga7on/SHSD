@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T22:22:54.529668+00:00",
+  "status": "diagnostic_only",
+  "network_disabled": true,
+  "host": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD"
+  },
+  "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "input": {
+    "video": "benchmarks\\reports\\bridge_f10\\tears_steel_120_140s_video_only.mp4",
+    "interval_ms": [
+      0,
+      8000
+    ],
+    "sampled_frame_count": 8,
+    "frame_pts_ms": [
+      0,
+      1000,
+      2000,
+      3000,
+      4000,
+      5000,
+      6000,
+      7000
+    ],
+    "video_metadata": {
+      "total_num_frames": 480,
+      "fps": 24.0,
+      "duration": 20.0,
+      "frames_indices": [
+        0,
+        24,
+        48,
+        72,
+        96,
+        120,
+        144,
+        168
+      ]
+    },
+    "embedding_window_id": "video:914f7f89142e:c07295d64fdf24555771",
+    "embedding_latency_ms": 11314.985,
+    "embedding_cache_hit": false
+  },
+  "scores": [
+    {
+      "candidate_id": "sitting_up_from_bed",
+      "text_en": "A gray-haired man sits up from a bed.",
+      "raw_cosine": 0.6884479522705078
+    },
+    {
+      "candidate_id": "reaching_toward_candle",
+      "text_en": "A gray-haired man reaches toward a candle next to a bed.",
+      "raw_cosine": 0.6776280403137207
+    },
+    {
+      "candidate_id": "lying_on_bed",
+      "text_en": "A gray-haired man is lying on a bed.",
+      "raw_cosine": 0.6760176420211792
+    },
+    {
+      "candidate_id": "getting_out_of_bed",
+      "text_en": "A gray-haired man gets out of bed and stands beside it.",
+      "raw_cosine": 0.6708340644836426
+    },
+    {
+      "candidate_id": "walking_away_from_bed",
+      "text_en": "A gray-haired man walks away from a bed across a room.",
+      "raw_cosine": 0.6564899682998657
+    },
+    {
+      "candidate_id": "kneeling_with_rifle",
+      "text_en": "A soldier kneels beside a bed and holds a rifle.",
+      "raw_cosine": 0.6126226782798767
+    },
+    {
+      "candidate_id": "empty_room",
+      "text_en": "An empty room with a bed and a candle.",
+      "raw_cosine": 0.5988569259643555
+    },
+    {
+      "candidate_id": "playing_piano",
+      "text_en": "A woman plays a piano in a concert hall.",
+      "raw_cosine": 0.5413816571235657
+    }
+  ],
+  "limitations": [
+    "Cosine values are similarities, not probabilities or verified labels.",
+    "This probe does not emit accepted timeline claims or trainable labels.",
+    "Candidate descriptions are diagnostic contrasts, not calibrated thresholds.",
+    "The video embedding is pooled; exact temporal evidence remains in the sampled PTS list."
+  ]
+}

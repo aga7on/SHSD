@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
@@ -242,6 +243,8 @@ def _validate_sample(
         )
 
     events: dict[str, tuple[int | None, int | None]] = {}
+    event_intervals: dict[str, tuple[Any, Any]] = {}
+    audio_event_ids: set[str] = set()
     for field in ("visual_actions", "scene_events"):
         for event in _array(target.get(field)) or []:
             item = _object(event)
@@ -252,6 +255,9 @@ def _validate_sample(
             if event_id in events:
                 errors.append(f"{prefix}: duplicate event_id {event_id}")
             events[event_id] = (item.get("start_ms"), item.get("end_ms"))
+            if event_id in audio_event_ids:
+                errors.append(f"{prefix}: event_id {event_id} is used by visual and audio events")
+            event_intervals[event_id] = (item.get("start_ms"), item.get("end_ms"))
             if interval_valid:
                 _within_sample(item, start_ms, end_ms, f"{prefix}: {field} {event_id}", errors)
             if field == "visual_actions":
@@ -269,7 +275,8 @@ def _validate_sample(
                     evidence, frame_pts, f"{prefix}: visual action {event_id}", errors
                 )
                 if mode in {"VIDEO", "AV"} and (
-                    not isinstance(evidence, list) or len(evidence) < 2
+                    not isinstance(evidence, list)
+                    or len({timestamp for timestamp in evidence if _integer(timestamp)}) < 2
                 ):
                     errors.append(
                         f"{prefix}: video actions require evidence from at least two sampled "
@@ -298,7 +305,6 @@ def _validate_sample(
             item.get("evidence_frame_ms"), frame_pts, f"{prefix}: visual relation", errors
         )
 
-    audio_event_ids: set[str] = set()
     for field in ("speech_segments", "music_layers"):
         for event in _array(target.get(field)) or []:
             item = _object(event)
@@ -308,7 +314,10 @@ def _validate_sample(
             event_id = item["event_id"]
             if event_id in audio_event_ids:
                 errors.append(f"{prefix}: duplicate audio event_id {event_id}")
+            elif event_id in events:
+                errors.append(f"{prefix}: event_id {event_id} is used by visual and audio events")
             audio_event_ids.add(event_id)
+            event_intervals[event_id] = (item.get("start_ms"), item.get("end_ms"))
             if interval_valid:
                 _within_sample(item, start_ms, end_ms, f"{prefix}: {field} {event_id}", errors)
             evidence = item.get("evidence_audio_ms")
@@ -385,6 +394,35 @@ def _validate_sample(
             "ends_within",
         }:
             errors.append(f"{prefix}: temporal relation has an unsupported relation label")
+            continue
+        if (
+            _has_text(before)
+            and _has_text(after)
+            and before in event_intervals
+            and after in event_intervals
+        ):
+            before_start, before_end = event_intervals[before]
+            after_start, after_end = event_intervals[after]
+            if (
+                not all(
+                    _integer(value) for value in (before_start, before_end, after_start, after_end)
+                )
+                or before_start >= before_end
+                or after_start >= after_end
+            ):
+                errors.append(f"{prefix}: temporal relation needs valid event intervals")
+                continue
+            matches = {
+                "before": before_end <= after_start,
+                "overlaps": before_start < after_end and after_start < before_end,
+                "starts_within": before_start <= after_start < before_end,
+                "ends_within": before_start < after_end <= before_end,
+            }[relation_label]
+            if not matches:
+                errors.append(
+                    f"{prefix}: temporal relation {relation_label} does not match "
+                    "the event intervals"
+                )
 
     rights = _object(record.get("rights"))
     if rights is None or not _has_text(rights.get("license_id")):
@@ -438,6 +476,8 @@ def _validate_evidence_times(
         errors.append(f"{label}: evidence timestamps are required")
     elif any(not _integer(ts) or ts not in available for ts in value):
         errors.append(f"{label}: evidence_frame_ms must reference sampled source PTS values")
+    elif len(set(value)) != len(value):
+        errors.append(f"{label}: evidence timestamps must be unique")
 
 
 def validate_jsonl(path: Path, *, media_root: Path | None = None) -> DatasetReport:
@@ -482,18 +522,105 @@ def validate_jsonl(path: Path, *, media_root: Path | None = None) -> DatasetRepo
     return DatasetReport(samples, tuple(errors))
 
 
+def validate_manifests(
+    manifests: Mapping[str, Path], *, media_roots: Mapping[str, Path] | None = None
+) -> DatasetReport:
+    """Validate train/val/test manifests and reject cross-split source leakage."""
+    required_splits = {"train", "val", "test"}
+    if set(manifests) != required_splits:
+        missing = sorted(required_splits - set(manifests))
+        extra = sorted(set(manifests) - required_splits)
+        errors = []
+        if missing:
+            errors.append(
+                f"manifests must include train, val, and test; missing {', '.join(missing)}"
+            )
+        if extra:
+            errors.append(f"unsupported manifest split(s): {', '.join(extra)}")
+        return DatasetReport(0, tuple(errors))
+
+    errors: list[str] = []
+    samples = 0
+    seen_sample_ids: dict[str, str] = {}
+    seen_sources: dict[tuple[str, str], tuple[str, str]] = {}
+    for expected_split in ("train", "val", "test"):
+        path = manifests[expected_split]
+        report = validate_jsonl(
+            path,
+            media_root=(media_roots or {}).get(expected_split),
+        )
+        samples += report.samples
+        errors.extend(f"{expected_split}: {error}" for error in report.errors)
+        try:
+            stream = path.open("r", encoding="utf-8")
+        except OSError:
+            continue  # validate_jsonl has already reported the open failure.
+        with stream:
+            for line_number, line in enumerate(stream, start=1):
+                if not line.strip():
+                    continue
+                try:
+                    record = _object(json.loads(line))
+                except json.JSONDecodeError:
+                    continue  # validate_jsonl has already reported malformed JSON.
+                if record is None:
+                    continue
+                location = f"{expected_split} line {line_number}"
+                declared_split = record.get("split")
+                if declared_split != expected_split:
+                    errors.append(
+                        f"{location}: record split {declared_split!r} does not match its manifest"
+                    )
+                sample_id = record.get("sample_id")
+                if _has_text(sample_id):
+                    previous_split = seen_sample_ids.setdefault(sample_id, expected_split)
+                    if previous_split != expected_split:
+                        errors.append(
+                            f"{location}: sample_id {sample_id} is duplicated across "
+                            f"{previous_split}/{expected_split}"
+                        )
+                for field in ("source_group_id", "source_id", "source_sha256"):
+                    value = record.get(field)
+                    if not _has_text(value):
+                        continue
+                    normalized = value.casefold() if field == "source_sha256" else value
+                    identity = (field, normalized)
+                    previous = seen_sources.setdefault(identity, (expected_split, location))
+                    if previous[0] != expected_split:
+                        errors.append(
+                            f"{location}: {field} {value} leaks across "
+                            f"{previous[0]}/{expected_split}"
+                        )
+    return DatasetReport(samples, tuple(errors))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("manifest", type=Path, help="JSONL manifest to validate")
+    parser.add_argument("manifest", type=Path, nargs="?", help="single JSONL manifest to validate")
     parser.add_argument(
         "--media-root", type=Path, help="also check referenced files under this root"
     )
+    parser.add_argument("--train", type=Path, help="train JSONL manifest")
+    parser.add_argument("--val", type=Path, help="validation JSONL manifest")
+    parser.add_argument("--test", type=Path, help="held-out test JSONL manifest")
     args = parser.parse_args()
-    report = validate_jsonl(args.manifest, media_root=args.media_root)
+    multi_paths = {name: getattr(args, name) for name in ("train", "val", "test")}
+    supplied_multi = {name: path for name, path in multi_paths.items() if path is not None}
+    if supplied_multi:
+        if args.manifest is not None or len(supplied_multi) != 3:
+            parser.error("provide either one positional manifest or all of --train, --val, --test")
+        roots = {name: args.media_root for name in supplied_multi if args.media_root is not None}
+        report = validate_manifests(supplied_multi, media_roots=roots)
+        report_label = "source-separated across train/val/test, human-verified"
+    else:
+        if args.manifest is None:
+            parser.error("provide a manifest or all of --train, --val, --test")
+        report = validate_jsonl(args.manifest, media_root=args.media_root)
+        report_label = "human-verified"
     for error in report.errors:
         print(f"ERROR: {error}")
     if report.valid:
-        print(f"VALID: {report.samples} source-separated, human-verified samples")
+        print(f"VALID: {report.samples} {report_label} sample(s)")
         return 0
     print(f"INVALID: {report.samples} sample(s), {len(report.errors)} error(s)")
     return 1
