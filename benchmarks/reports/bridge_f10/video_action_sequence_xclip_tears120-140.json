@@ -1,0 +1,2605 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T23:15:14.796812+00:00",
+  "status": "unverified_model_hypothesis",
+  "diagnostic_only": true,
+  "mode": "VIDEO_ONLY",
+  "audio_passed_to_model": false,
+  "host": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD"
+  },
+  "model": {
+    "id": "microsoft/xclip-base-patch32",
+    "revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+    "license": "MIT",
+    "transformers_version": "5.20.2"
+  },
+  "input": {
+    "video": "benchmarks\\fixtures\\real_poc\\tears_of_steel_120_140s.mp4",
+    "timeline": null,
+    "stream_id": "f10-video-only-tears120-140-sequence",
+    "epoch": 0,
+    "timeline_interval_ms": [
+      0,
+      20000
+    ],
+    "source_interval_ms": [
+      120000,
+      140000
+    ],
+    "source_pts_offset_ms": 120000,
+    "frame_pts_ms": [
+      0,
+      1000,
+      2000,
+      3000,
+      4000,
+      5000,
+      6000,
+      7000,
+      8000,
+      9000,
+      10000,
+      11000,
+      12000,
+      13000,
+      14000,
+      15000,
+      16000,
+      17000,
+      18000,
+      19000
+    ],
+    "source_frame_pts_ms": [
+      120000,
+      121000,
+      122000,
+      123000,
+      124000,
+      125000,
+      126000,
+      127000,
+      128000,
+      129000,
+      130000,
+      131000,
+      132000,
+      133000,
+      134000,
+      135000,
+      136000,
+      137000,
+      138000,
+      139000
+    ],
+    "video_metadata": {
+      "window_count": 13,
+      "windows": [
+        {
+          "timeline_interval_ms": [
+            0,
+            8000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              0,
+              24,
+              48,
+              72,
+              96,
+              120,
+              144,
+              168
+            ]
+          }
+        },
+        {
+          "timeline_interval_ms": [
+            1000,
+            9000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              24,
+              48,
+              72,
+              96,
+              120,
+              144,
+              168,
+              192
+            ]
+          }
+        },
+        {
+          "timeline_interval_ms": [
+            2000,
+            10000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              48,
+              72,
+              96,
+              120,
+              144,
+              168,
+              192,
+              216
+            ]
+          }
+        },
+        {
+          "timeline_interval_ms": [
+            3000,
+            11000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              72,
+              96,
+              120,
+              144,
+              168,
+              192,
+              216,
+              240
+            ]
+          }
+        },
+        {
+          "timeline_interval_ms": [
+            4000,
+            12000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              96,
+              120,
+              144,
+              168,
+              192,
+              216,
+              240,
+              264
+            ]
+          }
+        },
+        {
+          "timeline_interval_ms": [
+            5000,
+            13000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              120,
+              144,
+              168,
+              192,
+              216,
+              240,
+              264,
+              288
+            ]
+          }
+        },
+        {
+          "timeline_interval_ms": [
+            6000,
+            14000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              144,
+              168,
+              192,
+              216,
+              240,
+              264,
+              288,
+              312
+            ]
+          }
+        },
+        {
+          "timeline_interval_ms": [
+            7000,
+            15000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              168,
+              192,
+              216,
+              240,
+              264,
+              288,
+              312,
+              336
+            ]
+          }
+        },
+        {
+          "timeline_interval_ms": [
+            8000,
+            16000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              192,
+              216,
+              240,
+              264,
+              288,
+              312,
+              336,
+              360
+            ]
+          }
+        },
+        {
+          "timeline_interval_ms": [
+            9000,
+            17000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              216,
+              240,
+              264,
+              288,
+              312,
+              336,
+              360,
+              384
+            ]
+          }
+        },
+        {
+          "timeline_interval_ms": [
+            10000,
+            18000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              240,
+              264,
+              288,
+              312,
+              336,
+              360,
+              384,
+              408
+            ]
+          }
+        },
+        {
+          "timeline_interval_ms": [
+            11000,
+            19000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              264,
+              288,
+              312,
+              336,
+              360,
+              384,
+              408,
+              432
+            ]
+          }
+        },
+        {
+          "timeline_interval_ms": [
+            12000,
+            20000
+          ],
+          "metadata": {
+            "total_num_frames": 480,
+            "fps": 24.0,
+            "duration": 20.0,
+            "frames_indices": [
+              288,
+              312,
+              336,
+              360,
+              384,
+              408,
+              432,
+              456
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "xclip": {
+    "latency_ms": 4473.155,
+    "window_count": 13,
+    "top_candidate_counts": {
+      "reaches_toward_candle": 1,
+      "rises_from_bed_to_standing": 12
+    },
+    "windows": [
+      {
+        "timeline_interval_ms": [
+          0,
+          8000
+        ],
+        "source_interval_ms": [
+          120000,
+          128000
+        ],
+        "frame_pts_ms": [
+          0,
+          1000,
+          2000,
+          3000,
+          4000,
+          5000,
+          6000,
+          7000
+        ],
+        "source_frame_pts_ms": [
+          120000,
+          121000,
+          122000,
+          123000,
+          124000,
+          125000,
+          126000,
+          127000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            0,
+            24,
+            48,
+            72,
+            96,
+            120,
+            144,
+            168
+          ]
+        },
+        "latency_ms": 344.934,
+        "ranked_scores": [
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 5.861838340759277,
+            "candidate_set_softmax": 0.31910640001296997
+          },
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 5.804756164550781,
+            "candidate_set_softmax": 0.3014012277126312
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 4.898999214172363,
+            "candidate_set_softmax": 0.12183716893196106
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 4.611455917358398,
+            "candidate_set_softmax": 0.09139055758714676
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 4.343564510345459,
+            "candidate_set_softmax": 0.06991294026374817
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 3.7772774696350098,
+            "candidate_set_softmax": 0.03968461975455284
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 3.3202362060546875,
+            "candidate_set_softmax": 0.025126485154032707
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 3.0084898471832275,
+            "candidate_set_softmax": 0.018396787345409393
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 2.6722588539123535,
+            "candidate_set_softmax": 0.013143733143806458
+          }
+        ],
+        "top_two_logit_margin": 0.057082176208496094,
+        "top_candidate_id": "reaches_toward_candle",
+        "runner_up_candidate_id": "rises_from_bed_to_standing",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      },
+      {
+        "timeline_interval_ms": [
+          1000,
+          9000
+        ],
+        "source_interval_ms": [
+          121000,
+          129000
+        ],
+        "frame_pts_ms": [
+          1000,
+          2000,
+          3000,
+          4000,
+          5000,
+          6000,
+          7000,
+          8000
+        ],
+        "source_frame_pts_ms": [
+          121000,
+          122000,
+          123000,
+          124000,
+          125000,
+          126000,
+          127000,
+          128000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            24,
+            48,
+            72,
+            96,
+            120,
+            144,
+            168,
+            192
+          ]
+        },
+        "latency_ms": 322.205,
+        "ranked_scores": [
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 6.175841808319092,
+            "candidate_set_softmax": 0.3608025908470154
+          },
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 5.814914703369141,
+            "candidate_set_softmax": 0.25149017572402954
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 4.934445381164551,
+            "candidate_set_softmax": 0.10426487773656845
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 4.734726905822754,
+            "candidate_set_softmax": 0.0853888988494873
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 4.679228782653809,
+            "candidate_set_softmax": 0.0807790756225586
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 4.233098983764648,
+            "candidate_set_softmax": 0.051706742495298386
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 3.466050386428833,
+            "candidate_set_softmax": 0.024011660367250443
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 3.3788604736328125,
+            "candidate_set_softmax": 0.02200675942003727
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 3.260449171066284,
+            "candidate_set_softmax": 0.019549278542399406
+          }
+        ],
+        "top_two_logit_margin": 0.36092710494995117,
+        "top_candidate_id": "rises_from_bed_to_standing",
+        "runner_up_candidate_id": "reaches_toward_candle",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      },
+      {
+        "timeline_interval_ms": [
+          2000,
+          10000
+        ],
+        "source_interval_ms": [
+          122000,
+          130000
+        ],
+        "frame_pts_ms": [
+          2000,
+          3000,
+          4000,
+          5000,
+          6000,
+          7000,
+          8000,
+          9000
+        ],
+        "source_frame_pts_ms": [
+          122000,
+          123000,
+          124000,
+          125000,
+          126000,
+          127000,
+          128000,
+          129000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            48,
+            72,
+            96,
+            120,
+            144,
+            168,
+            192,
+            216
+          ]
+        },
+        "latency_ms": 319.369,
+        "ranked_scores": [
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 6.924549579620361,
+            "candidate_set_softmax": 0.49499616026878357
+          },
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 5.868221282958984,
+            "candidate_set_softmax": 0.17212511599063873
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 5.156219482421875,
+            "candidate_set_softmax": 0.08445508778095245
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 5.1280694007873535,
+            "candidate_set_softmax": 0.08211082220077515
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 4.87748908996582,
+            "candidate_set_softmax": 0.06391087919473648
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 4.556455612182617,
+            "candidate_set_softmax": 0.04636088013648987
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 3.8251354694366455,
+            "candidate_set_softmax": 0.02231224998831749
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 3.733466148376465,
+            "candidate_set_softmax": 0.020357849076390266
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 3.313079833984375,
+            "candidate_set_softmax": 0.013370893895626068
+          }
+        ],
+        "top_two_logit_margin": 1.056328296661377,
+        "top_candidate_id": "rises_from_bed_to_standing",
+        "runner_up_candidate_id": "reaches_toward_candle",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      },
+      {
+        "timeline_interval_ms": [
+          3000,
+          11000
+        ],
+        "source_interval_ms": [
+          123000,
+          131000
+        ],
+        "frame_pts_ms": [
+          3000,
+          4000,
+          5000,
+          6000,
+          7000,
+          8000,
+          9000,
+          10000
+        ],
+        "source_frame_pts_ms": [
+          123000,
+          124000,
+          125000,
+          126000,
+          127000,
+          128000,
+          129000,
+          130000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            72,
+            96,
+            120,
+            144,
+            168,
+            192,
+            216,
+            240
+          ]
+        },
+        "latency_ms": 351.029,
+        "ranked_scores": [
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 5.6454057693481445,
+            "candidate_set_softmax": 0.5704308748245239
+          },
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 4.160822868347168,
+            "candidate_set_softmax": 0.12925782799720764
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 3.824791669845581,
+            "candidate_set_softmax": 0.0923677533864975
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 3.390584945678711,
+            "candidate_set_softmax": 0.0598338283598423
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 3.2687387466430664,
+            "candidate_set_softmax": 0.05296996235847473
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 3.0477962493896484,
+            "candidate_set_softmax": 0.04246934503316879
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 2.4940390586853027,
+            "candidate_set_softmax": 0.02441079169511795
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 2.281236171722412,
+            "candidate_set_softmax": 0.019731620326638222
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 1.442371129989624,
+            "candidate_set_softmax": 0.008528023026883602
+          }
+        ],
+        "top_two_logit_margin": 1.4845829010009766,
+        "top_candidate_id": "rises_from_bed_to_standing",
+        "runner_up_candidate_id": "reaches_toward_candle",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      },
+      {
+        "timeline_interval_ms": [
+          4000,
+          12000
+        ],
+        "source_interval_ms": [
+          124000,
+          132000
+        ],
+        "frame_pts_ms": [
+          4000,
+          5000,
+          6000,
+          7000,
+          8000,
+          9000,
+          10000,
+          11000
+        ],
+        "source_frame_pts_ms": [
+          124000,
+          125000,
+          126000,
+          127000,
+          128000,
+          129000,
+          130000,
+          131000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            96,
+            120,
+            144,
+            168,
+            192,
+            216,
+            240,
+            264
+          ]
+        },
+        "latency_ms": 359.794,
+        "ranked_scores": [
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 5.805136680603027,
+            "candidate_set_softmax": 0.6429765820503235
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 3.7969484329223633,
+            "candidate_set_softmax": 0.08630780130624771
+          },
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 3.6699788570404053,
+            "candidate_set_softmax": 0.07601650804281235
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 3.4633140563964844,
+            "candidate_set_softmax": 0.061823632568120956
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 2.926746129989624,
+            "candidate_set_softmax": 0.036151476204395294
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 2.923877000808716,
+            "candidate_set_softmax": 0.03604790195822716
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 2.851494073867798,
+            "candidate_set_softmax": 0.03353084251284599
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 2.3069868087768555,
+            "candidate_set_softmax": 0.019452165812253952
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 1.3793480396270752,
+            "candidate_set_softmax": 0.007693066261708736
+          }
+        ],
+        "top_two_logit_margin": 2.008188247680664,
+        "top_candidate_id": "rises_from_bed_to_standing",
+        "runner_up_candidate_id": "stands_beside_bed",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      },
+      {
+        "timeline_interval_ms": [
+          5000,
+          13000
+        ],
+        "source_interval_ms": [
+          125000,
+          133000
+        ],
+        "frame_pts_ms": [
+          5000,
+          6000,
+          7000,
+          8000,
+          9000,
+          10000,
+          11000,
+          12000
+        ],
+        "source_frame_pts_ms": [
+          125000,
+          126000,
+          127000,
+          128000,
+          129000,
+          130000,
+          131000,
+          132000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            120,
+            144,
+            168,
+            192,
+            216,
+            240,
+            264,
+            288
+          ]
+        },
+        "latency_ms": 317.973,
+        "ranked_scores": [
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 5.424007415771484,
+            "candidate_set_softmax": 0.5937551856040955
+          },
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 3.8393075466156006,
+            "candidate_set_softmax": 0.12172534316778183
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 3.722505569458008,
+            "candidate_set_softmax": 0.10830651223659515
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 2.887528896331787,
+            "candidate_set_softmax": 0.046992525458335876
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 2.7184159755706787,
+            "candidate_set_softmax": 0.039681125432252884
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 2.5995826721191406,
+            "candidate_set_softmax": 0.03523508459329605
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 2.453950881958008,
+            "candidate_set_softmax": 0.03045988455414772
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 1.7111639976501465,
+            "candidate_set_softmax": 0.014492389746010303
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 1.273130178451538,
+            "candidate_set_softmax": 0.009351998567581177
+          }
+        ],
+        "top_two_logit_margin": 1.5846998691558838,
+        "top_candidate_id": "rises_from_bed_to_standing",
+        "runner_up_candidate_id": "reaches_toward_candle",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      },
+      {
+        "timeline_interval_ms": [
+          6000,
+          14000
+        ],
+        "source_interval_ms": [
+          126000,
+          134000
+        ],
+        "frame_pts_ms": [
+          6000,
+          7000,
+          8000,
+          9000,
+          10000,
+          11000,
+          12000,
+          13000
+        ],
+        "source_frame_pts_ms": [
+          126000,
+          127000,
+          128000,
+          129000,
+          130000,
+          131000,
+          132000,
+          133000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            144,
+            168,
+            192,
+            216,
+            240,
+            264,
+            288,
+            312
+          ]
+        },
+        "latency_ms": 359.753,
+        "ranked_scores": [
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 6.201838970184326,
+            "candidate_set_softmax": 0.5644177198410034
+          },
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 4.653298854827881,
+            "candidate_set_softmax": 0.11997153609991074
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 4.630577087402344,
+            "candidate_set_softmax": 0.11727630347013474
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 3.791304588317871,
+            "candidate_set_softmax": 0.05066625773906708
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 3.7214527130126953,
+            "candidate_set_softmax": 0.047247909009456635
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 3.6353631019592285,
+            "candidate_set_softmax": 0.043350521475076675
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 3.2992587089538574,
+            "candidate_set_softmax": 0.030976049602031708
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 2.524202585220337,
+            "candidate_set_softmax": 0.01426998246461153
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 2.33614444732666,
+            "candidate_set_softmax": 0.011823630891740322
+          }
+        ],
+        "top_two_logit_margin": 1.5485401153564453,
+        "top_candidate_id": "rises_from_bed_to_standing",
+        "runner_up_candidate_id": "reaches_toward_candle",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      },
+      {
+        "timeline_interval_ms": [
+          7000,
+          15000
+        ],
+        "source_interval_ms": [
+          127000,
+          135000
+        ],
+        "frame_pts_ms": [
+          7000,
+          8000,
+          9000,
+          10000,
+          11000,
+          12000,
+          13000,
+          14000
+        ],
+        "source_frame_pts_ms": [
+          127000,
+          128000,
+          129000,
+          130000,
+          131000,
+          132000,
+          133000,
+          134000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            168,
+            192,
+            216,
+            240,
+            264,
+            288,
+            312,
+            336
+          ]
+        },
+        "latency_ms": 366.222,
+        "ranked_scores": [
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 7.263697624206543,
+            "candidate_set_softmax": 0.5526489019393921
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 5.79006290435791,
+            "candidate_set_softmax": 0.1266070455312729
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 5.30439567565918,
+            "candidate_set_softmax": 0.07789961248636246
+          },
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 5.221224784851074,
+            "candidate_set_softmax": 0.07168275117874146
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 4.9765191078186035,
+            "candidate_set_softmax": 0.056122928857803345
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 4.864041328430176,
+            "candidate_set_softmax": 0.05015241354703903
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 4.346981048583984,
+            "candidate_set_softmax": 0.02990441955626011
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 3.946195602416992,
+            "candidate_set_softmax": 0.020029794424772263
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 3.653827667236328,
+            "candidate_set_softmax": 0.014952117577195168
+          }
+        ],
+        "top_two_logit_margin": 1.4736347198486328,
+        "top_candidate_id": "rises_from_bed_to_standing",
+        "runner_up_candidate_id": "stands_beside_bed",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      },
+      {
+        "timeline_interval_ms": [
+          8000,
+          16000
+        ],
+        "source_interval_ms": [
+          128000,
+          136000
+        ],
+        "frame_pts_ms": [
+          8000,
+          9000,
+          10000,
+          11000,
+          12000,
+          13000,
+          14000,
+          15000
+        ],
+        "source_frame_pts_ms": [
+          128000,
+          129000,
+          130000,
+          131000,
+          132000,
+          133000,
+          134000,
+          135000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            192,
+            216,
+            240,
+            264,
+            288,
+            312,
+            336,
+            360
+          ]
+        },
+        "latency_ms": 355.063,
+        "ranked_scores": [
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 7.958974361419678,
+            "candidate_set_softmax": 0.6490890383720398
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 6.062335968017578,
+            "candidate_set_softmax": 0.09741026163101196
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 5.555173873901367,
+            "candidate_set_softmax": 0.05866066738963127
+          },
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 5.37326717376709,
+            "candidate_set_softmax": 0.0489041730761528
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 5.272102355957031,
+            "candidate_set_softmax": 0.044198811054229736
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 5.211172103881836,
+            "candidate_set_softmax": 0.041586168110370636
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 4.860980987548828,
+            "candidate_set_softmax": 0.029299680143594742
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 4.434731483459473,
+            "candidate_set_softmax": 0.01913132518529892
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 3.944690465927124,
+            "candidate_set_softmax": 0.011719870381057262
+          }
+        ],
+        "top_two_logit_margin": 1.8966383934020996,
+        "top_candidate_id": "rises_from_bed_to_standing",
+        "runner_up_candidate_id": "stands_beside_bed",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      },
+      {
+        "timeline_interval_ms": [
+          9000,
+          17000
+        ],
+        "source_interval_ms": [
+          129000,
+          137000
+        ],
+        "frame_pts_ms": [
+          9000,
+          10000,
+          11000,
+          12000,
+          13000,
+          14000,
+          15000,
+          16000
+        ],
+        "source_frame_pts_ms": [
+          129000,
+          130000,
+          131000,
+          132000,
+          133000,
+          134000,
+          135000,
+          136000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            216,
+            240,
+            264,
+            288,
+            312,
+            336,
+            360,
+            384
+          ]
+        },
+        "latency_ms": 351.91,
+        "ranked_scores": [
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 9.030633926391602,
+            "candidate_set_softmax": 0.7530072331428528
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 6.987795352935791,
+            "candidate_set_softmax": 0.09763502329587936
+          },
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 6.039013862609863,
+            "candidate_set_softmax": 0.03780550882220268
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 5.8027472496032715,
+            "candidate_set_softmax": 0.029850101098418236
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 5.582878112792969,
+            "candidate_set_softmax": 0.023958399891853333
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 5.467986583709717,
+            "candidate_set_softmax": 0.021358024328947067
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 5.375469207763672,
+            "candidate_set_softmax": 0.019470687955617905
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 4.569171905517578,
+            "candidate_set_softmax": 0.008693823590874672
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 4.513294219970703,
+            "candidate_set_softmax": 0.008221356198191643
+          }
+        ],
+        "top_two_logit_margin": 2.0428385734558105,
+        "top_candidate_id": "rises_from_bed_to_standing",
+        "runner_up_candidate_id": "stands_beside_bed",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      },
+      {
+        "timeline_interval_ms": [
+          10000,
+          18000
+        ],
+        "source_interval_ms": [
+          130000,
+          138000
+        ],
+        "frame_pts_ms": [
+          10000,
+          11000,
+          12000,
+          13000,
+          14000,
+          15000,
+          16000,
+          17000
+        ],
+        "source_frame_pts_ms": [
+          130000,
+          131000,
+          132000,
+          133000,
+          134000,
+          135000,
+          136000,
+          137000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            240,
+            264,
+            288,
+            312,
+            336,
+            360,
+            384,
+            408
+          ]
+        },
+        "latency_ms": 329.797,
+        "ranked_scores": [
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 9.564141273498535,
+            "candidate_set_softmax": 0.7544111013412476
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 7.686246871948242,
+            "candidate_set_softmax": 0.11535831540822983
+          },
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 6.436268329620361,
+            "candidate_set_softmax": 0.033051420003175735
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 6.410196781158447,
+            "candidate_set_softmax": 0.032200854271650314
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 6.0154523849487305,
+            "candidate_set_softmax": 0.021698618307709694
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 5.64315128326416,
+            "candidate_set_softmax": 0.01495353039354086
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 5.56615686416626,
+            "candidate_set_softmax": 0.013845399022102356
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 4.957790374755859,
+            "candidate_set_softmax": 0.007535208947956562
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 4.876307964324951,
+            "candidate_set_softmax": 0.006945570930838585
+          }
+        ],
+        "top_two_logit_margin": 1.877894401550293,
+        "top_candidate_id": "rises_from_bed_to_standing",
+        "runner_up_candidate_id": "stands_beside_bed",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      },
+      {
+        "timeline_interval_ms": [
+          11000,
+          19000
+        ],
+        "source_interval_ms": [
+          131000,
+          139000
+        ],
+        "frame_pts_ms": [
+          11000,
+          12000,
+          13000,
+          14000,
+          15000,
+          16000,
+          17000,
+          18000
+        ],
+        "source_frame_pts_ms": [
+          131000,
+          132000,
+          133000,
+          134000,
+          135000,
+          136000,
+          137000,
+          138000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            264,
+            288,
+            312,
+            336,
+            360,
+            384,
+            408,
+            432
+          ]
+        },
+        "latency_ms": 351.079,
+        "ranked_scores": [
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 12.024168014526367,
+            "candidate_set_softmax": 0.7883567214012146
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 10.04661750793457,
+            "candidate_set_softmax": 0.10911476612091064
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 8.643001556396484,
+            "candidate_set_softmax": 0.02681024745106697
+          },
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 8.496086120605469,
+            "candidate_set_softmax": 0.023147083818912506
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 8.341787338256836,
+            "candidate_set_softmax": 0.01983741857111454
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 7.877820014953613,
+            "candidate_set_softmax": 0.012473453767597675
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 7.356179714202881,
+            "candidate_set_softmax": 0.00740357069298625
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 7.311689376831055,
+            "candidate_set_softmax": 0.007081402465701103
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 7.107815742492676,
+            "candidate_set_softmax": 0.005775347352027893
+          }
+        ],
+        "top_two_logit_margin": 1.9775505065917969,
+        "top_candidate_id": "rises_from_bed_to_standing",
+        "runner_up_candidate_id": "stands_beside_bed",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      },
+      {
+        "timeline_interval_ms": [
+          12000,
+          20000
+        ],
+        "source_interval_ms": [
+          132000,
+          140000
+        ],
+        "frame_pts_ms": [
+          12000,
+          13000,
+          14000,
+          15000,
+          16000,
+          17000,
+          18000,
+          19000
+        ],
+        "source_frame_pts_ms": [
+          132000,
+          133000,
+          134000,
+          135000,
+          136000,
+          137000,
+          138000,
+          139000
+        ],
+        "video_metadata": {
+          "total_num_frames": 480,
+          "fps": 24.0,
+          "duration": 20.0,
+          "frames_indices": [
+            288,
+            312,
+            336,
+            360,
+            384,
+            408,
+            432,
+            456
+          ]
+        },
+        "latency_ms": 344.027,
+        "ranked_scores": [
+          {
+            "candidate_id": "rises_from_bed_to_standing",
+            "text_en": "An older man rises from the bed to stand beside it.",
+            "raw_logit": 12.984395027160645,
+            "candidate_set_softmax": 0.7722821235656738
+          },
+          {
+            "candidate_id": "stands_beside_bed",
+            "text_en": "A man stands beside the bed.",
+            "raw_logit": 11.10683822631836,
+            "candidate_set_softmax": 0.1181308776140213
+          },
+          {
+            "candidate_id": "reaches_toward_candle",
+            "text_en": "A man reaches toward a candle beside the bed.",
+            "raw_logit": 9.63323974609375,
+            "candidate_set_softmax": 0.02706373669207096
+          },
+          {
+            "candidate_id": "turns_away_from_bed",
+            "text_en": "A man turns away from the bed.",
+            "raw_logit": 9.565997123718262,
+            "candidate_set_softmax": 0.025303736329078674
+          },
+          {
+            "candidate_id": "walks_away_from_bed",
+            "text_en": "A man walks away from the bed.",
+            "raw_logit": 9.29764461517334,
+            "candidate_set_softmax": 0.019348202273249626
+          },
+          {
+            "candidate_id": "lying_on_bed",
+            "text_en": "A man lies in bed.",
+            "raw_logit": 8.85917854309082,
+            "candidate_set_softmax": 0.012480076402425766
+          },
+          {
+            "candidate_id": "sitting_up_from_bed",
+            "text_en": "A man sits up from lying down on a bed.",
+            "raw_logit": 8.848075866699219,
+            "candidate_set_softmax": 0.012342280708253384
+          },
+          {
+            "candidate_id": "gets_out_of_bed",
+            "text_en": "A man gets out of bed.",
+            "raw_logit": 8.492441177368164,
+            "candidate_set_softmax": 0.008648588322103024
+          },
+          {
+            "candidate_id": "soldier_points_rifle",
+            "text_en": "A soldier points a rifle at a man in bed.",
+            "raw_logit": 7.816720008850098,
+            "candidate_set_softmax": 0.004400309640914202
+          }
+        ],
+        "top_two_logit_margin": 1.8775568008422852,
+        "top_candidate_id": "rises_from_bed_to_standing",
+        "runner_up_candidate_id": "stands_beside_bed",
+        "softmax_is_conditional_to_candidate_set": true,
+        "softmax_is_calibrated_probability": false
+      }
+    ],
+    "candidate_set": [
+      {
+        "candidate_id": "lying_on_bed",
+        "text_en": "A man lies in bed.",
+        "entity": "man",
+        "action": "lies on",
+        "object": "bed",
+        "text_ru": "Мужчина лежит на кровати."
+      },
+      {
+        "candidate_id": "sitting_up_from_bed",
+        "text_en": "A man sits up from lying down on a bed.",
+        "entity": "man",
+        "action": "sits up from",
+        "object": "bed",
+        "text_ru": "Мужчина приподнимается с кровати."
+      },
+      {
+        "candidate_id": "rises_from_bed_to_standing",
+        "text_en": "An older man rises from the bed to stand beside it.",
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "text_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней."
+      },
+      {
+        "candidate_id": "gets_out_of_bed",
+        "text_en": "A man gets out of bed.",
+        "entity": "man",
+        "action": "gets out of",
+        "object": "bed",
+        "text_ru": "Мужчина встаёт с кровати."
+      },
+      {
+        "candidate_id": "reaches_toward_candle",
+        "text_en": "A man reaches toward a candle beside the bed.",
+        "entity": "man",
+        "action": "reaches toward",
+        "object": "candle",
+        "text_ru": "Мужчина тянется к свече рядом с кроватью."
+      },
+      {
+        "candidate_id": "stands_beside_bed",
+        "text_en": "A man stands beside the bed.",
+        "entity": "man",
+        "action": "stands beside",
+        "object": "bed",
+        "text_ru": "Мужчина стоит рядом с кроватью."
+      },
+      {
+        "candidate_id": "walks_away_from_bed",
+        "text_en": "A man walks away from the bed.",
+        "entity": "man",
+        "action": "walks away from",
+        "object": "bed",
+        "text_ru": "Мужчина отходит от кровати."
+      },
+      {
+        "candidate_id": "turns_away_from_bed",
+        "text_en": "A man turns away from the bed.",
+        "entity": "man",
+        "action": "turns away from",
+        "object": "bed",
+        "text_ru": "Мужчина отворачивается от кровати."
+      },
+      {
+        "candidate_id": "soldier_points_rifle",
+        "text_en": "A soldier points a rifle at a man in bed.",
+        "entity": "soldier",
+        "action": "points a rifle at",
+        "object": "man in bed",
+        "text_ru": "Солдат целится из винтовки в мужчину на кровати."
+      }
+    ],
+    "ranked_scores": [
+      {
+        "candidate_id": "reaches_toward_candle",
+        "text_en": "A man reaches toward a candle beside the bed.",
+        "raw_logit": 5.861838340759277,
+        "candidate_set_softmax": 0.31910640001296997
+      },
+      {
+        "candidate_id": "rises_from_bed_to_standing",
+        "text_en": "An older man rises from the bed to stand beside it.",
+        "raw_logit": 5.804756164550781,
+        "candidate_set_softmax": 0.3014012277126312
+      },
+      {
+        "candidate_id": "lying_on_bed",
+        "text_en": "A man lies in bed.",
+        "raw_logit": 4.898999214172363,
+        "candidate_set_softmax": 0.12183716893196106
+      },
+      {
+        "candidate_id": "stands_beside_bed",
+        "text_en": "A man stands beside the bed.",
+        "raw_logit": 4.611455917358398,
+        "candidate_set_softmax": 0.09139055758714676
+      },
+      {
+        "candidate_id": "turns_away_from_bed",
+        "text_en": "A man turns away from the bed.",
+        "raw_logit": 4.343564510345459,
+        "candidate_set_softmax": 0.06991294026374817
+      },
+      {
+        "candidate_id": "walks_away_from_bed",
+        "text_en": "A man walks away from the bed.",
+        "raw_logit": 3.7772774696350098,
+        "candidate_set_softmax": 0.03968461975455284
+      },
+      {
+        "candidate_id": "soldier_points_rifle",
+        "text_en": "A soldier points a rifle at a man in bed.",
+        "raw_logit": 3.3202362060546875,
+        "candidate_set_softmax": 0.025126485154032707
+      },
+      {
+        "candidate_id": "sitting_up_from_bed",
+        "text_en": "A man sits up from lying down on a bed.",
+        "raw_logit": 3.0084898471832275,
+        "candidate_set_softmax": 0.018396787345409393
+      },
+      {
+        "candidate_id": "gets_out_of_bed",
+        "text_en": "A man gets out of bed.",
+        "raw_logit": 2.6722588539123535,
+        "candidate_set_softmax": 0.013143733143806458
+      }
+    ],
+    "top_two_logit_margin": 0.057082176208496094,
+    "softmax_is_conditional_to_candidate_set": true,
+    "softmax_is_calibrated_probability": false
+  },
+  "event_graph": {
+    "record_type": "event_graph",
+    "schema_version": 1,
+    "graph_id": "097aac1c2ec03cf8a7efb24d",
+    "stream_id": "f10-video-only-tears120-140-sequence",
+    "epoch": 0,
+    "ordering": "adjacent_event_start_time",
+    "nodes": [],
+    "edges": [],
+    "visual_sequences": [
+      {
+        "sequence_id": "a55b576fcc21eaf8ab43fc9e",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          0,
+          20000
+        ],
+        "source_interval_ms": [
+          120000,
+          140000
+        ],
+        "source_pts_offset_ms": 120000,
+        "evidence_status": "encoder_features_only",
+        "semantic_action_inferred": false,
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "frames": [
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:120000",
+            "timeline_pts_ms": 0,
+            "source_pts_ms": 120000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:121000",
+            "timeline_pts_ms": 1000,
+            "source_pts_ms": 121000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:122000",
+            "timeline_pts_ms": 2000,
+            "source_pts_ms": 122000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:123000",
+            "timeline_pts_ms": 3000,
+            "source_pts_ms": 123000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:124000",
+            "timeline_pts_ms": 4000,
+            "source_pts_ms": 124000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:125000",
+            "timeline_pts_ms": 5000,
+            "source_pts_ms": 125000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:126000",
+            "timeline_pts_ms": 6000,
+            "source_pts_ms": 126000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:127000",
+            "timeline_pts_ms": 7000,
+            "source_pts_ms": 127000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:128000",
+            "timeline_pts_ms": 8000,
+            "source_pts_ms": 128000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:129000",
+            "timeline_pts_ms": 9000,
+            "source_pts_ms": 129000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:130000",
+            "timeline_pts_ms": 10000,
+            "source_pts_ms": 130000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:131000",
+            "timeline_pts_ms": 11000,
+            "source_pts_ms": 131000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:132000",
+            "timeline_pts_ms": 12000,
+            "source_pts_ms": 132000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:133000",
+            "timeline_pts_ms": 13000,
+            "source_pts_ms": 133000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:134000",
+            "timeline_pts_ms": 14000,
+            "source_pts_ms": 134000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:135000",
+            "timeline_pts_ms": 15000,
+            "source_pts_ms": 135000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:136000",
+            "timeline_pts_ms": 16000,
+            "source_pts_ms": 136000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:137000",
+            "timeline_pts_ms": 17000,
+            "source_pts_ms": 137000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:138000",
+            "timeline_pts_ms": 18000,
+            "source_pts_ms": 138000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140-sequence:0:139000",
+            "timeline_pts_ms": 19000,
+            "source_pts_ms": 139000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          }
+        ]
+      }
+    ],
+    "visual_action_hypotheses": [
+      {
+        "hypothesis_id": "7aa896c9c0356de22d76aa9e",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          0,
+          8000
+        ],
+        "source_interval_ms": [
+          120000,
+          128000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "man",
+        "action": "reaches toward",
+        "object": "candle",
+        "description_en": "A man reaches toward a candle beside the bed.",
+        "description_ru": "Мужчина тянется к свече рядом с кроватью.",
+        "score": 5.861838340759277,
+        "score_kind": "xclip_logit",
+        "margin": 0.057082176208496094,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:120000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:121000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:122000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:123000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:124000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:125000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:126000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:127000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      },
+      {
+        "hypothesis_id": "f082f9c823f3785ef21c333d",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          1000,
+          9000
+        ],
+        "source_interval_ms": [
+          121000,
+          129000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 6.175841808319092,
+        "score_kind": "xclip_logit",
+        "margin": 0.36092710494995117,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:121000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:122000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:123000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:124000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:125000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:126000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:127000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:128000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      },
+      {
+        "hypothesis_id": "945dd1226675602176ffd63c",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          2000,
+          10000
+        ],
+        "source_interval_ms": [
+          122000,
+          130000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 6.924549579620361,
+        "score_kind": "xclip_logit",
+        "margin": 1.056328296661377,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:122000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:123000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:124000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:125000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:126000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:127000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:128000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:129000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      },
+      {
+        "hypothesis_id": "198c6dd4b7eab123a9f82aaa",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          3000,
+          11000
+        ],
+        "source_interval_ms": [
+          123000,
+          131000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 5.6454057693481445,
+        "score_kind": "xclip_logit",
+        "margin": 1.4845829010009766,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:123000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:124000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:125000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:126000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:127000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:128000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:129000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:130000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      },
+      {
+        "hypothesis_id": "4a898ac4d390a4008d61feea",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          4000,
+          12000
+        ],
+        "source_interval_ms": [
+          124000,
+          132000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 5.805136680603027,
+        "score_kind": "xclip_logit",
+        "margin": 2.008188247680664,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:124000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:125000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:126000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:127000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:128000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:129000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:130000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:131000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      },
+      {
+        "hypothesis_id": "40767e077024b6f3e188d354",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          5000,
+          13000
+        ],
+        "source_interval_ms": [
+          125000,
+          133000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 5.424007415771484,
+        "score_kind": "xclip_logit",
+        "margin": 1.5846998691558838,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:125000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:126000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:127000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:128000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:129000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:130000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:131000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:132000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      },
+      {
+        "hypothesis_id": "d2965cea19fce2824980d3d9",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          6000,
+          14000
+        ],
+        "source_interval_ms": [
+          126000,
+          134000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 6.201838970184326,
+        "score_kind": "xclip_logit",
+        "margin": 1.5485401153564453,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:126000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:127000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:128000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:129000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:130000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:131000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:132000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:133000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      },
+      {
+        "hypothesis_id": "31264cbaa57b628598bda6e5",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          7000,
+          15000
+        ],
+        "source_interval_ms": [
+          127000,
+          135000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 7.263697624206543,
+        "score_kind": "xclip_logit",
+        "margin": 1.4736347198486328,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:127000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:128000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:129000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:130000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:131000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:132000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:133000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:134000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      },
+      {
+        "hypothesis_id": "96cca58f9bb3d52a5f303e36",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          8000,
+          16000
+        ],
+        "source_interval_ms": [
+          128000,
+          136000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 7.958974361419678,
+        "score_kind": "xclip_logit",
+        "margin": 1.8966383934020996,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:128000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:129000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:130000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:131000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:132000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:133000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:134000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:135000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      },
+      {
+        "hypothesis_id": "bb064e930d23901239b02cf2",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          9000,
+          17000
+        ],
+        "source_interval_ms": [
+          129000,
+          137000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 9.030633926391602,
+        "score_kind": "xclip_logit",
+        "margin": 2.0428385734558105,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:129000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:130000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:131000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:132000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:133000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:134000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:135000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:136000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      },
+      {
+        "hypothesis_id": "613384dba40611cd8f01d93c",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          10000,
+          18000
+        ],
+        "source_interval_ms": [
+          130000,
+          138000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 9.564141273498535,
+        "score_kind": "xclip_logit",
+        "margin": 1.877894401550293,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:130000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:131000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:132000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:133000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:134000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:135000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:136000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:137000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      },
+      {
+        "hypothesis_id": "b6c093f3321ac3058662c6bf",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          11000,
+          19000
+        ],
+        "source_interval_ms": [
+          131000,
+          139000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 12.024168014526367,
+        "score_kind": "xclip_logit",
+        "margin": 1.9775505065917969,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:131000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:132000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:133000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:134000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:135000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:136000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:137000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:138000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      },
+      {
+        "hypothesis_id": "01e4327a8c0a5eaee7572eec",
+        "source_id": "f10-video-only-tears120-140-sequence",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          12000,
+          20000
+        ],
+        "source_interval_ms": [
+          132000,
+          140000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 12.984395027160645,
+        "score_kind": "xclip_logit",
+        "margin": 1.8775568008422852,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140-sequence:0:132000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:133000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:134000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:135000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:136000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:137000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:138000",
+          "visual-frame:f10-video-only-tears120-140-sequence:0:139000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      }
+    ],
+    "limitations": [
+      "Timeline nodes contain emitted claims; visual sequences and action hypotheses are separate evidence records.",
+      "Visual token features preserve frame PTS but are not semantic action labels.",
+      "Visual action hypotheses are unverified and are not passed to Qwen narration.",
+      "Cosine similarity is not probability or human verification.",
+      "Start-time ordering and interval overlap do not imply causality."
+    ]
+  },
+  "narration_request_count": 0,
+  "limitations": [
+    "The model output is an unverified candidate, not a human-verified event.",
+    "The top-two margin and candidate-set softmax are not calibrated confidence.",
+    "Overlapping windows may keep ranking an action after its visible onset or offset.",
+    "The output is an external diagnostic baseline and is not integrated into the default analyze route.",
+    "The candidate is retained in EventGraph but is not sent to Qwen narration."
+  ]
+}

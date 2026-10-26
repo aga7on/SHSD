@@ -8,6 +8,7 @@ Date: 2026-10-27. Model weights were not changed and no bridge training was run.
 - The positive-only scene probe on the real audio interval has four 5-second windows. At source PTS 185000–190000 ms, `music_present` is top but uncertain (cosine 0.791, margin 0.006). In the next three windows, source PTS 190000–205000 ms, `conversation_dominant` is accepted (cosines 0.746–0.754; margins 0.057–0.083). The old binary comparison accepts zero of these four windows. This shows that the positive alternatives can separate dialogue from music in this clip; it does not establish accuracy or false-positive behavior without blind labels.
 - The isolated AUDIO-only run reproduces the dialogue transition. L1 and L2 place `conversation_dominant` over clip time 5000–20000 ms, corresponding to source PTS 190000–205000 ms. L2 records the scene change and adds no music details because the music premise is not confirmed. Qwen produces the Russian caption “На первом плане слышен разговор людей.” in 2308 ms. No L3 music-development description is produced.
 - The 10-second VIDEO-only clip is 120000–130000 ms in the source film. A pinned, external zero-shot X-CLIP diagnostic ranks “An older man rises from the bed to stand beside it” highest for 121000–129000 ms (logit 6.1758; runner-up “A man reaches toward a candle beside the bed”, margin 0.3609). The optional EventGraph record links this candidate to eight source-time frame references. It is marked `unverified_model_hypothesis`, is not passed to Qwen, and is not part of the default `analyze` path. The score and margin are not calibrated confidence.
+- A new VIDEO-only scan scores thirteen overlapping 8-second windows across source PTS 120000–140000 ms at 1-second strides. It ranks `reaches_toward_candle` in the first window, then `rises_from_bed_to_standing` in the next twelve. The latter candidate persists into late windows where the man is already standing; its raw logit rises from 6.176 at 121000–129000 ms to 12.984 at 132000–140000 ms. This exposes temporal persistence and score-scale problems: top-candidate repetition does not locate the action or its boundaries. The EventGraph stores these as thirteen unverified hypotheses linked to one 20-frame PTS-preserving feature sequence; narration request count remains zero.
 - Review clips are checked with `ffprobe`: VIDEO-only, 10 seconds; AUDIO-only, 20 seconds, mono 16 kHz. Their original source intervals, hashes, and CC BY 3.0 attribution are in [`review_manifest.json`](../../review/bridge_f10_examples/review_manifest.json). The audio clip is from the real film and spans a music-to-dialogue scene change. A separate hard splice between unrelated music recordings was tested earlier; it is excluded from this review packet because it is not a natural transition.
 
 ## Findings against the current priorities
@@ -15,6 +16,8 @@ Date: 2026-10-27. Model weights were not changed and no bridge training was run.
 ### Semantic matcher
 
 Positive-only scene alternatives yield an accepted dialogue scene in three adjacent windows of the real clip, while the first music window remains uncertain. In the separate 65-second instrumental probe, all 13/13 broad music-scene windows remained uncertain (top-candidate cosine min/mean/max 0.718/0.744/0.766; margin 0.0004/0.0143/0.0233). Do not lower the 0.6 similarity or 0.05 margin thresholds from these label-free probes. The per-axis text hypotheses and raw scores are in the linked CSVs below.
+
+The X-CLIP sequence scan is also a negative diagnostic: the action label `rises_from_bed_to_standing` stays top after the visible rise has ended, and its raw logit increases in later standing/wide-shot windows. Do not use its margin or logit as a confidence gate. A temporal action model and independent labels are still required before B0 can accept this visual event.
 
 ### Music development
 
@@ -41,6 +44,7 @@ ffmpeg.exe -y -ss 65 -i benchmarks/fixtures/real_poc/tears_of_steel_120_210s.mp4
 
 # Re-run the external VIDEO-only action candidate (pinned MIT X-CLIP snapshot must be in the local ignored model cache)
 .venv/Scripts/python.exe scripts/probe_video_action_xclip.py --video benchmarks/fixtures/real_poc/tears_of_steel_120_140s.mp4 --start-ms 1000 --end-ms 9000 --source-pts-offset-ms 120000 --threads 4 --report benchmarks/reports/bridge_f10/video_action_hypothesis_xclip_tears120-140.json
+.venv/Scripts/python.exe scripts/probe_video_action_xclip.py --video benchmarks/fixtures/real_poc/tears_of_steel_120_140s.mp4 --start-ms 0 --end-ms 20000 --scan-window-ms 8000 --scan-stride-ms 1000 --source-pts-offset-ms 120000 --stream-id f10-video-only-tears120-140-sequence --threads 4 --report benchmarks/reports/bridge_f10/video_action_sequence_xclip_tears120-140.json
 ```
 
 Model: `microsoft/xclip-base-patch32`, MIT, revision `a2e27a78a2b5d802e894b8a1ef14f3a8ce490963`. X-CLIP is an external diagnostic only; weights are not committed or integrated into the default application path.
@@ -48,6 +52,7 @@ Model: `microsoft/xclip-base-patch32`, MIT, revision `a2e27a78a2b5d802e894b8a1ef
 ## Raw outputs
 
 - [`video_action_hypothesis_xclip_tears120-140.json`](video_action_hypothesis_xclip_tears120-140.json)
+- [`video_action_sequence_xclip_tears120-140.json`](video_action_sequence_xclip_tears120-140.json)
 - [`audio_only_analysis.jsonl`](music_transition_real_video_20261027/audio_only_analysis.jsonl)
 - [`multiclass summary`](music_transition_real_video_20261027/multiclass/music_multiclass_probe.json) and [scores](music_transition_real_video_20261027/multiclass/music_multiclass_scores.csv)
 - [`music-dynamics summary`](music_transition_real_video_20261027/dynamics/music_dynamics_probe.json) and [per-window scores](music_transition_real_video_20261027/dynamics/music_dynamics_prompt_scores.csv)

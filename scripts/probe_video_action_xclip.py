@@ -138,6 +138,26 @@ def _load_events(path: Path | None, *, stream_id: str, epoch: int) -> list[Timel
     return events
 
 
+def _scan_intervals(
+    start_ms: int,
+    end_ms: int,
+    window_ms: int,
+    stride_ms: int,
+) -> tuple[tuple[int, int], ...]:
+    """Return ordered, covering windows and align the final window to the interval end."""
+    if start_ms < 0 or end_ms <= start_ms:
+        raise ValueError("scan interval must be non-negative and non-empty")
+    if window_ms < 1 or end_ms - start_ms < window_ms:
+        raise ValueError("scan interval must be at least one full window")
+    if stride_ms < 1 or stride_ms > window_ms:
+        raise ValueError("scan stride must be positive and no larger than its window")
+    last_start_ms = end_ms - window_ms
+    starts = list(range(start_ms, last_start_ms + 1, stride_ms))
+    if not starts or starts[-1] != last_start_ms:
+        starts.append(last_start_ms)
+    return tuple((window_start, window_start + window_ms) for window_start in starts)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--video", type=Path, default=DEFAULT_VIDEO)
@@ -146,6 +166,18 @@ def main() -> int:
     parser.add_argument("--epoch", type=int, default=0)
     parser.add_argument("--start-ms", type=int, default=1_000)
     parser.add_argument("--end-ms", type=int, default=9_000)
+    parser.add_argument(
+        "--scan-window-ms",
+        type=int,
+        default=8_000,
+        help="window size used when --scan-stride-ms is positive",
+    )
+    parser.add_argument(
+        "--scan-stride-ms",
+        type=int,
+        default=0,
+        help="score overlapping windows across --start-ms..--end-ms; 0 scores one window",
+    )
     parser.add_argument("--source-pts-offset-ms", type=int, default=SOURCE_PTS_OFFSET_MS)
     parser.add_argument("--threads", type=int, default=4)
     parser.add_argument("--model-dir", type=Path, default=DEFAULT_MODEL_DIR)
@@ -164,6 +196,8 @@ def main() -> int:
         args.epoch < 0
         or args.start_ms < 0
         or args.end_ms <= args.start_ms
+        or args.scan_window_ms < 1
+        or args.scan_stride_ms < 0
         or args.source_pts_offset_ms < 0
         or args.threads < 1
     ):
@@ -173,6 +207,19 @@ def main() -> int:
     local_revision = config.get("_commit_hash")
     if local_revision is not None and local_revision != XCLIP_REVISION:
         parser.error(f"X-CLIP revision mismatch: expected {XCLIP_REVISION}, found {local_revision}")
+    try:
+        window_intervals = (
+            ((args.start_ms, args.end_ms),)
+            if args.scan_stride_ms == 0
+            else _scan_intervals(
+                args.start_ms,
+                args.end_ms,
+                args.scan_window_ms,
+                args.scan_stride_ms,
+            )
+        )
+    except ValueError as exc:
+        parser.error(str(exc))
 
     import torch
     import transformers
@@ -181,31 +228,108 @@ def main() -> int:
     torch.set_num_threads(args.threads)
     processor = XCLIPProcessor.from_pretrained(args.model_dir, local_files_only=True)
     model = XCLIPModel.from_pretrained(args.model_dir, local_files_only=True).eval().to("cpu")
-    frames, frame_pts_ms, video_metadata = _load_video_sample(
-        args.video,
-        interval_ms=(args.start_ms, args.end_ms),
-        max_frames=8,
-    )
-    if len(frames) != 8:
-        parser.error(f"X-CLIP requires 8 frames, but the requested interval yielded {len(frames)}")
-
     texts = [item["text_en"] for item in _CANDIDATES]
-    xclip_inputs = processor(
-        text=texts,
-        videos=[frames],
-        return_tensors="pt",
-        padding=True,
-    )
-    started = time.perf_counter()
-    with torch.inference_mode():
-        outputs = model(**xclip_inputs)
-    xclip_latency_ms = round((time.perf_counter() - started) * 1000, 3)
-    scores = outputs.logits_per_video[0].float().cpu().tolist()
-    ranked_indices = sorted(range(len(scores)), key=lambda index: scores[index], reverse=True)
-    top_index, runner_up_index = ranked_indices[:2]
-    top = _CANDIDATES[top_index]
-    margin = float(scores[top_index] - scores[runner_up_index])
     source_id = args.stream_id
+    images_by_pts: dict[int, Any] = {}
+    window_results: list[dict[str, Any]] = []
+    hypotheses: list[VisualActionHypothesis] = []
+    xclip_latency_total_ms = 0.0
+    for window_start_ms, window_end_ms in window_intervals:
+        frames, frame_pts_ms, video_metadata = _load_video_sample(
+            args.video,
+            interval_ms=(window_start_ms, window_end_ms),
+            max_frames=8,
+        )
+        if len(frames) != 8:
+            parser.error(
+                "X-CLIP requires 8 frames for every window; "
+                f"the interval [{window_start_ms}, {window_end_ms}) yielded {len(frames)}"
+            )
+        for frame, pts_ms in zip(frames, frame_pts_ms, strict=True):
+            images_by_pts.setdefault(pts_ms, frame)
+        xclip_inputs = processor(
+            text=texts,
+            videos=[frames],
+            return_tensors="pt",
+            padding=True,
+        )
+        started = time.perf_counter()
+        with torch.inference_mode():
+            outputs = model(**xclip_inputs)
+        latency_ms = round((time.perf_counter() - started) * 1000, 3)
+        xclip_latency_total_ms += latency_ms
+        scores = outputs.logits_per_video[0].float().cpu().tolist()
+        ranked_indices = sorted(range(len(scores)), key=lambda index: scores[index], reverse=True)
+        top_index, runner_up_index = ranked_indices[:2]
+        top = _CANDIDATES[top_index]
+        margin = float(scores[top_index] - scores[runner_up_index])
+        candidate_softmax = torch.softmax(torch.tensor(scores, dtype=torch.float32), dim=0).tolist()
+        ranked = [
+            {
+                "candidate_id": str(_CANDIDATES[index]["candidate_id"]),
+                "text_en": str(_CANDIDATES[index]["text_en"]),
+                "raw_logit": float(scores[index]),
+                "candidate_set_softmax": float(candidate_softmax[index]),
+            }
+            for index in ranked_indices
+        ]
+        window_results.append(
+            {
+                "timeline_interval_ms": [window_start_ms, window_end_ms],
+                "source_interval_ms": [
+                    window_start_ms + args.source_pts_offset_ms,
+                    window_end_ms + args.source_pts_offset_ms,
+                ],
+                "frame_pts_ms": list(frame_pts_ms),
+                "source_frame_pts_ms": [
+                    pts_ms + args.source_pts_offset_ms for pts_ms in frame_pts_ms
+                ],
+                "video_metadata": video_metadata,
+                "latency_ms": latency_ms,
+                "ranked_scores": ranked,
+                "top_two_logit_margin": margin,
+                "top_candidate_id": str(top["candidate_id"]),
+                "runner_up_candidate_id": str(_CANDIDATES[runner_up_index]["candidate_id"]),
+                "softmax_is_conditional_to_candidate_set": True,
+                "softmax_is_calibrated_probability": False,
+            }
+        )
+        hypothesis_digest = hashlib.sha256(
+            "\0".join(
+                (
+                    source_id,
+                    str(args.epoch),
+                    str(window_start_ms),
+                    str(window_end_ms),
+                    XCLIP_MODEL_ID,
+                    XCLIP_REVISION,
+                    str(top["candidate_id"]),
+                )
+            ).encode("utf-8")
+        ).hexdigest()[:24]
+        hypotheses.append(
+            VisualActionHypothesis(
+                hypothesis_id=hypothesis_digest,
+                source_id=source_id,
+                epoch=args.epoch,
+                timeline_interval_ms=(window_start_ms, window_end_ms),
+                source_pts_offset_ms=args.source_pts_offset_ms,
+                subject=str(top["entity"]),
+                action=str(top["action"]),
+                object=str(top["object"]),
+                description_en=str(top["text_en"]),
+                description_ru=str(top["text_ru"]),
+                score=float(scores[top_index]),
+                score_kind="xclip_logit",
+                margin=margin,
+                model_id=XCLIP_MODEL_ID,
+                model_revision=XCLIP_REVISION,
+                evidence_refs=tuple(
+                    f"visual-frame:{source_id}:{args.epoch}:{pts_ms + args.source_pts_offset_ms}"
+                    for pts_ms in frame_pts_ms
+                ),
+            )
+        )
 
     lock = json.loads((ROOT / "models.lock.json").read_text(encoding="utf-8"))
     embedding_model = lock["models"]["embeddinggemma2"]
@@ -216,9 +340,11 @@ def main() -> int:
         threads=args.threads,
         enabled_modalities={"image"},
     )
+    frame_pts_ms = tuple(sorted(images_by_pts))
+    frames_by_pts = tuple(images_by_pts[pts_ms] for pts_ms in frame_pts_ms)
     frame_records = tuple(
         feature_provider.encode_frame_features(np.asarray(frame.convert("RGB")), pts_ms)
-        for frame, pts_ms in zip(frames, frame_pts_ms, strict=True)
+        for frame, pts_ms in zip(frames_by_pts, frame_pts_ms, strict=True)
     )
     feature_batch = AVFeatureBatch.from_records(
         mode="VIDEO",
@@ -227,61 +353,27 @@ def main() -> int:
         interval_ms=(args.start_ms, args.end_ms),
         frame_records=frame_records,
     )
-    evidence_refs = tuple(
-        f"visual-frame:{source_id}:{args.epoch}:{pts_ms + args.source_pts_offset_ms}"
-        for pts_ms in frame_pts_ms
-    )
-    hypothesis_digest = hashlib.sha256(
-        "\0".join(
-            (
-                source_id,
-                str(args.epoch),
-                str(args.start_ms),
-                str(args.end_ms),
-                XCLIP_MODEL_ID,
-                XCLIP_REVISION,
-                str(top["candidate_id"]),
-            )
-        ).encode("utf-8")
-    ).hexdigest()[:24]
-    hypothesis = VisualActionHypothesis(
-        hypothesis_id=hypothesis_digest,
-        source_id=source_id,
-        epoch=args.epoch,
-        timeline_interval_ms=(args.start_ms, args.end_ms),
-        source_pts_offset_ms=args.source_pts_offset_ms,
-        subject=str(top["entity"]),
-        action=str(top["action"]),
-        object=str(top["object"]),
-        description_en=str(top["text_en"]),
-        description_ru=str(top["text_ru"]),
-        score=float(scores[top_index]),
-        score_kind="xclip_logit",
-        margin=margin,
-        model_id=XCLIP_MODEL_ID,
-        model_revision=XCLIP_REVISION,
-        evidence_refs=evidence_refs,
-    )
     events = _load_events(args.timeline, stream_id=source_id, epoch=args.epoch)
     graph = _narration_graph(
         events,
         stream_id=source_id,
         epoch=args.epoch,
         visual_feature_batches=(feature_batch,),
-        visual_action_hypotheses=(hypothesis,),
+        visual_action_hypotheses=tuple(hypotheses),
         source_pts_offset_ms=args.source_pts_offset_ms,
     )
-    logits = torch.tensor(scores, dtype=torch.float32)
-    candidate_softmax = torch.softmax(logits, dim=0).tolist()
-    ranked = [
-        {
-            "candidate_id": str(_CANDIDATES[index]["candidate_id"]),
-            "text_en": str(_CANDIDATES[index]["text_en"]),
-            "raw_logit": float(scores[index]),
-            "candidate_set_softmax": float(candidate_softmax[index]),
-        }
-        for index in ranked_indices
+    first_window = window_results[0]
+    top = _CANDIDATES[
+        next(
+            index
+            for index, candidate in enumerate(_CANDIDATES)
+            if candidate["candidate_id"] == first_window["top_candidate_id"]
+        )
     ]
+    top_counts: dict[str, int] = {}
+    for result in window_results:
+        candidate_id = str(result["top_candidate_id"])
+        top_counts[candidate_id] = top_counts.get(candidate_id, 0) + 1
     report: dict[str, Any] = {
         "schema_version": 1,
         "created_at_utc": datetime.now(UTC).isoformat(),
@@ -309,13 +401,29 @@ def main() -> int:
             "source_pts_offset_ms": args.source_pts_offset_ms,
             "frame_pts_ms": list(frame_pts_ms),
             "source_frame_pts_ms": [pts_ms + args.source_pts_offset_ms for pts_ms in frame_pts_ms],
-            "video_metadata": video_metadata,
+            "video_metadata": (
+                window_results[0]["video_metadata"]
+                if len(window_results) == 1
+                else {
+                    "window_count": len(window_results),
+                    "windows": [
+                        {
+                            "timeline_interval_ms": item["timeline_interval_ms"],
+                            "metadata": item["video_metadata"],
+                        }
+                        for item in window_results
+                    ],
+                }
+            ),
         },
         "xclip": {
-            "latency_ms": xclip_latency_ms,
+            "latency_ms": round(xclip_latency_total_ms, 3),
+            "window_count": len(window_results),
+            "top_candidate_counts": top_counts,
+            "windows": window_results,
             "candidate_set": [dict(item) for item in _CANDIDATES],
-            "ranked_scores": ranked,
-            "top_two_logit_margin": margin,
+            "ranked_scores": first_window["ranked_scores"],
+            "top_two_logit_margin": first_window["top_two_logit_margin"],
             "softmax_is_conditional_to_candidate_set": True,
             "softmax_is_calibrated_probability": False,
         },
@@ -324,6 +432,7 @@ def main() -> int:
         "limitations": [
             "The model output is an unverified candidate, not a human-verified event.",
             "The top-two margin and candidate-set softmax are not calibrated confidence.",
+            "Overlapping windows may keep ranking an action after its visible onset or offset.",
             (
                 "The output is an external diagnostic baseline and is not integrated into "
                 "the default analyze route."
@@ -345,9 +454,10 @@ def main() -> int:
                 "source_interval_ms": report["input"]["source_interval_ms"],
                 "source_frame_pts_ms": report["input"]["source_frame_pts_ms"],
                 "score_kind": "xclip_logit",
-                "score": round(float(scores[top_index]), 4),
-                "runner_up": _CANDIDATES[runner_up_index]["candidate_id"],
-                "margin": round(margin, 4),
+                "window_count": len(window_results),
+                "top_candidate_counts": top_counts,
+                "first_window_margin": first_window["top_two_logit_margin"],
+                "total_model_latency_ms": round(xclip_latency_total_ms, 3),
                 "graph_action_hypotheses": len(graph.visual_action_hypotheses),
                 "narration_request_count": len(graph.narration_requests()),
                 "report": str(args.report),
