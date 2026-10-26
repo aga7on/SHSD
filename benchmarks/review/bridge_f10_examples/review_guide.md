@@ -26,6 +26,10 @@ Clip time 0–20 s maps to original-film source PTS 185000–205000 ms. The four
 
 For `music_layer_type`, use `vocal`, `percussion`, `bass`, `instrument_family`, `music_presence`, or `unknown`. For `music_layer_state`, use `none`, `present`, `onset`, `offset`, `changed`, or `unknown`. Use `unknown` only with `partial` or `unverified`; a `human_verified` row must state what happened to music. Describe an audible change in `music_layer_change_ru`; do not call a scene handoff a musical change unless the music itself changes. For a transition, enter its source-time start/end, identify its layer type, and cite at least one `evidence_audio_source_ms` point before it and one after it. Separate multiple evidence points with semicolons. Leave transition times blank if no music transition is audible.
 
+If the clip has no audible music transition, record that accurately. The CSV validator will accept a complete human review, but the B0 example builder will refuse to label it as a positive transition; we will need another excerpt for that success example.
+
 ## CSV format
 
 Keep the two `clip_id` values unchanged and include exactly one row per clip. Separate multiple timestamps with semicolons. Use integer milliseconds in original-source time, without units or thousands separators. Preserve the header and UTF-8 encoding. The validator is `scripts/validate_f10_review_labels.py`; an empty template is expected to fail as incomplete.
+
+After both rows are `human_verified`, run `python scripts/build_f10_reviewed_graphs.py`. It checks the labels again and writes separate VIDEO-only and AUDIO-only EventGraph bundles with accepted, provenance-tagged B0 claims and Qwen narration requests. It refuses to build the audio success example unless the review confirms an onset, offset, or change in a music layer.

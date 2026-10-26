@@ -97,19 +97,70 @@ def test_timeline_claim_premise_provenance_round_trips_and_legacy_json_defaults(
     assert legacy_claim.premise_evidence_refs == ()
 
 
+def test_human_verified_action_claim_retains_annotation_and_entity_action_object() -> None:
+    claim = TimelineClaim(
+        claim_id="review:action-1",
+        label="human_verified_visual_action",
+        text_ru="Мужчина встаёт с кровати.",
+        decision="accepted",
+        raw_cosine=None,
+        margin=None,
+        evidence_refs=("visual-frame:video-1:0:1000", "visual-frame:video-1:0:2000"),
+        window_ids=("human-review:video_01",),
+        model_revision="human-review-record",
+        sample_count=2,
+        annotation_verification="human_verified",
+        annotator_id="reviewer-1",
+        guide_version="f10-blind-review-v1",
+        visual_subject_ru="мужчина",
+        visual_action_ru="встаёт",
+        visual_object_ru="кровать",
+    )
+
+    restored = TimelineClaim.from_dict(claim.to_dict())
+
+    assert restored == claim
+    assert restored.raw_cosine is None
+    assert restored.annotation_verification == "human_verified"
+    assert restored.visual_subject_ru == "мужчина"
+
+
+def test_unannotated_claim_keeps_legacy_serialization_shape() -> None:
+    value = _event().claims[0].to_dict()
+
+    assert "annotation_verification" not in value
+    assert "annotator_id" not in value
+    assert "visual_subject_ru" not in value
+    assert "music_layer_type" not in value
+
+
+def test_human_verified_claim_requires_complete_provenance_and_eao_fields() -> None:
+    with pytest.raises(ValueError, match="verification, annotator, and guide"):
+        TimelineClaim(
+            claim_id="review:action-1",
+            label="human_verified_visual_action",
+            text_ru="Мужчина встаёт с кровати.",
+            decision="accepted",
+            raw_cosine=None,
+            margin=None,
+            evidence_refs=("visual-frame:video-1:0:1000",),
+            window_ids=("human-review:video_01",),
+            model_revision="human-review-record",
+            sample_count=1,
+            annotation_verification="human_verified",
+            annotator_id="reviewer-1",
+        )
+
+
 def test_watermark_revisioned_mark_atomically_changes_status() -> None:
     tracker = WatermarkTracker("revisioned", required_modalities={"audio"})
     tracker.mark("D", 0, 1_000, "done", level="L1")
 
-    tracker.mark_revisioned(
-        "D", 0, 1_000, "skipped", level="L1", reason="runtime_backpressure"
-    )
+    tracker.mark_revisioned("D", 0, 1_000, "skipped", level="L1", reason="runtime_backpressure")
     tracker.mark_revisioned("D", 0, 1_000, "done", level="L1")
 
     spans = tracker.spans("D", level="L1")
-    assert [(span.status, span.revision, span.reason) for span in spans] == [
-        ("done", 3, None)
-    ]
+    assert [(span.status, span.revision, span.reason) for span in spans] == [("done", 3, None)]
 
 
 def _state_event(
@@ -356,9 +407,7 @@ def test_event_store_revisions_speech_segments_and_restores_latest(tmp_path) -> 
             store.append_speech_segment(
                 "stream-1", 0, {**final, "revision": 3, "supersedes_revision": 2}
             )
-        store.append_speech_segment(
-            "stream-1", 0, {**final, "text": "Итоговая расшифровка."}
-        )
+        store.append_speech_segment("stream-1", 0, {**final, "text": "Итоговая расшифровка."})
     with EventStore(path) as store:
         current = store.speech_segments("stream-1", 0)
     assert len(current) == 1
@@ -380,9 +429,7 @@ def test_temporal_state_tracks_snapshots_and_deduplicates_revisions() -> None:
     assert delta.published is True
     assert reducer.ingest(started) is None
 
-    duplicate_window = _state_event(
-        "duplicate-window", "music_started", 0, 1000, "music_present"
-    )
+    duplicate_window = _state_event("duplicate-window", "music_started", 0, 1000, "music_present")
     duplicate_window = replace(
         duplicate_window,
         claims=(replace(duplicate_window.claims[0], window_ids=started.claims[0].window_ids),),
@@ -398,9 +445,7 @@ def test_temporal_state_holds_overlapping_change_until_a_comparable_boundary() -
     reducer = TemporalStateReducer(min_repeats=2)
     reducer.ingest(_state_event("music-1", "music_started", 0, 1000, "ambient"))
 
-    overlapping = reducer.ingest(
-        _state_event("music-2", "music_changed", 800, 1800, "drums")
-    )
+    overlapping = reducer.ingest(_state_event("music-2", "music_changed", 800, 1800, "drums"))
 
     assert overlapping is not None
     assert overlapping.comparison == "ambiguous"
@@ -408,9 +453,7 @@ def test_temporal_state_holds_overlapping_change_until_a_comparable_boundary() -
     assert overlapping.published is False
     assert overlapping.current.active_music == "ambient"
 
-    confirmed = reducer.ingest(
-        _state_event("music-3", "music_changed", 1800, 2800, "drums")
-    )
+    confirmed = reducer.ingest(_state_event("music-3", "music_changed", 1800, 2800, "drums"))
 
     assert confirmed is not None
     assert confirmed.previous.active_music == "ambient"
@@ -430,9 +473,7 @@ def test_temporal_state_rejects_uncertain_claims_and_requires_hysteresis() -> No
     assert first.current.active_music is None
 
     uncertain = reducer.ingest(
-        _state_event(
-            "uncertain-1", "music_started", 1000, 2000, "ambient", decision="uncertain"
-        )
+        _state_event("uncertain-1", "music_started", 1000, 2000, "ambient", decision="uncertain")
     )
     assert uncertain is not None and uncertain.comparison == "ambiguous"
     assert uncertain.current.active_music is None
@@ -447,22 +488,14 @@ def test_temporal_state_rejects_uncertain_claims_and_requires_hysteresis() -> No
 def test_temporal_state_order_changes_result_and_tracks_scene_and_speakers() -> None:
     start_then_stop = TemporalStateReducer()
     forward_deltas = [
-        start_then_stop.ingest(
-            _state_event("a-start", "music_started", 0, 1000, "ambient")
-        ),
-        start_then_stop.ingest(
-            _state_event("a-stop", "music_stopped", 1000, 2000, "music_absent")
-        ),
+        start_then_stop.ingest(_state_event("a-start", "music_started", 0, 1000, "ambient")),
+        start_then_stop.ingest(_state_event("a-stop", "music_stopped", 1000, 2000, "music_absent")),
     ]
 
     stop_then_start = TemporalStateReducer()
     reverse_deltas = [
-        stop_then_start.ingest(
-            _state_event("b-stop", "music_stopped", 0, 1000, "music_absent")
-        ),
-        stop_then_start.ingest(
-            _state_event("b-start", "music_started", 1000, 2000, "ambient")
-        ),
+        stop_then_start.ingest(_state_event("b-stop", "music_stopped", 0, 1000, "music_absent")),
+        stop_then_start.ingest(_state_event("b-start", "music_started", 1000, 2000, "ambient")),
     ]
 
     assert start_then_stop.current("state-stream", 0).active_music is None
@@ -493,24 +526,18 @@ def test_temporal_state_novelty_requires_comparable_intervals_and_resets_on_epoc
     started = _state_event("music-1", "music_started", 0, 1000, "ambient")
     reducer.ingest(started)
 
-    stable = reducer.ingest(
-        _state_event("music-2", "music_started", 1000, 2000, "ambient")
-    )
+    stable = reducer.ingest(_state_event("music-2", "music_started", 1000, 2000, "ambient"))
     assert stable is not None
     assert stable.comparison == "adjacent"
     assert stable.novelty_score == 0.0
     assert stable.current.last_meaningful_change_ms == 0
 
-    late = reducer.ingest(
-        _state_event("late-music", "music_changed", 500, 1500, "drums")
-    )
+    late = reducer.ingest(_state_event("late-music", "music_changed", 500, 1500, "drums"))
     assert late is not None
     assert late.comparison == "ambiguous"
     assert late.current.active_music == "ambient"
 
-    next_epoch = replace(
-        _state_event("epoch-one", "music_started", 0, 1000, "ambient"), epoch=1
-    )
+    next_epoch = replace(_state_event("epoch-one", "music_started", 0, 1000, "ambient"), epoch=1)
     reducer.ingest(next_epoch)
     assert reducer.current("state-stream", 1).active_music == "ambient"
     assert reducer.current("state-stream", 0).active_music is None

@@ -18,6 +18,9 @@
       120000,
       130000
     ],
+    "source_pts_offset_ms": 120000,
+    "graph_stream_id": "f10-video-only-tears120-140-sequence",
+    "graph_epoch": 0,
     "source_file": "benchmarks/fixtures/real_poc/tears_of_steel_120_140s.mp4",
     "source_sha256": "014324f1575464b248acff73c858dec66059b9afb271875dd0c82d5460b7d588",
     "source_license": "Creative Commons Attribution 3.0",
@@ -38,6 +41,8 @@
       205000
     ],
     "source_pts_offset_ms": 185000,
+    "graph_stream_id": "f10-audio-only-tos-185-205",
+    "graph_epoch": 0,
     "source_file": "benchmarks/fixtures/real_poc/tears_of_steel_120_210s.mp4",
     "source_sha256": "2af621c3854de4cc3c29bcb1b9fa2a188c8aeb74477c59ff4140114979b07ae3",
     "source_license": "Creative Commons Attribution 3.0",

@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 
 @dataclass(frozen=True, slots=True)
@@ -24,6 +24,14 @@ class TimelineClaim:
     premise_state: str | None = None
     premise_claim_id: str | None = None
     premise_evidence_refs: tuple[str, ...] = ()
+    annotation_verification: Literal["human_verified"] | None = None
+    annotator_id: str | None = None
+    guide_version: str | None = None
+    visual_subject_ru: str | None = None
+    visual_action_ru: str | None = None
+    visual_object_ru: str | None = None
+    music_layer_type: str | None = None
+    music_layer_state: str | None = None
 
     def __post_init__(self) -> None:
         if not self.claim_id or not self.label or not self.model_revision:
@@ -49,6 +57,47 @@ class TimelineClaim:
             raise ValueError("unsupported premise_state")
         if self.premise_state is None and (self.premise_claim_id or self.premise_evidence_refs):
             raise ValueError("premise provenance requires a premise_state")
+        annotation_fields = (self.annotation_verification, self.annotator_id, self.guide_version)
+        if any(value is not None for value in annotation_fields) and not all(
+            isinstance(value, str) and value.strip() for value in annotation_fields
+        ):
+            raise ValueError(
+                "human annotation provenance requires verification, annotator, and guide"
+            )
+        if self.annotation_verification == "human_verified" and self.decision != "accepted":
+            raise ValueError("human-verified claims must be accepted")
+        human_review_labels = {
+            "human_verified_visual_action",
+            "human_verified_music_transition",
+            "human_verified_audio_scene",
+        }
+        if self.label in human_review_labels and self.annotation_verification != "human_verified":
+            raise ValueError("human-review claim labels require human-verified provenance")
+        if (
+            self.annotation_verification == "human_verified"
+            and self.label not in human_review_labels
+        ):
+            raise ValueError("human-verified provenance requires a supported review claim label")
+        visual_fields = (self.visual_subject_ru, self.visual_action_ru, self.visual_object_ru)
+        if any(value is not None for value in visual_fields) and not all(
+            isinstance(value, str) and value.strip() for value in visual_fields
+        ):
+            raise ValueError("visual action claims require Russian subject, action, and object")
+        if self.label == "human_verified_visual_action" and not all(
+            isinstance(value, str) and value.strip() for value in visual_fields
+        ):
+            raise ValueError(
+                "human-verified visual action claims require entity-action-object labels"
+            )
+        audio_fields = (self.music_layer_type, self.music_layer_state)
+        if any(value is not None for value in audio_fields) and not all(
+            isinstance(value, str) and value.strip() for value in audio_fields
+        ):
+            raise ValueError("music transition claims require layer type and state")
+        if self.label == "human_verified_music_transition" and not all(
+            isinstance(value, str) and value.strip() for value in audio_fields
+        ):
+            raise ValueError("human-verified music transitions require layer type and state")
         if not self.evidence_refs and self.decision != "unverified":
             raise ValueError("claims require evidence_refs or the unverified decision")
         if self.raw_cosine is not None and (
@@ -62,6 +111,18 @@ class TimelineClaim:
 
     def to_dict(self) -> dict[str, Any]:
         result = asdict(self)
+        for field_name in (
+            "annotation_verification",
+            "annotator_id",
+            "guide_version",
+            "visual_subject_ru",
+            "visual_action_ru",
+            "visual_object_ru",
+            "music_layer_type",
+            "music_layer_state",
+        ):
+            if result[field_name] is None:
+                result.pop(field_name)
         result["evidence_refs"] = list(self.evidence_refs)
         result["window_ids"] = list(self.window_ids)
         result["candidate_hypotheses"] = [
@@ -98,9 +159,17 @@ class TimelineClaim:
             ),
             premise_state=cast(str | None, value.get("premise_state")),
             premise_claim_id=cast(str | None, value.get("premise_claim_id")),
-            premise_evidence_refs=tuple(
-                cast(list[str], value.get("premise_evidence_refs", []))
+            premise_evidence_refs=tuple(cast(list[str], value.get("premise_evidence_refs", []))),
+            annotation_verification=cast(
+                Literal["human_verified"] | None, value.get("annotation_verification")
             ),
+            annotator_id=cast(str | None, value.get("annotator_id")),
+            guide_version=cast(str | None, value.get("guide_version")),
+            visual_subject_ru=cast(str | None, value.get("visual_subject_ru")),
+            visual_action_ru=cast(str | None, value.get("visual_action_ru")),
+            visual_object_ru=cast(str | None, value.get("visual_object_ru")),
+            music_layer_type=cast(str | None, value.get("music_layer_type")),
+            music_layer_state=cast(str | None, value.get("music_layer_state")),
         )
 
 

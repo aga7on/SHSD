@@ -268,16 +268,62 @@ class GroundedEventGraph:
         hypothesis_ids = [item.hypothesis_id for item in self.visual_action_hypotheses]
         if len(set(hypothesis_ids)) != len(hypothesis_ids):
             raise ValueError("visual action hypothesis IDs must be unique")
-        visual_evidence_refs = {
-            frame["evidence_ref"]
+        visual_frame_metadata = {
+            frame["evidence_ref"]: frame
             for sequence in self.visual_sequences
             for frame in sequence.to_dict()["frames"]
         }
+        visual_evidence_refs = set(visual_frame_metadata)
         if any(
             not set(item.evidence_refs).issubset(visual_evidence_refs)
             for item in self.visual_action_hypotheses
         ):
             raise ValueError("visual action hypotheses must reference graph frame evidence")
+        for event in self.events:
+            for claim in event.claims:
+                if claim.annotation_verification != "human_verified":
+                    continue
+                if claim.label == "human_verified_visual_action":
+                    if not event.modality_mask["video"]:
+                        raise ValueError("human-verified visual actions require video modality")
+                    if not set(claim.evidence_refs).issubset(visual_evidence_refs):
+                        raise ValueError(
+                            "human-verified visual actions must reference graph frame evidence"
+                        )
+                    if any(
+                        not event.start_ms
+                        <= visual_frame_metadata[ref]["timeline_pts_ms"]
+                        < event.end_ms
+                        for ref in claim.evidence_refs
+                    ):
+                        raise ValueError(
+                            "human-verified visual action evidence must fall inside its interval"
+                        )
+                elif claim.label in {
+                    "human_verified_music_transition",
+                    "human_verified_audio_scene",
+                }:
+                    if not event.modality_mask["audio"]:
+                        raise ValueError("human-verified audio claims require audio modality")
+                    prefix = f"audio-review:{self.stream_id}:{self.epoch}:"
+                    evidence_pts: list[int] = []
+                    for ref in claim.evidence_refs:
+                        if not ref.startswith(prefix):
+                            raise ValueError(
+                                "human-verified audio claims require source-linked review evidence"
+                            )
+                        try:
+                            evidence_pts.append(int(ref[len(prefix) :]))
+                        except ValueError as exc:
+                            raise ValueError(
+                                "human-verified audio evidence references must contain source PTS"
+                            ) from exc
+                    if len(set(evidence_pts)) < 2 or any(value < 0 for value in evidence_pts):
+                        raise ValueError(
+                            "human-verified audio claims require two distinct source PTS values"
+                        )
+                else:
+                    raise ValueError("unsupported human-verified claim label")
 
     @classmethod
     def from_events(
@@ -396,7 +442,9 @@ class GroundedEventGraph:
                 {
                     **claim.to_dict(),
                     "decision_state": (
-                        "accepted_by_policy"
+                        "human_verified"
+                        if claim.annotation_verification == "human_verified"
+                        else "accepted_by_policy"
                         if claim.decision == "accepted"
                         else "hypothesis"
                         if claim.decision == "uncertain"
