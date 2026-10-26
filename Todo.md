@@ -1,6 +1,8 @@
 # Todo.md — SHSD: активный backlog качества и realtime
 
-> **Версия 0.4 · 26.10.2026.** Все новые задачи ниже **открыты** до предъявления воспроизводимых доказательств. Прежний F0–F6 чеклист (исторически 157/159) [архивирован без изменений](docs/archive/2026-10-26-pre-multimodal-review/Todo.md). Эта цифра не измеряет готовность продукта.
+> **Версия 0.5 · 26.10.2026.** Все новые задачи ниже **открыты** до предъявления воспроизводимых доказательств. Прежний F0–F6 чеклист (исторически 157/159) [архивирован без изменений](docs/archive/2026-10-26-pre-multimodal-review/Todo.md). Эта цифра не измеряет готовность продукта.
+>
+> **Исполняемое ТЗ:** [F10-agent-handoff.md](docs/experiments/F10-agent-handoff.md) · [F10-GO template](docs/experiments/F10-GO.template.md).
 >
 > Цель: [Workspace.md](Workspace.md); правила агента: [Agents.md](Agents.md); протокол: [docs/experiments/av-bridge-evaluation-protocol.md](docs/experiments/av-bridge-evaluation-protocol.md).
 
@@ -82,12 +84,15 @@
 
 ## F10 — Обучаемый мультимодальный мост: параллельный R&D-трек
 
+**Первый результат агента — исполняемый код и измерения, а не очередной ресерч.** Порядок коммитов, критерии и негативные тесты — [handoff](docs/experiments/F10-agent-handoff.md).
+
 > **Не откладывать F10.01–02 до F9.** Они идут параллельно P0. **Обучение условно одобрено владельцем**: F10.03 готов к запуску после feasibility/data/budget `GO`; F10.04 — после evidence первого пилота; F10.05 — после quality/CPU сравнения. Это конкретный план пилота, не обязательство менять production.
 
 ### F10.01 — Проверка реальных интерфейсов и ограничений [P1; можно сейчас]
 - [ ] По официальным model cards и **исполняемым smoke tests** выяснить, какие EmbeddingGemma 2 outputs доступны: pooled, patch/token/time-level features, отдельные audio/video paths, timestamps, нормализация и возможность получить sequence representations без неподдерживаемых API.
 - [ ] Проверить, принимает ли конкретная Qwen3-0.6B implementation `inputs_embeds`/prefix tokens и как это соотносится с CPU GGUF/llama.cpp; сравнить PyTorch prototype и целевой runtime. Записать размерности, порядок модальностей, masking и стоимость prefill.
 - [ ] Проверить лицензии, совместимость версий и ограничения аппаратуры для отдельного GPU-training и **CPU-only** запуска. Не обещать, что pooled 768d восстанавливает действия, инструменты или временные связи.
+- [ ] Добавить исполняемые shape/API/CPU smoke tests, raw outputs и capability_matrix.md; не выдавать текстовый prompt за multimodal prefix.
 - **DoD:** таблица `supported/unsupported/unknown`, минимальные воспроизводимые smoke tests и `go/no-go` для непрерывного multimodal prefix. Не выдавать fake soft prompt за работающий bridge.
 - **Depends:** нет; стартовать параллельно F7.01–03.
 
@@ -96,6 +101,8 @@
 - [ ] Спроектировать token-level/temporal audio/video conditioning и fusion: 1) что видно и как меняется, 2) какие звуковые/музыкальные слои слышны, 3) что произошло раньше/позже, 4) какие утверждения имеют evidence.
 - [ ] Согласовать законные train/val/test источники **без source leakage**; training data собирать после проверки лицензий и source-separated splits. Разметка F7.03 — только evaluation, не скрытый train set.
 - [ ] Утвердить cost/quality metrics и ablations: audio-only, video-only, AV, swapped-audio, shuffled-time, missing modality, negative prompts, 1x cold-cache live, memory, CPU tok/s и prefill.
+- [ ] Реализовать B0 typed event graph→Qwen и независимый eval runner (visual actions, music transitions, input/expressed/omitted claims).
+- [ ] Заполнить [GO template](docs/experiments/F10-GO.template.md) реальными доказательствами в benchmarks/reports/bridge_f10/F10-GO.md.
 - **DoD:** [bridge pilot protocol](docs/experiments/bridge-training-pilot.md), явные критерии остановки, сравнение с frozen A0/A2 и documented technical/data/budget `GO` по уже полученному разрешению.
 - **Depends:** F10.01 и схема F7.03; F7–F9 продолжаются параллельно.
 
@@ -130,3 +137,12 @@
 Владелец разрешил **любое обучение, если оно перспективно поможет решить главную боль**: содержательный, достоверный визуальный сюжет, подробные музыкальные слои/переходы и устойчивый CPU-only offline realtime. Это включает adapter/projector, LoRA, encoder/LLM fine-tuning, distillation и альтернативные модели. **Повторного согласования каждого эксперимента не требуется.**
 
 **До GPU training:** (1) подтверждённый interface/conditioning и правдоподобный CPU deploy path; (2) права на данные и source-separated train/val/held-out; (3) зафиксированный baseline и независимые quality metrics; (4) bounded GPU budget, checkpoints и stop conditions; (5) письменный `F10-GO.md` с результатом `GO`. Если что-то не выполнено — `NO-GO`, не скрывать риск. После короткого пилота продолжать лишь при измеренном улучшении без роста ложных утверждений. В production новые веса попадут только после held-out A/B и sustained 1x CPU live. Это разрешение на исследование, **не доказательство, что обучение обязательно поможет**.
+
+## F10 — ближайшие четыре коммита агента
+
+1. **A:** encoder/Qwen conditioning/CPU smoke tests, capability matrix с exact commands.
+2. **B:** grounded event graph, B0 text-only Qwen baseline, human-labeled independent eval, заполненный F10-GO.
+3. **C (после GO):** короткий B1 projector training pilot с train/val/held-out, ablations, quality A/B и CPU measurements.
+4. **D:** сравнение B0/B1/специализированных perception моделей, sustained 1x live и решение о production. LoRA/другой fine-tune только при измеренном сигнале перспективности.
+
+Полный контракт: [F10 handoff](docs/experiments/F10-agent-handoff.md).

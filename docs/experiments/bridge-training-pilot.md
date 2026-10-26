@@ -38,6 +38,10 @@ audio windows + video frames + PTS
 4. Достаточны ли маленький projector и frozen Qwen для обучения мультимодального языка? Это гипотеза. Если не обучается, рассмотреть B2 LoRA или более глубокое обучение после evidence первого пилота и отдельного bounded budget gate или C готовую pretrained AV модель.
 5. Как получить легальные, разнообразные AV→RU training targets с независимыми источниками и без утечки в evaluation? Teacher-generated captions **не** ground truth.
 
+## 2.1. Контроль для обучаемого моста
+
+B0: grounded temporal event graph → текстовый Qwen3-0.6B. B1: тот же evidence + обучаемый projector/resampler → Qwen. Сравнивать на одинаковых источниках и независимых метках, чтобы не спутать новые perception facts с эффектом bridge. Pooled-only — контроль, а не гарантия деталей. Последний Deep Research не завершён, API проверять smoke tests. Исполняемое задание: [F10 handoff](F10-agent-handoff.md), [GO template](F10-GO.template.md).
+
 ## 3. Этапы с stop/go
 
 ### F10.01 — API и latency smoke tests (разрешено)

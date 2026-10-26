@@ -1,7 +1,9 @@
 # Workspace.md — SHSD: текущая цель и архитектурная спецификация
 
-> **Версия 0.4 · 26.10.2026 · статус: активный план улучшения качества и CPU realtime.**
+> **Версия 0.5 · 26.10.2026 · статус: активный план улучшения качества и CPU realtime.**
 > Исходная полная спецификация v0.1 сохранена [без изменений в архиве](docs/archive/2026-10-26-pre-multimodal-review/Workspace.md). Задачи — [Todo.md](Todo.md), правила — [Agents.md](Agents.md), протокол измерений — [docs/experiments/av-bridge-evaluation-protocol.md](docs/experiments/av-bridge-evaluation-protocol.md).
+>
+> **Практическое ТЗ:** [F10 coding-agent handoff](docs/experiments/F10-agent-handoff.md) · [AV event graph](docs/architecture/grounded-av-storytelling.md) · [F10-GO template](docs/experiments/F10-GO.template.md).
 >
 > **Граница:** целевой runtime остаётся offline/CPU-only. Существующая production-ветка пока training-free. **Обучаемый мультимодальный мост — отдельный параллельный R&D-трек F10 с конкретным протоколом**, а не отложенная заметка. **Владелец 26.10.2026 разрешил любое перспективное обучение** для улучшения grounded AV сюжета, музыки и temporal detail. Перед training — documented feasibility/data/budget `GO`, повторное разрешение не требуется.
 
@@ -96,3 +98,9 @@ SHSD (Streaming Hierarchical Semantic Decoder) должен получать ж�
 Владелец разрешил **любое обучение, если оно перспективно поможет решить главную боль**: содержательный, достоверный визуальный сюжет, подробные музыкальные слои/переходы и устойчивый CPU-only offline realtime. Это включает adapter/projector, LoRA, encoder/LLM fine-tuning, distillation и альтернативные модели. **Повторного согласования каждого эксперимента не требуется.**
 
 **До GPU training:** (1) подтверждённый interface/conditioning и правдоподобный CPU deploy path; (2) права на данные и source-separated train/val/held-out; (3) зафиксированный baseline и независимые quality metrics; (4) bounded GPU budget, checkpoints и stop conditions; (5) письменный `F10-GO.md` с результатом `GO`. Если что-то не выполнено — `NO-GO`, не скрывать риск. После короткого пилота продолжать лишь при измеренном улучшении без роста ложных утверждений. В production новые веса попадут только после held-out A/B и sustained 1x CPU live. Это разрешение на исследование, **не доказательство, что обучение обязательно поможет**.
+
+## 9. Порядок реализации после архитектурного анализа
+
+**Инженерная рекомендация, не доказанный результат обучения:** исправить музыкальную предпосылку, L2→L3 claim accounting и live backlog; создать grounded temporal graph объектов, действий и музыкальных слоёв; сравнить B0 (graph→текстовый Qwen) с B1 (обучаемый bridge→Qwen). Если EmbeddingGemma не содержит нужных token/time-level фактов, сравнить специализированные visual action/audio music encoders, а не учить Qwen придумывать отсутствующие факты.
+
+Обучение B1/LoRA/fine-tune разрешено владельцем **при документированном technical/data/CPU/budget GO**; не нужно повторно запрашивать разрешение. Нельзя объявлять GPU prototype production-ready без sustained CPU 1x. Последний Deep Research был остановлен до отчёта: конкретные API и численные улучшения остаются непроверенными до smoke tests. Следовать [F10 handoff](docs/experiments/F10-agent-handoff.md).

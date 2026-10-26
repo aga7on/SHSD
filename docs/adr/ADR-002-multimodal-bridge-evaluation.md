@@ -16,6 +16,10 @@
 
 Общее embedding-пространство **не является** готовым мультимодальным генератором. Pooled 768d vector может не сохранять инструменты/действия/порядок. PyTorch prototype не доказывает совместимость с Qwen GGUF/llama.cpp CPU runtime. Не заменять EmbeddingGemma/Qwen по умолчанию.
 
+## Gate перспективности
+
+Общее embedding-пространство не означает способности строить визуальный сюжет или музыкальные переходы. До обучения подтвердить доступные audio/video features, Qwen non-text conditioning и CPU deploy path; легальные source-separated данные; независимые visual/music quality metrics и ограниченный budget. B1 small projector — первый пилот; B2 LoRA/глубокое обучение — только при подтверждённой перспективности. Если pooled EmbeddingGemma теряет действия/инструменты, сравнить независимые perception models. [F10 handoff](docs/experiments/F10-agent-handoff.md) · [GO template](docs/experiments/F10-GO.template.md).
+
 ## Решение на сегодня
 
 **Вести A и B параллельно как равноправные проверяемые гипотезы, но не смешивать их в production.** A — текущая frozen реализация, F7–F9; B — **активный R&D-трек F10** с проверкой реальных API, проектом training pilot, ablations и заранее определённым A/B. F10.01–02 разрешены сейчас и должны завершиться конкретным `go/no-go`. F10.03–05 описаны как этапы **возможного обучения и сравнения**, но фактический training разрешён после technical/data/budget `GO`, без повторного разрешения владельца. Детали: [bridge-training-pilot.md](../experiments/bridge-training-pilot.md).

@@ -1,8 +1,10 @@
 # Agents.md — правила coding-агента SHSD
 
-> **Версия 0.4 · 26.10.2026.** Перед правкой читать [Workspace.md](Workspace.md), [Todo.md](Todo.md), [протокол](docs/experiments/av-bridge-evaluation-protocol.md). Полный набор прежних v0.1 инструкций сохранён [в архиве](docs/archive/2026-10-26-pre-multimodal-review/Agents.md). Его инженерные инварианты действуют, если не противоречат явно описанному новому плану.
+> **Версия 0.5 · 26.10.2026.** Перед правкой читать [Workspace.md](Workspace.md), [Todo.md](Todo.md), [протокол](docs/experiments/av-bridge-evaluation-protocol.md). Полный набор прежних v0.1 инструкций сохранён [в архиве](docs/archive/2026-10-26-pre-multimodal-review/Agents.md). Его инженерные инварианты действуют, если не противоречат явно описанному новому плану.
 
 ## 1. Неприкосновенные ограничения
+
+**Прочитать [F10 handoff](docs/experiments/F10-agent-handoff.md) и [event graph](docs/architecture/grounded-av-storytelling.md).** Не перезапускать Deep Research вместо coding, smoke tests, evaluation и bounded training pilot. Последний сеанс Deep Research не завершён; не выдавать гипотезы о model API за подтверждённые.
 
 1. **Два параллельных трека:** frozen production F7–F9 и trainable bridge R&D F10. Исследование архитектуры/интерфейсов F10.01–02 **обязательно и разрешено сейчас**. Владелец уже разрешил любое перспективное обучение (projector/LoRA/encoder или LLM fine-tuning/distillation). Запускать после documented technical/data/budget `GO`, без повторного разрешения; production менять только по F10.05 evidence. Малые независимые **оценочные** метки допустимы.
 2. **CPU-only, полностью offline в runtime.** Без обязательной CUDA, внешних LLM API и сетевой telemetry; Qwen3-0.6B остаётся narrator, EmbeddingGemma 2 — encoder. NCM — только архитектурное вдохновение.
@@ -62,3 +64,7 @@ Checkbox в Todo закрывать **только** после выполнен
 Владелец разрешил **любое обучение, если оно перспективно поможет решить главную боль**: содержательный, достоверный визуальный сюжет, подробные музыкальные слои/переходы и устойчивый CPU-only offline realtime. Это включает adapter/projector, LoRA, encoder/LLM fine-tuning, distillation и альтернативные модели. **Повторного согласования каждого эксперимента не требуется.**
 
 **До GPU training:** (1) подтверждённый interface/conditioning и правдоподобный CPU deploy path; (2) права на данные и source-separated train/val/held-out; (3) зафиксированный baseline и независимые quality metrics; (4) bounded GPU budget, checkpoints и stop conditions; (5) письменный `F10-GO.md` с результатом `GO`. Если что-то не выполнено — `NO-GO`, не скрывать риск. После короткого пилота продолжать лишь при измеренном улучшении без роста ложных утверждений. В production новые веса попадут только после held-out A/B и sustained 1x CPU live. Это разрешение на исследование, **не доказательство, что обучение обязательно поможет**.
+
+## 7. F10 training gate
+
+Перед GPU training заполнить [F10-GO template](docs/experiments/F10-GO.template.md) с verified encoder/Qwen/CPU paths, законными source-separated данными, baseline, human labels, pre-registered quality/CPU metrics, ограниченным GPU budget и stop criteria. Unknown означает blocked/NO-GO. Разрешение владельца уже есть, повторно не спрашивать. B0 typed evidence→Qwen сравнивать с B1 learned bridge на одинаковых источниках; PyTorch GPU prototype не доказывает CPU deployment. Не использовать held-out для training или tuning.

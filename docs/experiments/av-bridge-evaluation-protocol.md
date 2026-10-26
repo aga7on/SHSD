@@ -10,6 +10,9 @@
 
 ## 2. Сравниваемые режимы
 
+**B0** — grounded event graph → text-only Qwen; **B1** — тот же graph/evidence + learned multimodal conditioning. Не менять perception и narration одновременно без ablations. [F10 handoff](F10-agent-handoff.md).
+
+
 - **A0:** `20acb747`, multiclass music L1, текущий temporal L2, Qwen L3.
 - **A1:** A0 + отдельный music exploration/publication gate, независимое подтверждение premise, исправленный L2→L3 accounting.
 - **A2:** A1 + temporal musical transitions и grounded visual action/entity memory.
