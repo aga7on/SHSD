@@ -1,9 +1,9 @@
 # Workspace.md — SHSD: текущая цель и архитектурная спецификация
 
-> **Версия 0.2 · 26.10.2026 · статус: активный план улучшения качества и CPU realtime.**
+> **Версия 0.3 · 26.10.2026 · статус: активный план улучшения качества и CPU realtime.**
 > Исходная полная спецификация v0.1 сохранена [без изменений в архиве](docs/archive/2026-10-26-pre-multimodal-review/Workspace.md). Задачи — [Todo.md](Todo.md), правила — [Agents.md](Agents.md), протокол измерений — [docs/experiments/av-bridge-evaluation-protocol.md](docs/experiments/av-bridge-evaluation-protocol.md).
 >
-> **Граница:** SHSD остаётся offline, CPU-only в целевом runtime, без обучения/fine-tuning/projector в текущей реализации. Любая идея обучаемого моста рассматривается только как отдельная, пока не одобренная ADR; не является текущим планом реализации.
+> **Граница:** целевой runtime остаётся offline/CPU-only. Существующая production-ветка пока training-free. **Обучаемый мультимодальный мост — отдельный параллельный R&D-трек F10 с конкретным протоколом**, а не отложенная заметка. Обучение весов требует явного одобрения владельца проекта; до этого разрешены capability audit, design и тесты интерфейсов без training.
 
 ## 1. Что строим
 
@@ -23,7 +23,7 @@ SHSD (Streaming Hierarchical Semantic Decoder) должен получать ж�
 - **L0–L3:** L0 — измеримые признаки и evidence; L1 — грубые события; L2 — подтверждённые детали и временные переходы; L3 — связное русское описание без неподтверждённых добавлений.
 - **Temporal Event Memory:** стабильные event/claim IDs, интервалы в source time, PTS/time_base, epoch, ревизии, ссылки на evidence; отдельно фиксировать `observed`, `hypothesis`, `accepted_by_policy`, `human_verified`, `published`.
 - **Поток:** bounded 600-секундный ring, очереди/backpressure, C/E/D/R watermarks и явные skipped/dropped intervals; L3 не блокирует ingest. Совпадение audio onset и video cut не означает причинную связь.
-- **No-training v0.2:** без fine-tuning EmbeddingGemma/Qwen, projector/LoRA, обучающих датасетов и обязательных cloud/GPU API. Малый независимый **оценочный** набор с ручной разметкой разрешён и нужен; это не training.
+- **No-training production baseline:** текущие frozen веса не менять без разрешения. F10 параллельно изучает **обучаемый** projector/resampler между EmbeddingGemma 2 и Qwen3-0.6B; отдельный training experiment допускается только после проверки интерфейса, данных, лицензий и явного разрешения. Малый независимый **оценочный** набор нужен уже сейчас.
 
 Подробные исходные схемы API/JSONL/SQLite, контракты интервалов и watermarks — в [архивной v0.1 спецификации](docs/archive/2026-10-26-pre-multimodal-review/Workspace.md). При расхождении описания и реализации агент проверяет актуальный код, тесты и сообщает о несовместимости; не меняет контракт молча.
 
@@ -78,4 +78,14 @@ SHSD (Streaming Hierarchical Semantic Decoder) должен получать ж�
 3. **Live:** pre-stop 1x cold-cache на уникальном источнике, C/E/R coverage, lag p50/p95 и slope, drops, CPU/RSS, L3 latency и Qwen tok/s. Доказательство устойчивого `RTF ≤ 1` без растущего lag либо честный `not met`.
 4. **Совместимость:** offline CPU, EmbeddingGemma 2 + Qwen3-0.6B, bounded ring, существующие API/JSONL/SQLite без неоговорённых breaking changes.
 
-Исполнять [Todo.md](Todo.md). Варианты новых моделей или обучаемого моста — только после evidence, отдельно в [ADR-002](docs/adr/ADR-002-multimodal-bridge-evaluation.md); это не блокирует исправления P0.
+## 8. Параллельный F10: проверяем обучаемый EmbeddingGemma 2 → Qwen3-0.6B bridge
+
+**Почему:** если frozen similarity matcher не извлекает действий, инструментов и временных связей, бесконечное расширение словаря гипотез может не решить задачу. Trainable alignment между аудио/видео представлениями и языковой моделью — серьёзная альтернатива, а не декоративный пункт.
+
+**Гипотеза, не установленный факт:** небольшой projector/resampler и temporal fusion могут помочь Qwen строить последовательные grounded русские описания без обучения всей LLM. Однако **один pooled embedding** может потерять детали и время, а Qwen3-0.6B может не принимать произвольные prefix embeddings в целевом GGUF runtime. Сначала подтвердить доступные encoder tokens, LLM embedding API, latency и реальные права на данные.
+
+**Сравнение:** frozen baseline A0/A2 vs обучаемый adapter B1 vs при необходимости B2 adapter+LoRA vs компактная готовая модель C; отдельно audio-only, video-only, AV, shuffled-time, swapped-audio, отсутствующая модальность, negatives и held-out sources. Успех измеряется не cosine, а factual visual story, музыкальными переходами, omissions/hallucinations и **1x CPU live**.
+
+**Статус:** F10.01–F10.02 (исследование интерфейсов и проектирование) можно выполнять сейчас параллельно F7–F9. F10.03–F10.05 (обучение/сравнение) описаны как реальные исполнимые этапы, но **заблокированы до явного одобрения обучения**. Детали — [F10](Todo.md#f10--обучаемый-мультимодальный-мост-параллельный-rd-трек) и [план эксперимента](docs/experiments/bridge-training-pilot.md).
+
+Исполнять [Todo.md](Todo.md). [ADR-002](docs/adr/ADR-002-multimodal-bridge-evaluation.md) — формальная рамка выбора; она пока не разрешает запуск обучения.

@@ -14,7 +14,7 @@
 - **A1:** A0 + отдельный music exploration/publication gate, независимое подтверждение premise, исправленный L2→L3 accounting.
 - **A2:** A1 + temporal musical transitions и grounded visual action/entity memory.
 - **C (только после A1/A2):** возможные специализированные CPU perception модели как независимые источники evidence, с теми же тестами.
-- **B (не исполнять без новой ADR):** обучаемый EmbeddingGemma→Qwen bridge; сравнение допускается только после явного разрешения training, лицензий и CPU deploy проверки.
+- **B (F10, параллельный трек):** EmbeddingGemma 2→Qwen3-0.6B обучаемый bridge. Capability audit и дизайн выполнять сейчас; **фактическое обучение** только после явного разрешения, проверки лицензий и CPU deploy. См. [pilot](bridge-training-pilot.md).
 
 Для всех — одинаковые файлы, модельные ревизии, preprocessing, thresholds, windows, threads, Qwen settings. Разделять изменение policy и изменение perception.
 
@@ -48,4 +48,4 @@ Human review русских captions проводить по blind source/timeco
 
 Писать `benchmarks/reports/music_quality_v2/` и `benchmarks/reports/live_cpu_v2/`: `manifest.json` (git/model revisions, CPU, source IDs, windows, configs), `labels.jsonl`, `claims.jsonl`, `captions.jsonl`, `metrics.json`, `errors.md`, `report.md` с точными командами запуска. Не коммитить чужие приватные медиа или персональные диалоги.
 
-**Gate P0:** на independent labels нет опубликованных деталей с одной лишь слабой music premise; expressed/omitted claim IDs правдивы; ошибки и abstention измеримы. **Gate live:** sustained 1x подтверждён или явно `not met`. Дальнейшие архитектурные решения — по этим данным, а не по количеству чекбоксов.
+**Gate P0:** на independent labels нет опубликованных деталей с одной лишь слабой music premise; expressed/omitted claim IDs правдивы; ошибки и abstention измеримы. **Gate live:** sustained 1x подтверждён или явно `not met`. **Gate F10:** API+deployment smoke tests, owner approval до training, независимые source-separated data, held-out A/B и CPU live. Дальнейшие архитектурные решения — по этим данным, а не по количеству чекбоксов.

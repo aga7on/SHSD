@@ -1,10 +1,10 @@
 # Agents.md — правила coding-агента SHSD
 
-> **Версия 0.2 · 26.10.2026.** Перед правкой читать [Workspace.md](Workspace.md), [Todo.md](Todo.md), [протокол](docs/experiments/av-bridge-evaluation-protocol.md). Полный набор прежних v0.1 инструкций сохранён [в архиве](docs/archive/2026-10-26-pre-multimodal-review/Agents.md). Его инженерные инварианты действуют, если не противоречат явно описанному новому плану.
+> **Версия 0.3 · 26.10.2026.** Перед правкой читать [Workspace.md](Workspace.md), [Todo.md](Todo.md), [протокол](docs/experiments/av-bridge-evaluation-protocol.md). Полный набор прежних v0.1 инструкций сохранён [в архиве](docs/archive/2026-10-26-pre-multimodal-review/Agents.md). Его инженерные инварианты действуют, если не противоречат явно описанному новому плану.
 
 ## 1. Неприкосновенные ограничения
 
-1. **Никакого обучения или fine-tuning.** EmbeddingGemma 2, Qwen3-0.6B, GigaAM — замороженные веса. Не вводить projector/LoRA/training corpus без отдельной принятой ADR и явного решения пользователя. Малые независимые **оценочные** метки допустимы.
+1. **Два параллельных трека:** frozen production F7–F9 и trainable bridge R&D F10. Исследование архитектуры/интерфейсов F10.01–02 **обязательно и разрешено сейчас**. Фактическое обучение projector/LoRA, подготовка training corpus и изменение production — только после отдельной принятой ADR и явного решения пользователя. Малые независимые **оценочные** метки допустимы.
 2. **CPU-only, полностью offline в runtime.** Без обязательной CUDA, внешних LLM API и сетевой telemetry; Qwen3-0.6B остаётся narrator, EmbeddingGemma 2 — encoder. NCM — только архитектурное вдохновение.
 3. **Не подменять evidence сходством.** Cosine — ranking, не вероятность. `accepted` означает прохождение policy, не объективную истину. Claim должен иметь source intervals, model/preprocess version, decision и evidence refs.
 4. **Не утверждать музыку на основании альтернативного кандидата.** `music_possible` разрешает внутренний L2 probe; `music_confirmed` и детальный evidence требуются для factual L3. Разговор на первом плане не исключает фоновую музыку.
@@ -36,7 +36,7 @@
 ## 4. Формат отчёта и Definition of Done
 
 ```text
-Task ID: F7.xx / F8.xx / F9.xx
+Task ID: F7.xx / F8.xx / F9.xx / F10.xx
 Status: completed | partial | blocked
 Commit / files: ...
 Change / contract: ...
@@ -47,4 +47,11 @@ Live: hardware, model revisions, pre-stop C/E/R, lag, RTF, drops, RSS
 Known limitations / next task: ...
 ```
 
-Checkbox в Todo закрывать **только** после выполнения указанного DoD. Если задача требует отступления от training-free, CPU-only или публичных схем, сначала ADR и запрос согласования, а не скрытая замена.
+## 5. Отдельный порядок для F10
+
+- Начать **параллельно** с P0, не дожидаясь F9: прочитать [bridge pilot protocol](docs/experiments/bridge-training-pilot.md), проверить официальные model APIs и написать smoke tests для sequence features и Qwen embedding inputs без training.
+- В отчёте различать `hypothesis`, `upstream documented`, `smoke-test verified`, `trained/benchmarked`. Если GGUF/llama.cpp не поддерживает multimodal prefix, это blocker, а не задача, которую можно замолчать.
+- Ни один trained bridge не заменяет evidence/temporal tracking и не оправдывает выдуманные сюжетные детали. Аудио, видео и их время должны проверяться отдельными ablations.
+- Не запускать F10.03/04 и не создавать training data, пока владелец не разрешил обучение. Если разрешение получено, сохранить отдельную ADR, изолировать experimental branch, зафиксировать лицензии и train/val/test source split.
+
+Checkbox в Todo закрывать **только** после выполнения указанного DoD. CPU-only production и публичные схемы не менять скрыто.
