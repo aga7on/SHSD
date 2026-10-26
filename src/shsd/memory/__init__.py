@@ -1,6 +1,6 @@
 """Append-only timeline events and temporal L1 reduction."""
 
-from shsd.memory.graph import GroundedEventGraph, TemporalGraphEdge
+from shsd.memory.graph import GroundedEventGraph, TemporalGraphEdge, VisualSequenceEvidence
 from shsd.memory.models import TimelineClaim, TimelineEvent
 from shsd.memory.state import TemporalStateDelta, TemporalStateReducer, TemporalStateSnapshot
 from shsd.memory.store import EventStore, StaleRevisionError
@@ -22,6 +22,7 @@ __all__ = [
     "StaleCoverageRevisionError",
     "TemporalEventReducer",
     "TemporalGraphEdge",
+    "VisualSequenceEvidence",
     "TemporalStateDelta",
     "TemporalStateReducer",
     "TemporalStateSnapshot",

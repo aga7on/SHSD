@@ -138,7 +138,7 @@ def _observe_captions(
             first_seen.setdefault(_caption_key(caption), elapsed_s)
 
 
-def _latency_summary(values: list[int]) -> dict[str, int | float]:
+def _latency_summary(values: list[int | float]) -> dict[str, int | float]:
     if not values:
         return {"count": 0}
     ordered = sorted(values)
@@ -158,12 +158,26 @@ def _runtime_metrics_summary(metrics: dict[str, Any] | None) -> dict[str, Any] |
     prefetch = metrics.get("prefetch", {})
     embedding = metrics.get("embedding_worker", {})
     scheduler = metrics.get("semantic_scheduler", {})
+    scheduler_l2 = scheduler.get("l2", {})
+    scheduler_l3 = scheduler.get("l3", {})
+    scheduler_narration = scheduler.get("narration", {})
     l2 = scheduler.get("l2", {})
     resources = metrics.get("process_resources", {})
     return {
         "end_to_end_elapsed_s": metrics.get("end_to_end_elapsed"),
         "event_revision_count": metrics.get("event_revision_count"),
+        "stage_timings_ms": metrics.get("stage_timings_ms", {}),
+        "worker_stage_timings": metrics.get("worker_stage_timings", []),
         "peak_process_tree_rss_bytes": resources.get("peak_process_tree_rss_bytes"),
+        "process_resources": {
+            key: resources.get(key)
+            for key in (
+                "peak_process_tree_rss_bytes",
+                "peak_process_count",
+                "system_cpu_percent",
+                "sample_interval_ms",
+            )
+        },
         "media_ingest_packet_count": ingest.get("packets"),
         "media_ingest_drop_count": ingest.get("dropped_count"),
         "shared_prefetch_drop_count": prefetch.get("shared", {}).get("dropped_count"),
@@ -177,6 +191,32 @@ def _runtime_metrics_summary(metrics: dict[str, Any] | None) -> dict[str, Any] |
         "narration_backend_counts": metrics.get("narration_backend_counts"),
         "narration_fallback_count": metrics.get("narration_fallback_count"),
         "narration_latency_ms_samples": metrics.get("narration_latency_ms_samples", []),
+        "online_worker_summary": {
+            "L2": {
+                "completed": scheduler_l2.get("completed"),
+                "failed": scheduler_l2.get("failed"),
+                "dropped": scheduler_l2.get("dropped"),
+                "queue_latency_ms": _latency_summary(scheduler_l2.get("latency_ms_samples", [])),
+                "semantic_refinement": scheduler_l2.get("semantic_refinement"),
+            },
+            "L3": {
+                "completed": scheduler_l3.get("completed"),
+                "failed": scheduler_l3.get("failed"),
+                "dropped": scheduler_l3.get("dropped"),
+                "queue_latency_ms": _latency_summary(scheduler_l3.get("latency_ms_samples", [])),
+            },
+            "Qwen_narration": {
+                "caption_count": scheduler_narration.get("caption_count"),
+                "backend_counts": scheduler_narration.get("backend_counts"),
+                "fallback_count": scheduler_narration.get("fallback_count"),
+                "latency_ms": _latency_summary(scheduler_narration.get("latency_ms_samples", [])),
+                "generation_ms": scheduler_narration.get("generation_ms"),
+                "tokens_per_second": scheduler_narration.get("tokens_per_second"),
+            },
+        },
+        "host_load": metrics.get("host_load"),
+        "media_ingest": ingest,
+        "prefetch": prefetch,
         "l2_semantic_refinement": l2.get("semantic_refinement"),
     }
 
@@ -503,6 +543,45 @@ def main() -> int:
             if item["wall_elapsed_since_publish_s"] is not None
             and item["wall_elapsed_since_publish_s"] <= publisher_elapsed_s
         ]
+        pre_stop_sample = pre_end_samples[-1] if pre_end_samples else None
+        captured_ms = (
+            int(pre_stop_sample.get("capture_C_ms", 0)) if isinstance(pre_stop_sample, dict) else 0
+        )
+        embedded_ms = (
+            int(pre_stop_sample.get("embedding_E_ms", 0))
+            if isinstance(pre_stop_sample, dict)
+            else 0
+        )
+        watermark_payload = (
+            pre_stop_watermark.get("watermarks", {}) if isinstance(pre_stop_watermark, dict) else {}
+        )
+        progress_payload = (
+            watermark_payload.get("watermarks", {}) if isinstance(watermark_payload, dict) else {}
+        )
+        live_progress_summary = {
+            "publisher_elapsed_s": round(publisher_elapsed_s, 3),
+            "captured_source_seconds": round(captured_ms / 1000, 3),
+            "embedded_source_seconds": round(embedded_ms / 1000, 3),
+            "capture_to_wall_ratio": (
+                round(captured_ms / (publisher_elapsed_s * 1000), 4)
+                if publisher_elapsed_s > 0
+                else None
+            ),
+            "embedding_to_wall_ratio": (
+                round(embedded_ms / (publisher_elapsed_s * 1000), 4)
+                if publisher_elapsed_s > 0
+                else None
+            ),
+            "pre_stop_backlog_ms": watermark_payload.get("backlog_ms", {})
+            if isinstance(watermark_payload, dict)
+            else {},
+            "pre_stop_cursors_ms": {
+                key: progress_payload.get(key)
+                for key in ("C", "E", "D", "R", "lag_ms", "modality_cursors")
+            }
+            if isinstance(progress_payload, dict)
+            else {},
+        }
         first_caption_sample = next(
             (s["publisher_elapsed_s"] for s in samples if s["caption_count"] > 0), None
         )
@@ -535,10 +614,21 @@ def main() -> int:
             "pre_stop_caption_count": pre_stop_caption_count,
             "pre_stop_refine_l3_result": pre_stop_refine_result,
             "pre_stop_watermark": pre_stop_watermark,
-            "pre_stop_last_sample": pre_end_samples[-1] if pre_end_samples else None,
+            "pre_stop_last_sample": pre_stop_sample,
+            "live_progress_summary": live_progress_summary,
             "first_caption_elapsed_since_publish_s": first_caption_sample,
             "first_caption_after_stop_s": (
                 round(first_caption_sample - stop_requested_elapsed_s, 3)
+                if first_caption_sample is not None
+                else None
+            ),
+            "first_caption_offset_from_stop_s_signed": (
+                round(first_caption_sample - stop_requested_elapsed_s, 3)
+                if first_caption_sample is not None
+                else None
+            ),
+            "first_caption_before_stop_s": (
+                round(max(0.0, stop_requested_elapsed_s - first_caption_sample), 3)
                 if first_caption_sample is not None
                 else None
             ),
@@ -557,6 +647,17 @@ def main() -> int:
                     for item in live_event_latencies
                     if item["level"] == level
                 ]
+                for level in ("L1", "L2", "L3")
+            },
+            "live_event_output_lag_summary_ms": {
+                level: _latency_summary(
+                    [
+                        int(item["approx_output_lag_ms"])
+                        for item in live_event_latencies
+                        if item["level"] == level
+                        and isinstance(item["approx_output_lag_ms"], (int, float))
+                    ]
+                )
                 for level in ("L1", "L2", "L3")
             },
             "caption_count": len(captions),

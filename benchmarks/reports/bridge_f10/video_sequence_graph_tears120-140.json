@@ -1,0 +1,1065 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T22:38:56.813327+00:00",
+  "status": "feature_provenance_only",
+  "network_disabled": true,
+  "host": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD"
+  },
+  "input": {
+    "video": "benchmarks\\fixtures\\real_poc\\tears_of_steel_120_140s.mp4",
+    "timeline": "benchmarks\\reports\\bridge_f10\\video_only_tears120-140.jsonl",
+    "stream_id": "f10-video-only-tears120-140",
+    "epoch": 0,
+    "timeline_interval_ms": [
+      0,
+      8000
+    ],
+    "source_pts_offset_ms": 120000,
+    "video_metadata": {
+      "total_num_frames": 480,
+      "fps": 24.0,
+      "duration": 20.0,
+      "frames_indices": [
+        0,
+        48,
+        96,
+        144
+      ]
+    },
+    "feature_batch": {
+      "mode": "VIDEO",
+      "source_id": "f10-video-only-tears120-140",
+      "epoch": 0,
+      "interval_ms": [
+        0,
+        8000
+      ],
+      "modality_present": {
+        "vision": true,
+        "audio": false
+      },
+      "frame_pts_ms": [
+        0,
+        2000,
+        4000,
+        6000
+      ],
+      "frame_token_shapes": [
+        [
+          254,
+          768
+        ],
+        [
+          254,
+          768
+        ],
+        [
+          254,
+          768
+        ],
+        [
+          254,
+          768
+        ]
+      ],
+      "audio_interval_ms": null,
+      "audio_token_shape": null,
+      "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+      "preprocess_versions": [
+        "embeddinggemma2-st-v4-audio-video-metadata",
+        "embeddinggemma2-st-v4-audio-video-metadata",
+        "embeddinggemma2-st-v4-audio-video-metadata",
+        "embeddinggemma2-st-v4-audio-video-metadata"
+      ]
+    },
+    "frame_encode_latency_ms": [
+      3825.467,
+      3838.317,
+      3806.047,
+      3831.85
+    ]
+  },
+  "event_graph": {
+    "record_type": "event_graph",
+    "schema_version": 1,
+    "graph_id": "2a8bbd0119d8f374d00d4a5b",
+    "stream_id": "f10-video-only-tears120-140",
+    "epoch": 0,
+    "ordering": "adjacent_event_start_time",
+    "nodes": [
+      {
+        "event_id": "6e26fecbc1c743a58444adc2bb254a9f",
+        "revision": 6,
+        "interval_ms": [
+          0,
+          16000
+        ],
+        "kind": "unknown",
+        "level": "L2",
+        "state": "committed",
+        "modality_mask": {
+          "audio": false,
+          "speech": false,
+          "video": true
+        },
+        "visual_evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140:0:120000",
+          "visual-frame:f10-video-only-tears120-140:0:122000",
+          "visual-frame:f10-video-only-tears120-140:0:124000",
+          "visual-frame:f10-video-only-tears120-140:0:126000"
+        ],
+        "claims": [
+          {
+            "claim_id": "claim-scene_style-unknown",
+            "label": "unknown",
+            "text_ru": null,
+            "decision": "uncertain",
+            "raw_cosine": 0.5797669887542725,
+            "margin": 0.0,
+            "evidence_refs": [
+              "image:0-2000",
+              "embedding:image:914f7f89142e:c7eaa355e2fd9cd95dee",
+              "axis:scene_style",
+              "image:2000-4000",
+              "embedding:image:914f7f89142e:75654165ec2ad1b8d561",
+              "image:6000-8000",
+              "embedding:image:914f7f89142e:591fe74bc7224ff82089",
+              "image:10000-12000",
+              "embedding:image:914f7f89142e:d5af2ac347a06bdb1482",
+              "image:14000-16000",
+              "embedding:image:914f7f89142e:f425f53aaa2811d5875f"
+            ],
+            "window_ids": [
+              "image:914f7f89142e:c7eaa355e2fd9cd95dee",
+              "image:914f7f89142e:75654165ec2ad1b8d561",
+              "image:914f7f89142e:591fe74bc7224ff82089",
+              "image:914f7f89142e:d5af2ac347a06bdb1482",
+              "image:914f7f89142e:f425f53aaa2811d5875f"
+            ],
+            "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+            "sample_count": 5,
+            "candidate_hypotheses": [
+              {
+                "candidate_id": "built_environment",
+                "raw_cosine": 0.5797669887542725,
+                "decision": "uncertain"
+              },
+              {
+                "candidate_id": "natural_scene",
+                "raw_cosine": 0.5681269526481628,
+                "decision": "uncertain"
+              }
+            ],
+            "premise_state": null,
+            "premise_claim_id": null,
+            "premise_evidence_refs": [],
+            "decision_state": "hypothesis",
+            "confidence_kind": "cosine_similarity",
+            "confidence_is_probability": false
+          }
+        ]
+      },
+      {
+        "event_id": "4abb4c83e7cf41da878c21bbc30e7f0e",
+        "revision": 7,
+        "interval_ms": [
+          0,
+          20000
+        ],
+        "kind": "unknown",
+        "level": "L2",
+        "state": "committed",
+        "modality_mask": {
+          "audio": false,
+          "speech": false,
+          "video": true
+        },
+        "visual_evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140:0:120000",
+          "visual-frame:f10-video-only-tears120-140:0:122000",
+          "visual-frame:f10-video-only-tears120-140:0:124000",
+          "visual-frame:f10-video-only-tears120-140:0:126000"
+        ],
+        "claims": [
+          {
+            "claim_id": "claim-screen_text_presence-screen_text_visible",
+            "label": "screen_text_visible",
+            "text_ru": "На изображении виден читаемый текст.",
+            "decision": "uncertain",
+            "raw_cosine": 0.607415775458018,
+            "margin": 0.0031160712242126465,
+            "evidence_refs": [
+              "image:0-2000",
+              "embedding:image:914f7f89142e:c7eaa355e2fd9cd95dee",
+              "axis:screen_text_presence",
+              "image:2000-4000",
+              "embedding:image:914f7f89142e:75654165ec2ad1b8d561",
+              "image:6000-8000",
+              "embedding:image:914f7f89142e:591fe74bc7224ff82089",
+              "image:10000-12000",
+              "embedding:image:914f7f89142e:d5af2ac347a06bdb1482",
+              "image:14000-16000",
+              "embedding:image:914f7f89142e:f425f53aaa2811d5875f",
+              "image:18000-20000",
+              "embedding:image:914f7f89142e:7c2b3ee255b35ce22b30"
+            ],
+            "window_ids": [
+              "image:914f7f89142e:c7eaa355e2fd9cd95dee",
+              "image:914f7f89142e:75654165ec2ad1b8d561",
+              "image:914f7f89142e:591fe74bc7224ff82089",
+              "image:914f7f89142e:d5af2ac347a06bdb1482",
+              "image:914f7f89142e:f425f53aaa2811d5875f",
+              "image:914f7f89142e:7c2b3ee255b35ce22b30"
+            ],
+            "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+            "sample_count": 6,
+            "candidate_hypotheses": [
+              {
+                "candidate_id": "screen_text_visible",
+                "raw_cosine": 0.607415775458018,
+                "decision": "uncertain"
+              },
+              {
+                "candidate_id": "screen_text_absent",
+                "raw_cosine": 0.5987797677516937,
+                "decision": "uncertain"
+              }
+            ],
+            "premise_state": null,
+            "premise_claim_id": null,
+            "premise_evidence_refs": [],
+            "decision_state": "hypothesis",
+            "confidence_kind": "cosine_similarity",
+            "confidence_is_probability": false
+          }
+        ]
+      },
+      {
+        "event_id": "bd7fddfa39a046469e0ff713fe4501bb",
+        "revision": 7,
+        "interval_ms": [
+          0,
+          20000
+        ],
+        "kind": "unknown",
+        "level": "L2",
+        "state": "committed",
+        "modality_mask": {
+          "audio": false,
+          "speech": false,
+          "video": true
+        },
+        "visual_evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140:0:120000",
+          "visual-frame:f10-video-only-tears120-140:0:122000",
+          "visual-frame:f10-video-only-tears120-140:0:124000",
+          "visual-frame:f10-video-only-tears120-140:0:126000"
+        ],
+        "claims": [
+          {
+            "claim_id": "claim-person_presence-person_visible",
+            "label": "person_visible",
+            "text_ru": "На изображении виден человек.",
+            "decision": "uncertain",
+            "raw_cosine": 0.62477907538414,
+            "margin": 0.01472938060760498,
+            "evidence_refs": [
+              "image:0-2000",
+              "embedding:image:914f7f89142e:c7eaa355e2fd9cd95dee",
+              "axis:person_presence",
+              "image:2000-4000",
+              "embedding:image:914f7f89142e:75654165ec2ad1b8d561",
+              "image:6000-8000",
+              "embedding:image:914f7f89142e:591fe74bc7224ff82089",
+              "image:10000-12000",
+              "embedding:image:914f7f89142e:d5af2ac347a06bdb1482",
+              "image:14000-16000",
+              "embedding:image:914f7f89142e:f425f53aaa2811d5875f",
+              "image:18000-20000",
+              "embedding:image:914f7f89142e:7c2b3ee255b35ce22b30"
+            ],
+            "window_ids": [
+              "image:914f7f89142e:c7eaa355e2fd9cd95dee",
+              "image:914f7f89142e:75654165ec2ad1b8d561",
+              "image:914f7f89142e:591fe74bc7224ff82089",
+              "image:914f7f89142e:d5af2ac347a06bdb1482",
+              "image:914f7f89142e:f425f53aaa2811d5875f",
+              "image:914f7f89142e:7c2b3ee255b35ce22b30"
+            ],
+            "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+            "sample_count": 6,
+            "candidate_hypotheses": [
+              {
+                "candidate_id": "person_visible",
+                "raw_cosine": 0.62477907538414,
+                "decision": "uncertain"
+              },
+              {
+                "candidate_id": "person_not_visible",
+                "raw_cosine": 0.5980474650859833,
+                "decision": "uncertain"
+              }
+            ],
+            "premise_state": null,
+            "premise_claim_id": null,
+            "premise_evidence_refs": [],
+            "decision_state": "hypothesis",
+            "confidence_kind": "cosine_similarity",
+            "confidence_is_probability": false
+          }
+        ]
+      },
+      {
+        "event_id": "a1845d66166d40e190e3cbb81018276a",
+        "revision": 2,
+        "interval_ms": [
+          1000,
+          2000
+        ],
+        "kind": "scene_changed",
+        "level": "L2",
+        "state": "refined",
+        "modality_mask": {
+          "audio": false,
+          "speech": false,
+          "video": true
+        },
+        "visual_evidence_refs": [],
+        "claims": [
+          {
+            "claim_id": "claim-scene-cut-scene-cut:1000:2000",
+            "label": "scene_cut",
+            "text_ru": "Обнаружено заметное изменение изображения.",
+            "decision": "accepted",
+            "raw_cosine": null,
+            "margin": null,
+            "evidence_refs": [
+              "video:1000-2000",
+              "method:video-frame-diff-v3"
+            ],
+            "window_ids": [
+              "scene-cut:1000:2000"
+            ],
+            "model_revision": "video-frame-diff-v3",
+            "sample_count": 1,
+            "candidate_hypotheses": [],
+            "premise_state": null,
+            "premise_claim_id": null,
+            "premise_evidence_refs": [],
+            "decision_state": "accepted_by_policy",
+            "confidence_kind": "unavailable",
+            "confidence_is_probability": false
+          }
+        ]
+      },
+      {
+        "event_id": "dd61401f04c9407c8f6ed1b1ab732516",
+        "revision": 2,
+        "interval_ms": [
+          2000,
+          3000
+        ],
+        "kind": "scene_changed",
+        "level": "L2",
+        "state": "refined",
+        "modality_mask": {
+          "audio": false,
+          "speech": false,
+          "video": true
+        },
+        "visual_evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140:0:122000"
+        ],
+        "claims": [
+          {
+            "claim_id": "claim-scene-cut-scene-cut:2000:3000",
+            "label": "scene_cut",
+            "text_ru": "Обнаружено заметное изменение изображения.",
+            "decision": "accepted",
+            "raw_cosine": null,
+            "margin": null,
+            "evidence_refs": [
+              "video:2000-3000",
+              "method:video-frame-diff-v3"
+            ],
+            "window_ids": [
+              "scene-cut:2000:3000"
+            ],
+            "model_revision": "video-frame-diff-v3",
+            "sample_count": 1,
+            "candidate_hypotheses": [],
+            "premise_state": null,
+            "premise_claim_id": null,
+            "premise_evidence_refs": [],
+            "decision_state": "accepted_by_policy",
+            "confidence_kind": "unavailable",
+            "confidence_is_probability": false
+          }
+        ]
+      },
+      {
+        "event_id": "5e9b885fabd841838974db784e87b80c",
+        "revision": 6,
+        "interval_ms": [
+          2000,
+          20000
+        ],
+        "kind": "unknown",
+        "level": "L2",
+        "state": "committed",
+        "modality_mask": {
+          "audio": false,
+          "speech": false,
+          "video": true
+        },
+        "visual_evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140:0:122000",
+          "visual-frame:f10-video-only-tears120-140:0:124000",
+          "visual-frame:f10-video-only-tears120-140:0:126000"
+        ],
+        "claims": [
+          {
+            "claim_id": "claim-scene_setting-indoor_setting",
+            "label": "indoor_setting",
+            "text_ru": "На изображении показано помещение.",
+            "decision": "uncertain",
+            "raw_cosine": 0.6499785900115966,
+            "margin": 0.0028290748596191406,
+            "evidence_refs": [
+              "image:2000-4000",
+              "embedding:image:914f7f89142e:75654165ec2ad1b8d561",
+              "axis:scene_setting",
+              "image:6000-8000",
+              "embedding:image:914f7f89142e:591fe74bc7224ff82089",
+              "image:10000-12000",
+              "embedding:image:914f7f89142e:d5af2ac347a06bdb1482",
+              "image:14000-16000",
+              "embedding:image:914f7f89142e:f425f53aaa2811d5875f",
+              "image:18000-20000",
+              "embedding:image:914f7f89142e:7c2b3ee255b35ce22b30"
+            ],
+            "window_ids": [
+              "image:914f7f89142e:75654165ec2ad1b8d561",
+              "image:914f7f89142e:591fe74bc7224ff82089",
+              "image:914f7f89142e:d5af2ac347a06bdb1482",
+              "image:914f7f89142e:f425f53aaa2811d5875f",
+              "image:914f7f89142e:7c2b3ee255b35ce22b30"
+            ],
+            "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+            "sample_count": 5,
+            "candidate_hypotheses": [
+              {
+                "candidate_id": "indoor_setting",
+                "raw_cosine": 0.6499785900115966,
+                "decision": "uncertain"
+              },
+              {
+                "candidate_id": "outdoor_setting",
+                "raw_cosine": 0.6411180019378662,
+                "decision": "uncertain"
+              }
+            ],
+            "premise_state": null,
+            "premise_claim_id": null,
+            "premise_evidence_refs": [],
+            "decision_state": "hypothesis",
+            "confidence_kind": "cosine_similarity",
+            "confidence_is_probability": false
+          }
+        ]
+      },
+      {
+        "event_id": "a9f9c9008b954687a932f583a623d8e4",
+        "revision": 2,
+        "interval_ms": [
+          3000,
+          4000
+        ],
+        "kind": "scene_changed",
+        "level": "L2",
+        "state": "refined",
+        "modality_mask": {
+          "audio": false,
+          "speech": false,
+          "video": true
+        },
+        "visual_evidence_refs": [],
+        "claims": [
+          {
+            "claim_id": "claim-scene-cut-scene-cut:3000:4000",
+            "label": "scene_cut",
+            "text_ru": "Обнаружено заметное изменение изображения.",
+            "decision": "accepted",
+            "raw_cosine": null,
+            "margin": null,
+            "evidence_refs": [
+              "video:3000-4000",
+              "method:video-frame-diff-v3"
+            ],
+            "window_ids": [
+              "scene-cut:3000:4000"
+            ],
+            "model_revision": "video-frame-diff-v3",
+            "sample_count": 1,
+            "candidate_hypotheses": [],
+            "premise_state": null,
+            "premise_claim_id": null,
+            "premise_evidence_refs": [],
+            "decision_state": "accepted_by_policy",
+            "confidence_kind": "unavailable",
+            "confidence_is_probability": false
+          }
+        ]
+      },
+      {
+        "event_id": "cb7dab0edc1245e5a7240d5270f566be",
+        "revision": 2,
+        "interval_ms": [
+          4000,
+          5000
+        ],
+        "kind": "scene_changed",
+        "level": "L2",
+        "state": "refined",
+        "modality_mask": {
+          "audio": false,
+          "speech": false,
+          "video": true
+        },
+        "visual_evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140:0:124000"
+        ],
+        "claims": [
+          {
+            "claim_id": "claim-scene-cut-scene-cut:4000:5000",
+            "label": "scene_cut",
+            "text_ru": "Обнаружено заметное изменение изображения.",
+            "decision": "accepted",
+            "raw_cosine": null,
+            "margin": null,
+            "evidence_refs": [
+              "video:4000-5000",
+              "method:video-frame-diff-v3"
+            ],
+            "window_ids": [
+              "scene-cut:4000:5000"
+            ],
+            "model_revision": "video-frame-diff-v3",
+            "sample_count": 1,
+            "candidate_hypotheses": [],
+            "premise_state": null,
+            "premise_claim_id": null,
+            "premise_evidence_refs": [],
+            "decision_state": "accepted_by_policy",
+            "confidence_kind": "unavailable",
+            "confidence_is_probability": false
+          }
+        ]
+      },
+      {
+        "event_id": "af2973f78c7444bb929b1d7971924dbf",
+        "revision": 2,
+        "interval_ms": [
+          5000,
+          6000
+        ],
+        "kind": "scene_changed",
+        "level": "L2",
+        "state": "refined",
+        "modality_mask": {
+          "audio": false,
+          "speech": false,
+          "video": true
+        },
+        "visual_evidence_refs": [],
+        "claims": [
+          {
+            "claim_id": "claim-scene-cut-scene-cut:5000:6000",
+            "label": "scene_cut",
+            "text_ru": "Обнаружено заметное изменение изображения.",
+            "decision": "accepted",
+            "raw_cosine": null,
+            "margin": null,
+            "evidence_refs": [
+              "video:5000-6000",
+              "method:video-frame-diff-v3"
+            ],
+            "window_ids": [
+              "scene-cut:5000:6000"
+            ],
+            "model_revision": "video-frame-diff-v3",
+            "sample_count": 1,
+            "candidate_hypotheses": [],
+            "premise_state": null,
+            "premise_claim_id": null,
+            "premise_evidence_refs": [],
+            "decision_state": "accepted_by_policy",
+            "confidence_kind": "unavailable",
+            "confidence_is_probability": false
+          }
+        ]
+      },
+      {
+        "event_id": "cdd037c488644ebb92da9f596dae42a9",
+        "revision": 2,
+        "interval_ms": [
+          6000,
+          7000
+        ],
+        "kind": "scene_changed",
+        "level": "L2",
+        "state": "refined",
+        "modality_mask": {
+          "audio": false,
+          "speech": false,
+          "video": true
+        },
+        "visual_evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140:0:126000"
+        ],
+        "claims": [
+          {
+            "claim_id": "claim-scene-cut-scene-cut:6000:7000",
+            "label": "scene_cut",
+            "text_ru": "Обнаружено заметное изменение изображения.",
+            "decision": "accepted",
+            "raw_cosine": null,
+            "margin": null,
+            "evidence_refs": [
+              "video:6000-7000",
+              "method:video-frame-diff-v3"
+            ],
+            "window_ids": [
+              "scene-cut:6000:7000"
+            ],
+            "model_revision": "video-frame-diff-v3",
+            "sample_count": 1,
+            "candidate_hypotheses": [],
+            "premise_state": null,
+            "premise_claim_id": null,
+            "premise_evidence_refs": [],
+            "decision_state": "accepted_by_policy",
+            "confidence_kind": "unavailable",
+            "confidence_is_probability": false
+          }
+        ]
+      },
+      {
+        "event_id": "0b0753ee78c94217bcfb491e3ada217d",
+        "revision": 2,
+        "interval_ms": [
+          7000,
+          8000
+        ],
+        "kind": "scene_changed",
+        "level": "L2",
+        "state": "refined",
+        "modality_mask": {
+          "audio": false,
+          "speech": false,
+          "video": true
+        },
+        "visual_evidence_refs": [],
+        "claims": [
+          {
+            "claim_id": "claim-scene-cut-scene-cut:7000:8000",
+            "label": "scene_cut",
+            "text_ru": "Обнаружено заметное изменение изображения.",
+            "decision": "accepted",
+            "raw_cosine": null,
+            "margin": null,
+            "evidence_refs": [
+              "video:7000-8000",
+              "method:video-frame-diff-v3"
+            ],
+            "window_ids": [
+              "scene-cut:7000:8000"
+            ],
+            "model_revision": "video-frame-diff-v3",
+            "sample_count": 1,
+            "candidate_hypotheses": [],
+            "premise_state": null,
+            "premise_claim_id": null,
+            "premise_evidence_refs": [],
+            "decision_state": "accepted_by_policy",
+            "confidence_kind": "unavailable",
+            "confidence_is_probability": false
+          }
+        ]
+      },
+      {
+        "event_id": "e356863e60a042e4b30ef208535a1d59",
+        "revision": 2,
+        "interval_ms": [
+          14000,
+          15000
+        ],
+        "kind": "scene_changed",
+        "level": "L2",
+        "state": "refined",
+        "modality_mask": {
+          "audio": false,
+          "speech": false,
+          "video": true
+        },
+        "visual_evidence_refs": [],
+        "claims": [
+          {
+            "claim_id": "claim-scene-cut-scene-cut:14000:15000",
+            "label": "scene_cut",
+            "text_ru": "Обнаружено заметное изменение изображения.",
+            "decision": "accepted",
+            "raw_cosine": null,
+            "margin": null,
+            "evidence_refs": [
+              "video:14000-15000",
+              "method:video-frame-diff-v3"
+            ],
+            "window_ids": [
+              "scene-cut:14000:15000"
+            ],
+            "model_revision": "video-frame-diff-v3",
+            "sample_count": 1,
+            "candidate_hypotheses": [],
+            "premise_state": null,
+            "premise_claim_id": null,
+            "premise_evidence_refs": [],
+            "decision_state": "accepted_by_policy",
+            "confidence_kind": "unavailable",
+            "confidence_is_probability": false
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "source": {
+          "event_id": "6e26fecbc1c743a58444adc2bb254a9f",
+          "revision": 6
+        },
+        "target": {
+          "event_id": "4abb4c83e7cf41da878c21bbc30e7f0e",
+          "revision": 7
+        },
+        "relation": "starts_before",
+        "intervals_overlap": true,
+        "evidence_refs": [
+          "image:0-2000",
+          "embedding:image:914f7f89142e:c7eaa355e2fd9cd95dee",
+          "axis:scene_style",
+          "image:2000-4000",
+          "embedding:image:914f7f89142e:75654165ec2ad1b8d561",
+          "image:6000-8000",
+          "embedding:image:914f7f89142e:591fe74bc7224ff82089",
+          "image:10000-12000",
+          "embedding:image:914f7f89142e:d5af2ac347a06bdb1482",
+          "image:14000-16000",
+          "embedding:image:914f7f89142e:f425f53aaa2811d5875f",
+          "axis:screen_text_presence",
+          "image:18000-20000",
+          "embedding:image:914f7f89142e:7c2b3ee255b35ce22b30"
+        ],
+        "causality_claimed": false
+      },
+      {
+        "source": {
+          "event_id": "4abb4c83e7cf41da878c21bbc30e7f0e",
+          "revision": 7
+        },
+        "target": {
+          "event_id": "bd7fddfa39a046469e0ff713fe4501bb",
+          "revision": 7
+        },
+        "relation": "starts_before",
+        "intervals_overlap": true,
+        "evidence_refs": [
+          "image:0-2000",
+          "embedding:image:914f7f89142e:c7eaa355e2fd9cd95dee",
+          "axis:screen_text_presence",
+          "image:2000-4000",
+          "embedding:image:914f7f89142e:75654165ec2ad1b8d561",
+          "image:6000-8000",
+          "embedding:image:914f7f89142e:591fe74bc7224ff82089",
+          "image:10000-12000",
+          "embedding:image:914f7f89142e:d5af2ac347a06bdb1482",
+          "image:14000-16000",
+          "embedding:image:914f7f89142e:f425f53aaa2811d5875f",
+          "image:18000-20000",
+          "embedding:image:914f7f89142e:7c2b3ee255b35ce22b30",
+          "axis:person_presence"
+        ],
+        "causality_claimed": false
+      },
+      {
+        "source": {
+          "event_id": "bd7fddfa39a046469e0ff713fe4501bb",
+          "revision": 7
+        },
+        "target": {
+          "event_id": "a1845d66166d40e190e3cbb81018276a",
+          "revision": 2
+        },
+        "relation": "starts_before",
+        "intervals_overlap": true,
+        "evidence_refs": [
+          "image:0-2000",
+          "embedding:image:914f7f89142e:c7eaa355e2fd9cd95dee",
+          "axis:person_presence",
+          "image:2000-4000",
+          "embedding:image:914f7f89142e:75654165ec2ad1b8d561",
+          "image:6000-8000",
+          "embedding:image:914f7f89142e:591fe74bc7224ff82089",
+          "image:10000-12000",
+          "embedding:image:914f7f89142e:d5af2ac347a06bdb1482",
+          "image:14000-16000",
+          "embedding:image:914f7f89142e:f425f53aaa2811d5875f",
+          "image:18000-20000",
+          "embedding:image:914f7f89142e:7c2b3ee255b35ce22b30",
+          "video:1000-2000",
+          "method:video-frame-diff-v3"
+        ],
+        "causality_claimed": false
+      },
+      {
+        "source": {
+          "event_id": "a1845d66166d40e190e3cbb81018276a",
+          "revision": 2
+        },
+        "target": {
+          "event_id": "dd61401f04c9407c8f6ed1b1ab732516",
+          "revision": 2
+        },
+        "relation": "starts_before",
+        "intervals_overlap": false,
+        "evidence_refs": [
+          "video:1000-2000",
+          "method:video-frame-diff-v3",
+          "video:2000-3000"
+        ],
+        "causality_claimed": false
+      },
+      {
+        "source": {
+          "event_id": "dd61401f04c9407c8f6ed1b1ab732516",
+          "revision": 2
+        },
+        "target": {
+          "event_id": "5e9b885fabd841838974db784e87b80c",
+          "revision": 6
+        },
+        "relation": "starts_before",
+        "intervals_overlap": true,
+        "evidence_refs": [
+          "video:2000-3000",
+          "method:video-frame-diff-v3",
+          "image:2000-4000",
+          "embedding:image:914f7f89142e:75654165ec2ad1b8d561",
+          "axis:scene_setting",
+          "image:6000-8000",
+          "embedding:image:914f7f89142e:591fe74bc7224ff82089",
+          "image:10000-12000",
+          "embedding:image:914f7f89142e:d5af2ac347a06bdb1482",
+          "image:14000-16000",
+          "embedding:image:914f7f89142e:f425f53aaa2811d5875f",
+          "image:18000-20000",
+          "embedding:image:914f7f89142e:7c2b3ee255b35ce22b30"
+        ],
+        "causality_claimed": false
+      },
+      {
+        "source": {
+          "event_id": "5e9b885fabd841838974db784e87b80c",
+          "revision": 6
+        },
+        "target": {
+          "event_id": "a9f9c9008b954687a932f583a623d8e4",
+          "revision": 2
+        },
+        "relation": "starts_before",
+        "intervals_overlap": true,
+        "evidence_refs": [
+          "image:2000-4000",
+          "embedding:image:914f7f89142e:75654165ec2ad1b8d561",
+          "axis:scene_setting",
+          "image:6000-8000",
+          "embedding:image:914f7f89142e:591fe74bc7224ff82089",
+          "image:10000-12000",
+          "embedding:image:914f7f89142e:d5af2ac347a06bdb1482",
+          "image:14000-16000",
+          "embedding:image:914f7f89142e:f425f53aaa2811d5875f",
+          "image:18000-20000",
+          "embedding:image:914f7f89142e:7c2b3ee255b35ce22b30",
+          "video:3000-4000",
+          "method:video-frame-diff-v3"
+        ],
+        "causality_claimed": false
+      },
+      {
+        "source": {
+          "event_id": "a9f9c9008b954687a932f583a623d8e4",
+          "revision": 2
+        },
+        "target": {
+          "event_id": "cb7dab0edc1245e5a7240d5270f566be",
+          "revision": 2
+        },
+        "relation": "starts_before",
+        "intervals_overlap": false,
+        "evidence_refs": [
+          "video:3000-4000",
+          "method:video-frame-diff-v3",
+          "video:4000-5000"
+        ],
+        "causality_claimed": false
+      },
+      {
+        "source": {
+          "event_id": "cb7dab0edc1245e5a7240d5270f566be",
+          "revision": 2
+        },
+        "target": {
+          "event_id": "af2973f78c7444bb929b1d7971924dbf",
+          "revision": 2
+        },
+        "relation": "starts_before",
+        "intervals_overlap": false,
+        "evidence_refs": [
+          "video:4000-5000",
+          "method:video-frame-diff-v3",
+          "video:5000-6000"
+        ],
+        "causality_claimed": false
+      },
+      {
+        "source": {
+          "event_id": "af2973f78c7444bb929b1d7971924dbf",
+          "revision": 2
+        },
+        "target": {
+          "event_id": "cdd037c488644ebb92da9f596dae42a9",
+          "revision": 2
+        },
+        "relation": "starts_before",
+        "intervals_overlap": false,
+        "evidence_refs": [
+          "video:5000-6000",
+          "method:video-frame-diff-v3",
+          "video:6000-7000"
+        ],
+        "causality_claimed": false
+      },
+      {
+        "source": {
+          "event_id": "cdd037c488644ebb92da9f596dae42a9",
+          "revision": 2
+        },
+        "target": {
+          "event_id": "0b0753ee78c94217bcfb491e3ada217d",
+          "revision": 2
+        },
+        "relation": "starts_before",
+        "intervals_overlap": false,
+        "evidence_refs": [
+          "video:6000-7000",
+          "method:video-frame-diff-v3",
+          "video:7000-8000"
+        ],
+        "causality_claimed": false
+      },
+      {
+        "source": {
+          "event_id": "0b0753ee78c94217bcfb491e3ada217d",
+          "revision": 2
+        },
+        "target": {
+          "event_id": "e356863e60a042e4b30ef208535a1d59",
+          "revision": 2
+        },
+        "relation": "starts_before",
+        "intervals_overlap": false,
+        "evidence_refs": [
+          "video:7000-8000",
+          "method:video-frame-diff-v3",
+          "video:14000-15000"
+        ],
+        "causality_claimed": false
+      }
+    ],
+    "visual_sequences": [
+      {
+        "sequence_id": "c231863c015057d20bf1a420",
+        "source_id": "f10-video-only-tears120-140",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          0,
+          8000
+        ],
+        "source_interval_ms": [
+          120000,
+          128000
+        ],
+        "source_pts_offset_ms": 120000,
+        "evidence_status": "encoder_features_only",
+        "semantic_action_inferred": false,
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "frames": [
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140:0:120000",
+            "timeline_pts_ms": 0,
+            "source_pts_ms": 120000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140:0:122000",
+            "timeline_pts_ms": 2000,
+            "source_pts_ms": 122000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140:0:124000",
+            "timeline_pts_ms": 4000,
+            "source_pts_ms": 124000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140:0:126000",
+            "timeline_pts_ms": 6000,
+            "source_pts_ms": 126000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          }
+        ]
+      }
+    ],
+    "limitations": [
+      "This graph contains emitted timeline claims only; it does not infer visual entities or actions.",
+      "Visual token features preserve frame PTS but are not semantic action labels.",
+      "Cosine similarity is not probability or human verification.",
+      "Start-time ordering and interval overlap do not imply causality."
+    ],
+    "narration_request_count": 3
+  },
+  "limitations": [
+    "Per-frame token features and source PTS are attached to overlapping event nodes.",
+    "This probe does not infer or verify entity, action, or object labels.",
+    "Qwen narration requests still contain accepted timeline claims only; visual token features are not passed to Qwen.",
+    "Source PTS offset maps this excerpt to the original film timeline; it is supplied by fixture metadata."
+  ]
+}

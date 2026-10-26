@@ -1,0 +1,92 @@
+[
+  {
+    "backend": "qwen",
+    "caption_ru": "Обнаружено заметное изменение изображения.",
+    "claim_coverage": [
+      {
+        "claim_id": "42071b0f9faf46a192b7ea485a20620d:claim-scene-cut-scene-cut:4402:5402",
+        "lexical_coverage": 1.0,
+        "status": "expressed"
+      }
+    ],
+    "claim_coverage_method": "conservative_token_overlap_v2",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "42071b0f9faf46a192b7ea485a20620d",
+        "revision": 2
+      }
+    ],
+    "expressed_claim_ids": [
+      "42071b0f9faf46a192b7ea485a20620d:claim-scene-cut-scene-cut:4402:5402"
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "input_claim_ids": [
+      "42071b0f9faf46a192b7ea485a20620d:claim-scene-cut-scene-cut:4402:5402"
+    ],
+    "latency_ms": 2011.884,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "omitted_claim_ids": [],
+    "prompt_version": "narrator-ru-v2",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "generated",
+    "time_range": {
+      "end_ms": 5402,
+      "start_ms": 4402
+    },
+    "tokens_per_second": 60.5,
+    "uncertain_claim_ids": [],
+    "used_claim_ids": [
+      "42071b0f9faf46a192b7ea485a20620d:claim-scene-cut-scene-cut:4402:5402"
+    ],
+    "warnings": []
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Обнаружено заметное изменение изображения.",
+    "claim_coverage": [
+      {
+        "claim_id": "6d8d9ed525b54d77a83c797961f6bc92:claim-scene-cut-scene-cut:20402:25402",
+        "lexical_coverage": 1.0,
+        "status": "expressed"
+      }
+    ],
+    "claim_coverage_method": "conservative_token_overlap_v2",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "6d8d9ed525b54d77a83c797961f6bc92",
+        "revision": 2
+      }
+    ],
+    "expressed_claim_ids": [
+      "6d8d9ed525b54d77a83c797961f6bc92:claim-scene-cut-scene-cut:20402:25402"
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "input_claim_ids": [
+      "6d8d9ed525b54d77a83c797961f6bc92:claim-scene-cut-scene-cut:20402:25402"
+    ],
+    "latency_ms": 2032.279,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "omitted_claim_ids": [],
+    "prompt_version": "narrator-ru-v2",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "generated",
+    "time_range": {
+      "end_ms": 25402,
+      "start_ms": 20402
+    },
+    "tokens_per_second": 59.0,
+    "uncertain_claim_ids": [],
+    "used_claim_ids": [
+      "6d8d9ed525b54d77a83c797961f6bc92:claim-scene-cut-scene-cut:20402:25402"
+    ],
+    "warnings": []
+  }
+]

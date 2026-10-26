@@ -6,7 +6,7 @@
 
 B1 is the first trainable **Multimodal AV Bridge**: frozen EmbeddingGemma 2 plus frozen Qwen3-0.6B, with a small trainable visual/audio projector and temporal resampler. IMAGE, VIDEO, AUDIO, and synchronized AV are co-primary modes. Targets are structured grounded events/claims plus chronological Russian narration. A music-only score cannot pass this gate.
 
-The current B0 graph improves claim provenance and accepted-claim narration, but it does not yet represent tracked visual entities/actions or music-layer transitions as typed nodes. The feature batch and dataset schema are in place as interfaces, but neither is connected to the production `analyze` path or backed by an independently labeled corpus.
+The current B0 graph improves claim provenance and accepted-claim narration, but it does not yet represent tracked visual entities/actions or music-layer transitions as typed nodes. An optional feature-batch input now carries per-frame PTS and provenance into EventGraph; it does not infer actions, is not automatically populated by the default `analyze` route, and is not backed by an independently labeled corpus.
 
 ## Technical gate
 
@@ -15,9 +15,9 @@ The current B0 graph improves claim provenance and accepted-claim narration, but
 | EmbeddingGemma IMAGE/VIDEO/AUDIO/AV pooled and token outputs | **PASS: API shape only** | [`production_sequence_smoke.json`](production_sequence_smoke.json), pinned revision `914f7f89142e33e77833254d9c9b90c3cef7303b`; token widths 768, sampled frame PTS preserved. One 5s VIDEO call took 4.18s on CPU; this is not a stream result. |
 | Qwen external conditioning | **PASS: transport only** | [`llama_cpp_prefix_smoke.json`](llama_cpp_prefix_smoke.json) verifies a synthetic `[4,1024]` external prefix through the pinned CPU llama.cpp C API. The values are untrained and prove no useful conditioning. |
 | Frozen Qwen gradient path for projector training | **PASS: API smoke only** | [`capability_matrix.md`](capability_matrix.md) records a synthetic Transformers `inputs_embeds` forward/gradient/generate probe. This is not learned bridge quality. |
-| Production sequence-to-bridge data path | **PARTIAL** | `AVFeatureBatch` preserves one IMAGE sequence per exact frame PTS and a separate AUDIO interval sequence; 23 unit tests cover its masks, ordering, dimensions, provenance and modality requirements. No integration smoke or end-to-end Qwen call has been run for this adapter. Default `analyze` still uses pooled records. |
+| Production sequence-to-bridge data path | **PARTIAL** | `AVFeatureBatch` preserves one IMAGE sequence per exact frame PTS and a separate AUDIO interval sequence. Targeted dataset/feature/EventGraph tests: 28 passed. A real VIDEO-only probe attached four `[254,768]` frame sequences to B0 nodes at original-film PTS 120000, 122000, 124000, 126000ms; see [`video_sequence_graph_tears120-140.json`](video_sequence_graph_tears120-140.json). The default `analyze` route still uses pooled records, and Qwen does not consume these untrained visual sequences. No visual action was inferred. |
 | Cross-manifest source leakage | **PASS: validator behavior only** | `validate_manifests()` and CLI `--train/--val/--test` reject split mismatch, duplicate sample IDs, and cross-split source group/ID/SHA collisions. No real corpus exists to validate. |
-| CPU prefill/decode/RSS under sustained stream load | **NOT MET** | The existing 85-second live Qwen run emitted zero captions before stop; L2/L3 cursors were 93ms and the first caption arrived 4.154s after stop. The live path does not yet provide online L2/L3 latency. No sustained B1 1x test exists. |
+| CPU prefill/decode/RSS under sustained stream load | **NOT MET** | Current-source cold-cache 60s Qwen RTSP run: capture 41.818s (0.697 capture/wall), embedding 35.099s (0.585), 548 shared-prefetch drops, 2 live Qwen captions, median observed output lag 20.758s, and 3.432GB peak process-tree RSS. L2/L3 cursors reached 25.099s before stop. Full stage/worker report: [`f10_02_followup_20261027.md`](f10_02_followup_20261027.md). This does not meet 1x. The 26 October 85s run remains a historical baseline. |
 | Model/runtime licenses | **PARTIAL** | Pinned model and llama.cpp licenses are recorded in `capability_matrix.md`. No training data source has been selected, rights-reviewed, or approved for the required uses. |
 
 ## Data, baseline, and evaluation
@@ -39,7 +39,7 @@ The current B0 graph improves claim provenance and accepted-claim narration, but
 
 1. Secure rights-cleared, source-separated training and validation groups plus a held-out evaluation set; record provenance and permitted use in the manifest.
 2. Obtain blind human labels for all four modes, including visual entity continuity/actions/order and AV alignment; freeze per-mode metrics and non-regression criteria before evaluating held-out.
-3. Connect the PTS-preserving feature adapter to the B0 graph/evidence path; obtain independent confirmation for the provisional source-time visual action, add supported entity/action/object and audio-transition events, then freeze same-source A0/B0 outputs. Current local evidence shows these conditions are not yet met.
+3. Extend the optional PTS-preserving feature-to-EventGraph probe into model-supported visual grounding in B0; obtain independent human confirmation for the provisional source-time visual action; add supported entity/action/object and audio-transition events; then freeze same-source A0/B0 outputs. The current graph probe is feature provenance only and does not meet this requirement.
 4. Record a bounded GPU-hours/VRAM/disk budget and validation/stop schedule in this file before training.
 5. Run shape, masking, target-only loss, frozen-weight, and small train-only overfit checks, then make a measured CPU prefix/live plan. Training may start only after these entries are evidence-backed and the decision is explicitly changed to GO.
 

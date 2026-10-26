@@ -364,11 +364,19 @@ def _narration_graph(
     *,
     stream_id: str,
     epoch: int,
+    visual_feature_batches: tuple[Any, ...] = (),
+    source_pts_offset_ms: int = 0,
 ) -> Any:
-    """Build the typed event graph used by the training-free B0 narrator."""
+    """Build the B0 graph, optionally attaching PTS-preserving visual feature evidence."""
     from shsd.memory.graph import GroundedEventGraph
 
-    return GroundedEventGraph.from_events(events, stream_id=stream_id, epoch=epoch)
+    return GroundedEventGraph.from_events(
+        events,
+        stream_id=stream_id,
+        epoch=epoch,
+        visual_feature_batches=visual_feature_batches,
+        source_pts_offset_ms=source_pts_offset_ms,
+    )
 
 
 def _narration_batches(
@@ -1100,6 +1108,8 @@ def analyze_media(
     runtime_load_controller: RuntimeLoadController | None = None,
     load_source_id: str | None = None,
     embedding_provider_pool: EmbeddingProviderPool | None = None,
+    visual_feature_batches: tuple[Any, ...] = (),
+    source_pts_offset_ms: int = 0,
 ) -> dict[str, Any]:
     """Decode local media, run actual CPU embeddings, rank claims, and emit JSONL rows."""
     if window_ms < 250:
@@ -1224,9 +1234,7 @@ def analyze_media(
         matcher=matcher,
         policy=policy,
         context_padding_ms=window_ms,
-        detail_axes=[
-            item for item in all_axes_by_modality["audio"] if item[0].level == "L2"
-        ],
+        detail_axes=[item for item in all_axes_by_modality["audio"] if item[0].level == "L2"],
     )
     sampling_controller = AdaptiveSamplingController(
         profile=sampling_profile,
@@ -2176,7 +2184,13 @@ def analyze_media(
                 )
 
             def make_live_narration_requests(events: list[TimelineEvent]) -> list[Any]:
-                graph = _narration_graph(events, stream_id=stream_id, epoch=epoch)
+                graph = _narration_graph(
+                    events,
+                    stream_id=stream_id,
+                    epoch=epoch,
+                    visual_feature_batches=visual_feature_batches,
+                    source_pts_offset_ms=source_pts_offset_ms,
+                )
                 publish(graph.to_dict())
                 return graph.narration_requests()
 
@@ -2980,7 +2994,13 @@ def analyze_media(
                 narration_generation_rate_samples.append(float(tokens_per_second))
         if l3_allowed and live_level_report is None:
             l2_events = [event for event in latest_events.values() if event.level == "L2"]
-            graph = _narration_graph(l2_events, stream_id=stream_id, epoch=epoch)
+            graph = _narration_graph(
+                l2_events,
+                stream_id=stream_id,
+                epoch=epoch,
+                visual_feature_batches=visual_feature_batches,
+                source_pts_offset_ms=source_pts_offset_ms,
+            )
             publish(graph.to_dict())
             requests = graph.narration_requests()
             if not requests:
