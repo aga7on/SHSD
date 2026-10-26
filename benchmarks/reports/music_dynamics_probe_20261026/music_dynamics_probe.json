@@ -1,0 +1,507 @@
+{
+  "schema_version": 1,
+  "diagnostic_type": "label_free_music_detail_axis_probe",
+  "accuracy_claim": false,
+  "similarity_is_probability": false,
+  "production_music_gate_bypassed_for_probe": true,
+  "source": "X:\\AI\\SHSD\\benchmarks\\fixtures\\real_poc\\tears_of_steel_120_210s.mp4",
+  "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "hypothesis_profile": "music",
+  "hypothesis_profile_version": 1,
+  "window_ms": 5000,
+  "window_count": 18,
+  "minimum_similarity": 0.6,
+  "minimum_margin": 0.05,
+  "axes": {
+    "music_presence": {
+      "mutually_exclusive": true,
+      "candidates": {
+        "music_present": {
+          "text_en": "Music is audible in the audio.",
+          "text_ru": "В аудио слышна музыка."
+        },
+        "music_absent": {
+          "text_en": "No music is audible in the audio.",
+          "text_ru": "В аудио не слышно музыки."
+        }
+      }
+    },
+    "vocal_presence": {
+      "mutually_exclusive": true,
+      "candidates": {
+        "vocals_present": {
+          "text_en": "Singing or vocal sounds are audible in the music.",
+          "text_ru": "В музыке слышны вокал или голосовые звуки."
+        },
+        "vocals_absent": {
+          "text_en": "The music contains no audible singing or vocal sounds.",
+          "text_ru": "В музыке не слышно вокала или голосовых звуков."
+        }
+      }
+    },
+    "percussion_presence": {
+      "mutually_exclusive": true,
+      "candidates": {
+        "percussion_present": {
+          "text_en": "Percussive rhythmic sounds are audible in the music.",
+          "text_ru": "В музыке слышны ритмичные ударные звуки."
+        },
+        "percussion_absent": {
+          "text_en": "No clear percussive rhythmic sounds are audible in the music.",
+          "text_ru": "В музыке не слышно отчётливых ритмичных ударных звуков."
+        }
+      }
+    },
+    "bass_presence": {
+      "mutually_exclusive": true,
+      "candidates": {
+        "bass_present": {
+          "text_en": "A distinct low-frequency bass part is audible in the music.",
+          "text_ru": "В музыке слышна отчётливая низкочастотная басовая партия."
+        },
+        "bass_not_distinct": {
+          "text_en": "No distinct low-frequency bass part is audible in the music.",
+          "text_ru": "В музыке не слышно отчётливой низкочастотной басовой партии."
+        }
+      }
+    },
+    "energy": {
+      "mutually_exclusive": true,
+      "candidates": {
+        "high_energy": {
+          "text_en": "The music sounds energetic and intense.",
+          "text_ru": "Музыка звучит энергично и интенсивно."
+        },
+        "low_energy": {
+          "text_en": "The music sounds calm and low in energy.",
+          "text_ru": "Музыка звучит спокойно и сдержанно."
+        }
+      }
+    },
+    "tempo_feel": {
+      "mutually_exclusive": true,
+      "candidates": {
+        "fast_feel": {
+          "text_en": "The musical pulse feels fast.",
+          "text_ru": "Музыкальный пульс воспринимается быстрым."
+        },
+        "slow_feel": {
+          "text_en": "The musical pulse feels slow.",
+          "text_ru": "Музыкальный пульс воспринимается медленным."
+        }
+      }
+    },
+    "instrument_family": {
+      "mutually_exclusive": false,
+      "candidates": {
+        "electronic_timbre": {
+          "text_en": "The music has a prominent electronic or synthesized timbre.",
+          "text_ru": "В музыке заметен электронный или синтезированный тембр."
+        },
+        "acoustic_strings": {
+          "text_en": "The music has a prominent acoustic string timbre.",
+          "text_ru": "В музыке заметен тембр акустических струнных инструментов."
+        },
+        "percussion_timbre": {
+          "text_en": "The music has prominent acoustic or electronic percussion timbres.",
+          "text_ru": "В музыке заметны акустические или электронные ударные тембры."
+        }
+      }
+    }
+  },
+  "summary": {
+    "music_presence": {
+      "window_count": 18,
+      "mutually_exclusive": true,
+      "best_cosine_min_mean_max": [
+        0.67276,
+        0.73632,
+        0.774612
+      ],
+      "top_two_margin_min_mean_max": [
+        6.1e-05,
+        0.009565,
+        0.01792
+      ],
+      "decision_counts": {
+        "uncertain": 18
+      },
+      "top_candidate_counts": {
+        "music_absent": 10,
+        "music_present": 8
+      },
+      "accepted_candidate_counts": {
+        "music_absent": 0,
+        "music_present": 0
+      }
+    },
+    "vocal_presence": {
+      "window_count": 18,
+      "mutually_exclusive": true,
+      "best_cosine_min_mean_max": [
+        0.664993,
+        0.74232,
+        0.791722
+      ],
+      "top_two_margin_min_mean_max": [
+        0.003999,
+        0.037153,
+        0.061482
+      ],
+      "decision_counts": {
+        "uncertain": 14,
+        "accepted": 4
+      },
+      "top_candidate_counts": {
+        "vocals_absent": 12,
+        "vocals_present": 6
+      },
+      "accepted_candidate_counts": {
+        "vocals_absent": 4,
+        "vocals_present": 0
+      }
+    },
+    "percussion_presence": {
+      "window_count": 18,
+      "mutually_exclusive": true,
+      "best_cosine_min_mean_max": [
+        0.652297,
+        0.72577,
+        0.766503
+      ],
+      "top_two_margin_min_mean_max": [
+        0.002014,
+        0.012387,
+        0.02317
+      ],
+      "decision_counts": {
+        "uncertain": 18
+      },
+      "top_candidate_counts": {
+        "percussion_absent": 14,
+        "percussion_present": 4
+      },
+      "accepted_candidate_counts": {
+        "percussion_absent": 0,
+        "percussion_present": 0
+      }
+    },
+    "bass_presence": {
+      "window_count": 18,
+      "mutually_exclusive": true,
+      "best_cosine_min_mean_max": [
+        0.64295,
+        0.72469,
+        0.772344
+      ],
+      "top_two_margin_min_mean_max": [
+        0.000998,
+        0.007822,
+        0.017364
+      ],
+      "decision_counts": {
+        "uncertain": 18
+      },
+      "top_candidate_counts": {
+        "bass_not_distinct": 3,
+        "bass_present": 15
+      },
+      "accepted_candidate_counts": {
+        "bass_not_distinct": 0,
+        "bass_present": 0
+      }
+    },
+    "energy": {
+      "window_count": 18,
+      "mutually_exclusive": true,
+      "best_cosine_min_mean_max": [
+        0.64169,
+        0.749886,
+        0.807934
+      ],
+      "top_two_margin_min_mean_max": [
+        0.002598,
+        0.036385,
+        0.078268
+      ],
+      "decision_counts": {
+        "uncertain": 11,
+        "accepted": 7
+      },
+      "top_candidate_counts": {
+        "high_energy": 5,
+        "low_energy": 13
+      },
+      "accepted_candidate_counts": {
+        "high_energy": 1,
+        "low_energy": 6
+      }
+    },
+    "tempo_feel": {
+      "window_count": 18,
+      "mutually_exclusive": true,
+      "best_cosine_min_mean_max": [
+        0.629768,
+        0.742003,
+        0.797187
+      ],
+      "top_two_margin_min_mean_max": [
+        0.000355,
+        0.013117,
+        0.023101
+      ],
+      "decision_counts": {
+        "uncertain": 18
+      },
+      "top_candidate_counts": {
+        "fast_feel": 7,
+        "slow_feel": 11
+      },
+      "accepted_candidate_counts": {
+        "fast_feel": 0,
+        "slow_feel": 0
+      }
+    },
+    "instrument_family": {
+      "window_count": 18,
+      "mutually_exclusive": false,
+      "best_cosine_min_mean_max": [
+        0.622164,
+        0.716774,
+        0.779036
+      ],
+      "top_two_margin_min_mean_max": [
+        0.000137,
+        0.009976,
+        0.028629
+      ],
+      "decision_counts": {
+        "accepted": 14,
+        "uncertain": 4
+      },
+      "top_candidate_counts": {
+        "acoustic_strings": 11,
+        "electronic_timbre": 3,
+        "percussion_timbre": 4
+      },
+      "accepted_candidate_counts": {
+        "acoustic_strings": 14,
+        "electronic_timbre": 13,
+        "percussion_timbre": 13
+      }
+    }
+  },
+  "ranked_candidate_transitions": [
+    {
+      "axis_id": "music_presence",
+      "time_ms": 10000,
+      "from_candidate": "music_absent",
+      "to_candidate": "music_present"
+    },
+    {
+      "axis_id": "music_presence",
+      "time_ms": 15000,
+      "from_candidate": "music_present",
+      "to_candidate": "music_absent"
+    },
+    {
+      "axis_id": "music_presence",
+      "time_ms": 30000,
+      "from_candidate": "music_absent",
+      "to_candidate": "music_present"
+    },
+    {
+      "axis_id": "music_presence",
+      "time_ms": 40000,
+      "from_candidate": "music_present",
+      "to_candidate": "music_absent"
+    },
+    {
+      "axis_id": "music_presence",
+      "time_ms": 60000,
+      "from_candidate": "music_absent",
+      "to_candidate": "music_present"
+    },
+    {
+      "axis_id": "music_presence",
+      "time_ms": 65000,
+      "from_candidate": "music_present",
+      "to_candidate": "music_absent"
+    },
+    {
+      "axis_id": "music_presence",
+      "time_ms": 70000,
+      "from_candidate": "music_absent",
+      "to_candidate": "music_present"
+    },
+    {
+      "axis_id": "vocal_presence",
+      "time_ms": 10000,
+      "from_candidate": "vocals_absent",
+      "to_candidate": "vocals_present"
+    },
+    {
+      "axis_id": "vocal_presence",
+      "time_ms": 20000,
+      "from_candidate": "vocals_present",
+      "to_candidate": "vocals_absent"
+    },
+    {
+      "axis_id": "vocal_presence",
+      "time_ms": 70000,
+      "from_candidate": "vocals_absent",
+      "to_candidate": "vocals_present"
+    },
+    {
+      "axis_id": "percussion_presence",
+      "time_ms": 70000,
+      "from_candidate": "percussion_absent",
+      "to_candidate": "percussion_present"
+    },
+    {
+      "axis_id": "bass_presence",
+      "time_ms": 15000,
+      "from_candidate": "bass_present",
+      "to_candidate": "bass_not_distinct"
+    },
+    {
+      "axis_id": "bass_presence",
+      "time_ms": 25000,
+      "from_candidate": "bass_not_distinct",
+      "to_candidate": "bass_present"
+    },
+    {
+      "axis_id": "bass_presence",
+      "time_ms": 45000,
+      "from_candidate": "bass_present",
+      "to_candidate": "bass_not_distinct"
+    },
+    {
+      "axis_id": "bass_presence",
+      "time_ms": 50000,
+      "from_candidate": "bass_not_distinct",
+      "to_candidate": "bass_present"
+    },
+    {
+      "axis_id": "energy",
+      "time_ms": 25000,
+      "from_candidate": "low_energy",
+      "to_candidate": "high_energy"
+    },
+    {
+      "axis_id": "energy",
+      "time_ms": 30000,
+      "from_candidate": "high_energy",
+      "to_candidate": "low_energy"
+    },
+    {
+      "axis_id": "energy",
+      "time_ms": 35000,
+      "from_candidate": "low_energy",
+      "to_candidate": "high_energy"
+    },
+    {
+      "axis_id": "energy",
+      "time_ms": 40000,
+      "from_candidate": "high_energy",
+      "to_candidate": "low_energy"
+    },
+    {
+      "axis_id": "energy",
+      "time_ms": 70000,
+      "from_candidate": "low_energy",
+      "to_candidate": "high_energy"
+    },
+    {
+      "axis_id": "energy",
+      "time_ms": 80000,
+      "from_candidate": "high_energy",
+      "to_candidate": "low_energy"
+    },
+    {
+      "axis_id": "energy",
+      "time_ms": 85000,
+      "from_candidate": "low_energy",
+      "to_candidate": "high_energy"
+    },
+    {
+      "axis_id": "tempo_feel",
+      "time_ms": 10000,
+      "from_candidate": "fast_feel",
+      "to_candidate": "slow_feel"
+    },
+    {
+      "axis_id": "tempo_feel",
+      "time_ms": 25000,
+      "from_candidate": "slow_feel",
+      "to_candidate": "fast_feel"
+    },
+    {
+      "axis_id": "tempo_feel",
+      "time_ms": 30000,
+      "from_candidate": "fast_feel",
+      "to_candidate": "slow_feel"
+    },
+    {
+      "axis_id": "tempo_feel",
+      "time_ms": 70000,
+      "from_candidate": "slow_feel",
+      "to_candidate": "fast_feel"
+    },
+    {
+      "axis_id": "instrument_family",
+      "time_ms": 10000,
+      "from_candidate": "percussion_timbre",
+      "to_candidate": "acoustic_strings"
+    },
+    {
+      "axis_id": "instrument_family",
+      "time_ms": 25000,
+      "from_candidate": "acoustic_strings",
+      "to_candidate": "percussion_timbre"
+    },
+    {
+      "axis_id": "instrument_family",
+      "time_ms": 30000,
+      "from_candidate": "percussion_timbre",
+      "to_candidate": "acoustic_strings"
+    },
+    {
+      "axis_id": "instrument_family",
+      "time_ms": 35000,
+      "from_candidate": "acoustic_strings",
+      "to_candidate": "electronic_timbre"
+    },
+    {
+      "axis_id": "instrument_family",
+      "time_ms": 40000,
+      "from_candidate": "electronic_timbre",
+      "to_candidate": "acoustic_strings"
+    },
+    {
+      "axis_id": "instrument_family",
+      "time_ms": 60000,
+      "from_candidate": "acoustic_strings",
+      "to_candidate": "electronic_timbre"
+    },
+    {
+      "axis_id": "instrument_family",
+      "time_ms": 65000,
+      "from_candidate": "electronic_timbre",
+      "to_candidate": "percussion_timbre"
+    },
+    {
+      "axis_id": "instrument_family",
+      "time_ms": 70000,
+      "from_candidate": "percussion_timbre",
+      "to_candidate": "acoustic_strings"
+    },
+    {
+      "axis_id": "instrument_family",
+      "time_ms": 85000,
+      "from_candidate": "acoustic_strings",
+      "to_candidate": "electronic_timbre"
+    }
+  ],
+  "scores_csv": "music_dynamics_prompt_scores.csv"
+}

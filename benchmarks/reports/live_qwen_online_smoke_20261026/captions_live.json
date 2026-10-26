@@ -1,0 +1,60 @@
+[
+  {
+    "backend": "qwen",
+    "caption_ru": "Обнаружено заметное изменение изображения.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "1070b24cd99e41759f17be78161d2e1a",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 1646.676,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "generated",
+    "time_range": {
+      "end_ms": 6575,
+      "start_ms": 5575
+    },
+    "tokens_per_second": 62.4,
+    "used_claim_ids": [
+      "1070b24cd99e41759f17be78161d2e1a:claim-scene-cut-scene-cut:5575:6575"
+    ],
+    "warnings": []
+  },
+  {
+    "backend": "qwen",
+    "caption_ru": "Обнаружено заметное изменение изображения.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "a19be552930b4c968c53cfa4961f36b8",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 1725.01,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v1",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "generated",
+    "time_range": {
+      "end_ms": 8575,
+      "start_ms": 7575
+    },
+    "tokens_per_second": 60.2,
+    "used_claim_ids": [
+      "a19be552930b4c968c53cfa4961f36b8:claim-scene-cut-scene-cut:7575:8575"
+    ],
+    "warnings": []
+  }
+]

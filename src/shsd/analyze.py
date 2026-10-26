@@ -92,6 +92,7 @@ from shsd.workers.embedding_worker import (
     SharedEmbeddingDispatcher,
 )
 from shsd.workers.l1_worker import BoundedL1Worker, L1Work
+from shsd.workers.live_levels import LiveLevelWorkers
 from shsd.workers.scheduler import (
     AsyncLevelScheduler,
     JobKey,
@@ -1296,6 +1297,7 @@ def analyze_media(
     video_level_cursor_lock = Lock()
     l1_worker: BoundedL1Worker | None = None
     speech_worker: BoundedSpeechWorker | None = None
+    progressive_workers: LiveLevelWorkers | None = None
     deferred_speech_tasks: deque[SpeechTask] = deque()
     deferred_speech_capacity = 2
     speech_admission_drop_count = 0
@@ -1303,6 +1305,10 @@ def analyze_media(
     publish_lock = RLock()
     progress_lock = RLock()
     capture_state_lock = RLock()
+    l1_frontier_lock = RLock()
+    l1_processed_frontiers: dict[str, int] = {}
+    live_pending_coverage: list[tuple[int, int]] = []
+    live_coverage_lock = RLock()
 
     def observe_runtime_load(*, force: bool = False) -> None:
         nonlocal host_metrics_available
@@ -1329,6 +1335,8 @@ def analyze_media(
                     speech_worker.admission_capacity + deferred_speech_capacity,
                 )
             )
+        if progressive_workers is not None:
+            queue_candidates.extend(progressive_workers.queue_loads())
         queue_depth, queue_capacity = max(
             queue_candidates,
             key=lambda item: item[0] / item[1],
@@ -1364,12 +1372,39 @@ def analyze_media(
             flush_deferred_speech()
 
     def publish(record: dict[str, Any]) -> None:
+        progressive_event: TimelineEvent | None = None
         with publish_lock:
             if record.get("record_type") == "event":
                 event_data = {key: value for key, value in record.items() if key != "record_type"}
                 event = TimelineEvent.from_dict(event_data)
                 latest_events[event.event_id] = event
+                if (
+                    event.level in {"L0", "L1"}
+                    and event.state == "committed"
+                    and progressive_workers is not None
+                ):
+                    progressive_event = event
             emit(record)
+        if progressive_event is not None and progressive_workers is not None:
+            progressive_workers.submit_event(progressive_event)
+
+    def mark_live_coverage(
+        level: str,
+        stage: str,
+        start_ms: int,
+        end_ms: int,
+        status: str,
+        reason: str | None,
+    ) -> None:
+        watermark.mark_revisioned(
+            cast(CoverageStage, stage),
+            start_ms,
+            end_ms,
+            cast(CoverageStatus, status),
+            level=cast(Level, level),
+            reason=reason,
+        )
+        emit_watermark()
 
     for modality in media.unavailable_modalities:
         if source_duration_ms is not None:
@@ -1525,6 +1560,9 @@ def analyze_media(
         nonlocal video_level_cursor
         with processed_intervals_lock:
             processed_intervals.append((start_ms, end_ms))
+        if progressive_workers is not None and "L2" in active_levels:
+            with live_coverage_lock:
+                live_pending_coverage.append((start_ms, end_ms))
         mark_semantic_origin(modality, start_ms)
         if l1_status is None:
             l1_status = "done" if "L1" in active_levels else "skipped"
@@ -1562,6 +1600,17 @@ def analyze_media(
                     level=level,
                     reason="level_not_requested",
                 )
+                if progressive_workers is not None:
+                    watermark.mark_revisioned(
+                        "R",
+                        start_ms,
+                        end_ms,
+                        "skipped",
+                        level=level,
+                        reason="level_not_requested",
+                    )
+            elif level == "L2" and progressive_workers is not None:
+                watermark.mark_revisioned("D", start_ms, end_ms, "done", level="L2")
 
     embedding_worker: BoundedEmbeddingWorker | None = None
     embedding_handlers: dict[int, Callable[[EmbeddingRecord], None]] = {}
@@ -1575,6 +1624,54 @@ def analyze_media(
         job_id = next_l1_job_id
         next_l1_job_id += 1
         l1_worker.submit(L1Work(job_id=job_id, run=run))
+
+    def advance_live_levels(modality: str, end_ms: int) -> None:
+        """Commit stable L1 events and enqueue coverage after each live window."""
+        if progressive_workers is None or "L2" not in active_levels:
+            return
+        with l1_frontier_lock:
+            l1_processed_frontiers[modality] = max(
+                l1_processed_frontiers.get(modality, 0), end_ms
+            )
+            if not semantic_modalities.issubset(l1_processed_frontiers):
+                return
+            stable_horizon = min(
+                l1_processed_frontiers[item] for item in semantic_modalities
+            ) - reducer.max_gap_ms
+        if stable_horizon <= 0:
+            return
+
+        with publish_lock:
+            stable_events = sorted(
+                (
+                    event
+                    for event in latest_events.values()
+                    if event.level == "L1"
+                    and event.state != "committed"
+                    and event.end_ms <= stable_horizon
+                ),
+                key=lambda event: (event.start_ms, event.end_ms, event.event_id),
+            )
+        for event in stable_events:
+            committed = replace(
+                event,
+                revision=event.revision + 1,
+                state="committed",
+                supersedes_revision=event.revision,
+                updated_at_utc=datetime.now(UTC).isoformat(),
+            )
+            store.append(committed, expected_revision=event.revision)
+            publish({"record_type": "event", **committed.to_dict()})
+
+        with live_coverage_lock:
+            eligible = tuple(
+                item for item in live_pending_coverage if item[1] <= stable_horizon
+            )
+            if eligible and progressive_workers.submit_coverage(eligible):
+                eligible_set = set(eligible)
+                live_pending_coverage[:] = [
+                    item for item in live_pending_coverage if item not in eligible_set
+                ]
 
     def process_l1_window(
         record: EmbeddingRecord,
@@ -1652,6 +1749,7 @@ def analyze_media(
             end_ms,
             modality="audio" if modality == "audio" else "video",
         )
+        advance_live_levels("audio" if modality == "audio" else "video", end_ms)
         emit_watermark()
         per_stage_ms["l1_match_and_reduce"] += (time.perf_counter() - l1_started) * 1000
 
@@ -2040,6 +2138,35 @@ def analyze_media(
                     queue_capacity=4,
                     load_controller=load_controller,
                 )
+        if remote_source and "L2" in active_levels:
+            def create_live_narrator() -> Any:
+                from shsd.captions.narrator import QwenNarrator, TemplateNarrator
+
+                if narrator_mode == "template":
+                    return TemplateNarrator()
+                lock_path = Path(__file__).resolve().parents[2] / "models.lock.json"
+                qwen_model = json.loads(lock_path.read_text(encoding="utf-8"))["models"][
+                    "qwen3_0_6b"
+                ]
+                return QwenNarrator(
+                    qwen_model,
+                    models_dir,
+                    Path(__file__).resolve().parents[2],
+                    threads=threads,
+                    max_tokens=96,
+                )
+
+            progressive_workers = LiveLevelWorkers(
+                store=store,
+                load_controller=load_controller,
+                emit=publish,
+                mark_coverage=mark_live_coverage,
+                make_requests=lambda events: _narration_batches(
+                    events, stream_id=stream_id, epoch=epoch
+                ),
+                narrator_factory=create_live_narrator,
+                l3_enabled="L3" in active_levels,
+            )
         for timestamp_ms, work_modality, payload in iter_merge_by_key(
             timed_sources,
             key=lambda item: item[0],
@@ -2509,7 +2636,26 @@ def analyze_media(
             "failed_count": 0,
         }
         l2_skipped_events: list[TimelineEvent] = []
-        if "L2" in active_levels:
+        live_level_report: dict[str, object] | None = None
+        if progressive_workers is not None:
+            with live_coverage_lock:
+                remaining_coverage = tuple(live_pending_coverage)
+                live_pending_coverage.clear()
+            progressive_workers.submit_coverage(remaining_coverage, block=True)
+            progressive_workers.finish()
+            live_level_report = progressive_workers.snapshot()
+            scheduler_report = {
+                **live_level_report,
+                "load": load_controller.status.to_dict(),
+            }
+            live_current_events = store.current_events(stream_id, epoch)
+            refined_events = [event for event in live_current_events if event.level == "L2"]
+            l2_report = cast(dict[str, Any], live_level_report.get("l2", {}))
+            emitted_events += int(l2_report.get("completed", 0))
+            per_stage_ms["l2_state_refinement"] = sum(
+                cast(list[float], l2_report.get("latency_ms_samples", []))
+            )
+        elif "L2" in active_levels:
             state_deltas: dict[str, dict[str, Any]] = {}
             scheduler_errors: list[dict[str, str]] = []
             backpressure_events: list[dict[str, str]] = []
@@ -2641,15 +2787,18 @@ def analyze_media(
                         "load": load_controller.status.to_dict(),
                     }
                 )
-        per_stage_ms["l2_state_refinement"] = (time.perf_counter() - state_started) * 1000
+        if progressive_workers is None:
+            per_stage_ms["l2_state_refinement"] = (time.perf_counter() - state_started) * 1000
 
         l3_allowed = False
-        if "L3" in active_levels:
+        if progressive_workers is not None:
+            l3_allowed = "L3" in active_levels
+        elif "L3" in active_levels:
             latest_host_sample, latest_host_metrics_available = _host_load_sample()
             host_metrics_available = host_metrics_available or latest_host_metrics_available
             load_controller.observe(latest_host_sample, source_id=load_source_id)
             l3_allowed = load_controller.admit(WorkPriority.L3_NARRATION).admitted
-        if "L3" in active_levels and not l3_allowed:
+        if progressive_workers is None and "L3" in active_levels and not l3_allowed:
             publish(
                 {
                     "record_type": "scheduler_degradation",
@@ -2675,6 +2824,10 @@ def analyze_media(
                 if level == "L1":
                     # L1 commits per completed window while the source is live.
                     # Terminal gap filling below closes any unprocessed spans.
+                    continue
+                elif progressive_workers is not None:
+                    # Online L2/L3 workers emit revisioned watermarks at their
+                    # queued coverage barriers while the source is arriving.
                     continue
                 elif level == "L2":
                     interval_skipped = any(
@@ -2725,7 +2878,39 @@ def analyze_media(
         narration_generated_tokens = 0
         narration_generation_ms = 0.0
         narration_measured_generations = 0
-        if l3_allowed:
+        if live_level_report is not None:
+            narration_report = cast(dict[str, Any], live_level_report.get("narration", {}))
+            narration_errors = cast(
+                list[tuple[int, int, str]], narration_report.get("errors", [])
+            )
+            narration_ranges = cast(
+                list[tuple[int, int]], narration_report.get("ranges", [])
+            )
+            narration_latency_ms_samples = cast(
+                list[float], narration_report.get("latency_ms_samples", [])
+            )
+            narration_backend_counts = cast(
+                dict[str, int], narration_report.get("backend_counts", narration_backend_counts)
+            )
+            narration_fallback_count = int(narration_report.get("fallback_count", 0))
+            narration_unsupported_claim_count = int(
+                narration_report.get("unsupported_claim_count", 0)
+            )
+            narration_generated_tokens = int(narration_report.get("generated_tokens") or 0)
+            narration_generation_ms = float(narration_report.get("generation_ms") or 0.0)
+            narration_measured_generations = len(narration_latency_ms_samples)
+            per_stage_ms["l3_narration"] = sum(
+                cast(
+                    list[float],
+                    cast(dict[str, Any], live_level_report.get("l3", {})).get(
+                        "latency_ms_samples", []
+                    ),
+                )
+            )
+            tokens_per_second = narration_report.get("tokens_per_second")
+            if isinstance(tokens_per_second, (int, float)):
+                narration_generation_rate_samples.append(float(tokens_per_second))
+        if l3_allowed and live_level_report is None:
             l2_events = [event for event in latest_events.values() if event.level == "L2"]
             requests = _narration_batches(l2_events, stream_id=stream_id, epoch=epoch)
             if not requests:
@@ -2852,7 +3037,8 @@ def analyze_media(
                         level="L3",
                         reason=narration_reason,
                     )
-        per_stage_ms["l3_narration"] = (time.perf_counter() - narration_started) * 1000
+        if live_level_report is None:
+            per_stage_ms["l3_narration"] = (time.perf_counter() - narration_started) * 1000
 
         # Close the known media horizon. Uncovered regions are explicit gaps;
         # unavailable tracks already carry their terminal unavailable status.

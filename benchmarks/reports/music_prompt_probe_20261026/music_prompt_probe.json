@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "diagnostic_type": "label_free_prompt_margin_probe",
+  "accuracy_claim": false,
+  "similarity_is_probability": false,
+  "source": "X:\\AI\\SHSD\\benchmarks\\fixtures\\real_poc\\tears_of_steel_120_210s.mp4",
+  "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "window_ms": 5000,
+  "window_count": 18,
+  "minimum_similarity": 0.6,
+  "minimum_margin": 0.05,
+  "prompt_texts": {
+    "baseline": {
+      "music_present": "Music is audible in the audio.",
+      "music_absent": "No music is audible in the audio."
+    },
+    "performance_vs_speech_and_noise": {
+      "music_present": "An instrumental or sung musical performance is audible, with melody or rhythm.",
+      "music_absent": "Only speech, effects, or environmental sounds are audible; there is no musical performance."
+    },
+    "tune_beat_vs_words_and_noise": {
+      "music_present": "The audio contains a song or instrumental music, with a tune, beat, or playing instruments.",
+      "music_absent": "The audio contains spoken words or everyday noises, without a tune, beat, or instrumental playing."
+    },
+    "soundtrack_vs_dialogue_and_effects": {
+      "music_present": "A musical soundtrack is playing under or alongside the other sounds.",
+      "music_absent": "There is no soundtrack or music, only dialogue and natural sound effects."
+    }
+  },
+  "summary": {
+    "baseline": {
+      "window_count": 18,
+      "music_present_cosine": {
+        "min": 0.674119,
+        "mean": 0.73238,
+        "median": 0.743284,
+        "max": 0.769977
+      },
+      "music_absent_cosine": {
+        "min": 0.654951,
+        "mean": 0.732023,
+        "median": 0.748611,
+        "max": 0.774973
+      },
+      "mean_signed_gap_positive_minus_negative": 0.000357,
+      "mean_absolute_gap": 0.009526,
+      "median_absolute_gap": 0.008363,
+      "min_absolute_gap": 0.000923,
+      "max_absolute_gap": 0.019168,
+      "accepted_by_current_policy_count": 0,
+      "uncertain_by_current_policy_count": 18,
+      "ranked_winner_count": {
+        "music_present": 8,
+        "music_absent": 10
+      }
+    },
+    "performance_vs_speech_and_noise": {
+      "window_count": 18,
+      "music_present_cosine": {
+        "min": 0.648235,
+        "mean": 0.726692,
+        "median": 0.748266,
+        "max": 0.767361
+      },
+      "music_absent_cosine": {
+        "min": 0.643439,
+        "mean": 0.715349,
+        "median": 0.735065,
+        "max": 0.753581
+      },
+      "mean_signed_gap_positive_minus_negative": 0.011342,
+      "mean_absolute_gap": 0.013952,
+      "median_absolute_gap": 0.013757,
+      "min_absolute_gap": 0.003119,
+      "max_absolute_gap": 0.026656,
+      "accepted_by_current_policy_count": 0,
+      "uncertain_by_current_policy_count": 18,
+      "ranked_winner_count": {
+        "music_present": 15,
+        "music_absent": 3
+      }
+    },
+    "tune_beat_vs_words_and_noise": {
+      "window_count": 18,
+      "music_present_cosine": {
+        "min": 0.655789,
+        "mean": 0.748885,
+        "median": 0.76314,
+        "max": 0.814075
+      },
+      "music_absent_cosine": {
+        "min": 0.68975,
+        "mean": 0.74538,
+        "median": 0.756353,
+        "max": 0.800145
+      },
+      "mean_signed_gap_positive_minus_negative": 0.003505,
+      "mean_absolute_gap": 0.022587,
+      "median_absolute_gap": 0.022063,
+      "min_absolute_gap": 0.000277,
+      "max_absolute_gap": 0.055271,
+      "accepted_by_current_policy_count": 1,
+      "uncertain_by_current_policy_count": 17,
+      "ranked_winner_count": {
+        "music_present": 11,
+        "music_absent": 7
+      }
+    },
+    "soundtrack_vs_dialogue_and_effects": {
+      "window_count": 18,
+      "music_present_cosine": {
+        "min": 0.652627,
+        "mean": 0.731806,
+        "median": 0.753822,
+        "max": 0.779029
+      },
+      "music_absent_cosine": {
+        "min": 0.680411,
+        "mean": 0.728813,
+        "median": 0.736972,
+        "max": 0.760678
+      },
+      "mean_signed_gap_positive_minus_negative": 0.002993,
+      "mean_absolute_gap": 0.021554,
+      "median_absolute_gap": 0.01954,
+      "min_absolute_gap": 0.001739,
+      "max_absolute_gap": 0.046116,
+      "accepted_by_current_policy_count": 0,
+      "uncertain_by_current_policy_count": 18,
+      "ranked_winner_count": {
+        "music_present": 11,
+        "music_absent": 7
+      }
+    }
+  },
+  "scores_csv": "music_prompt_scores.csv"
+}

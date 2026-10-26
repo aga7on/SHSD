@@ -1,0 +1,6 @@
+﻿start_ms,end_ms,status,language,text,error
+40000,60000,dropped,ru,,load_critical
+60000,80000,dropped,ru,,load_critical
+80000,90000,dropped,ru,,load_critical
+0,20000,dropped,ru,,load_critical
+20000,40000,dropped,ru,,load_critical
