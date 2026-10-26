@@ -21,6 +21,9 @@ class TimelineClaim:
     model_revision: str
     sample_count: int
     candidate_hypotheses: tuple[tuple[str, float, str], ...] = ()
+    premise_state: str | None = None
+    premise_claim_id: str | None = None
+    premise_evidence_refs: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.claim_id or not self.label or not self.model_revision:
@@ -36,6 +39,16 @@ class TimelineClaim:
                 raise ValueError("candidate hypothesis decision is unsupported")
         if self.decision not in {"accepted", "uncertain", "rejected", "unverified", "unknown"}:
             raise ValueError("unsupported claim decision")
+        if self.premise_state not in {
+            None,
+            "music_possible",
+            "music_confirmed",
+            "music_absent",
+            "not_supported",
+        }:
+            raise ValueError("unsupported premise_state")
+        if self.premise_state is None and (self.premise_claim_id or self.premise_evidence_refs):
+            raise ValueError("premise provenance requires a premise_state")
         if not self.evidence_refs and self.decision != "unverified":
             raise ValueError("claims require evidence_refs or the unverified decision")
         if self.raw_cosine is not None and (
@@ -59,6 +72,7 @@ class TimelineClaim:
             }
             for candidate_id, raw_cosine, decision in self.candidate_hypotheses
         ]
+        result["premise_evidence_refs"] = list(self.premise_evidence_refs)
         return result
 
     @classmethod
@@ -81,6 +95,11 @@ class TimelineClaim:
                     str(item["decision"]),
                 )
                 for item in cast(list[dict[str, Any]], value.get("candidate_hypotheses", []))
+            ),
+            premise_state=cast(str | None, value.get("premise_state")),
+            premise_claim_id=cast(str | None, value.get("premise_claim_id")),
+            premise_evidence_refs=tuple(
+                cast(list[str], value.get("premise_evidence_refs", []))
             ),
         )
 

@@ -212,6 +212,19 @@ def render_markdown(payload: dict[str, Any]) -> str:
         lines.append("- Сохранённых captions нет.")
 
     lines.extend(["", "## Предупреждения о неопределённости и покрытии", ""])
+    for caption in captions:
+        input_claim_ids = caption.get("input_claim_ids")
+        expressed_claim_ids = caption.get("expressed_claim_ids", caption.get("used_claim_ids", []))
+        omitted_claim_ids = caption.get("omitted_claim_ids", [])
+        uncertain_claim_ids = caption.get("uncertain_claim_ids", [])
+        if not isinstance(input_claim_ids, list):
+            continue
+        start_ms, end_ms = _caption_range(caption)
+        lines.append(
+            f"- [{_format_time(start_ms)}–{_format_time(end_ms)}] "
+            f"Claims: {len(expressed_claim_ids)}/{len(input_claim_ids)} expressed; "
+            f"{len(omitted_claim_ids)} omitted; {len(uncertain_claim_ids)} uncertain."
+        )
     speech_segments = [
         item for item in payload.get("speech_segments", []) if isinstance(item, dict)
     ]

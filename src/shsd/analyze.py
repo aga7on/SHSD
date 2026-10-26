@@ -359,51 +359,26 @@ def _active_levels(levels: frozenset[str]) -> frozenset[str]:
     return frozenset(active)
 
 
+def _narration_graph(
+    events: list[TimelineEvent],
+    *,
+    stream_id: str,
+    epoch: int,
+) -> Any:
+    """Build the typed event graph used by the training-free B0 narrator."""
+    from shsd.memory.graph import GroundedEventGraph
+
+    return GroundedEventGraph.from_events(events, stream_id=stream_id, epoch=epoch)
+
+
 def _narration_batches(
     events: list[TimelineEvent],
     *,
     stream_id: str,
     epoch: int,
 ) -> list[Any]:
-    """Build small, source-linked narrator batches from accepted event claims."""
-    from shsd.captions.narrator import NarrationClaim, NarrationEventRef, NarrationRequest
-
-    sources: list[tuple[TimelineEvent, Any]] = []
-    for event in sorted(events, key=lambda item: (item.start_ms, item.end_ms, item.event_id)):
-        for claim in event.claims:
-            if claim.decision == "accepted" and claim.text_ru:
-                sources.append((event, claim))
-
-    batches: list[Any] = []
-    # Keep each model request small enough for the bounded local context. The
-    # complete evidence list remains in the event record; the prompt needs only
-    # a compact set of references plus the exact event revision.
-    for offset in range(0, len(sources), 3):
-        source_batch = sources[offset : offset + 3]
-        refs_by_id: dict[str, NarrationEventRef] = {}
-        claims: list[NarrationClaim] = []
-        for event, claim in source_batch:
-            refs_by_id[event.event_id] = NarrationEventRef(event.event_id, event.revision)
-            claims.append(
-                NarrationClaim(
-                    claim_id=f"{event.event_id}:{claim.claim_id}",
-                    event_id=event.event_id,
-                    revision=event.revision,
-                    start_ms=event.start_ms,
-                    end_ms=event.end_ms,
-                    text_ru=claim.text_ru,
-                    evidence_refs=claim.evidence_refs[:12],
-                )
-            )
-        batches.append(
-            NarrationRequest(
-                stream_id=stream_id,
-                epoch=epoch,
-                event_refs=tuple(refs_by_id.values()),
-                claims=tuple(claims),
-            )
-        )
-    return batches
+    """Build small, source-linked B0 narrator batches from accepted graph claims."""
+    return _narration_graph(events, stream_id=stream_id, epoch=epoch).narration_requests()
 
 
 def _frame_time_ms(frame: Any, fallback_ms: int) -> int:
@@ -1916,7 +1891,15 @@ def analyze_media(
                 "coarse_axis_id": music_presence_axis_id,
                 "coarse_candidates": ["music_present", "music_and_speech"],
                 "detail_axes": sorted(music_detail_axis_ids),
-                "coarse_routing": "accepted_or_uncertain_candidate_above_minimum_similarity",
+                "coarse_routing": (
+                    "accepted_or_uncertain_positive_music_candidate_above_minimum_similarity_"
+                    "for_internal_exploration"
+                ),
+                "publication_gate": (
+                    "accepted_music_present_or_music_and_speech_premise_plus_"
+                    "independent_l2_temporal_support"
+                ),
+                "runner_up_music_is_publishable": False,
                 "minimum_similarity": policy.minimum_similarity,
                 "strategy": "coarse_to_fine_temporal_audio_v2",
             },
@@ -2192,14 +2175,17 @@ def analyze_media(
                     max_tokens=96,
                 )
 
+            def make_live_narration_requests(events: list[TimelineEvent]) -> list[Any]:
+                graph = _narration_graph(events, stream_id=stream_id, epoch=epoch)
+                publish(graph.to_dict())
+                return graph.narration_requests()
+
             progressive_workers = LiveLevelWorkers(
                 store=store,
                 load_controller=load_controller,
                 emit=publish,
                 mark_coverage=mark_live_coverage,
-                make_requests=lambda events: _narration_batches(
-                    events, stream_id=stream_id, epoch=epoch
-                ),
+                make_requests=make_live_narration_requests,
                 narrator_factory=create_live_narrator,
                 l3_enabled="L3" in active_levels,
                 refine_l2=temporal_audio_refiner.refine,
@@ -2994,7 +2980,9 @@ def analyze_media(
                 narration_generation_rate_samples.append(float(tokens_per_second))
         if l3_allowed and live_level_report is None:
             l2_events = [event for event in latest_events.values() if event.level == "L2"]
-            requests = _narration_batches(l2_events, stream_id=stream_id, epoch=epoch)
+            graph = _narration_graph(l2_events, stream_id=stream_id, epoch=epoch)
+            publish(graph.to_dict())
+            requests = graph.narration_requests()
             if not requests:
                 publish(
                     {

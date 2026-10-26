@@ -8,9 +8,10 @@
 
 Нужен **достоверный русский визуальный сюжет**, а не набор frame tags: устойчивые персонажи/объекты, действия, взаимодействия и их порядок. **Равноправно** нужна детальная музыка: слои, инструменты/семейства, вокал/бас/ударные, overlap с речью и появление/исчезновение/смена во времени. CPU-only offline production, устойчивый 1x live; GPU допускается для обучения. EmbeddingGemma 2 + Qwen3-0.6B остаются baseline до A/B и отдельного production decision.
 
-**Baseline:** 90s file-mode: 3 общих L3, 1 accepted-but-not-human-verified percussion detail, 0 accepted semantic transitions; 60s 1x live: capture 41.828/60, 503 shared-prefetch drops, L1 lag p50 22.27s. L2 claims могут не быть выражены Qwen, хотя input IDs помечены used. Это **не** доказательство, что обучение поможет.
+**Latest 90s B0 graph baseline:** 62 L1 and 62 L2 revisions, 3 Russian L3 descriptions, 0 new accepted L2 details, 0 accepted semantic transitions, and 2 safe fallbacks; the 27.91s run was warm-cache offline analysis, not realtime or labeled quality. An earlier run did produce one unverified percussion detail; do not mix those run counts. **60s 1x live reference:** capture 41.828/60, 503 shared-prefetch drops, L1 lag p50 22.27s. L2 claims may not be expressed by Qwen even when input IDs are marked used. None of these results proves training will help.
 
-**Unknown до smoke tests:** EmbeddingGemma audio/video token/time features, Qwen inputs_embeds/custom prefix, CPU GGUF/llama.cpp deploy, точная стоимость и качество B1. Не утверждать непроверенное.
+**F10.01 result (2026-10-26):** local smoke tests verified EmbeddingGemma pre-pooling tokens for IMAGE/VIDEO/AUDIO/AV, a real Q8_0 Qwen3 GGUF external prefix through llama.cpp b11886, and production-provider sequence features/masks/token IDs/source PTS on CPU. See [`capability_matrix.md`](../../benchmarks/reports/bridge_f10/capability_matrix.md), [`production_sequence_smoke.json`](../../benchmarks/reports/bridge_f10/production_sequence_smoke.json) and raw JSON. A typed `AVFeatureBatch` now groups each IMAGE sequence with its exact PTS and keeps AUDIO as a separate interval; the dataset schema/validator records rights, annotation completeness, and split leakage. These are interfaces, not a trained or integrated bridge: prefix values are untrained, default analyze still pools, the adapter is not connected to B0, and sustained 1× CPU performance is unverified. Current training decision and exact missing gates: [`F10-GO.md`](../../benchmarks/reports/bridge_f10/F10-GO.md).
+**B0 implementation result:** `analyze` emits typed temporal claim-graph records and builds Qwen inputs from accepted grounded claims in offline and live L3 paths. The current graph has event revisions and start-order links only; it does not infer visual entities/actions or music-layer events, and it does not consume the unpooled feature adapter yet.
 
 ## Контролируемые варианты
 
@@ -29,8 +30,8 @@ Pooled embedding — контроль, не гарантия, что сохра�
 
 ### A. Исполняемая проверка интерфейсов — без обучения
 - Pin model revisions и preprocessing. На 5s audio + sampled frames проверить encoder outputs: pooled, а если API поддерживает — patch/time tokens, shapes, masks, timestamps, CPU encoder latency.
-- Qwen3-0.6B: synthetic non-text conditioning smoke test, проверка inputs_embeds/prefix и gradient path **без training**. Не выдавать text prompt за мультимодальный prefix.
-- Отдельно CPU GGUF/llama.cpp или иной offline CPU runtime: custom conditioning, prefill/decode, RSS.
+- Qwen3-0.6B: synthetic non-text `inputs_embeds` forward/generate and prefix gradient path without training; also test the actual GGUF native C API path. Do not call a text prompt a multimodal prefix.
+- CPU GGUF/llama.cpp: external-prefix API is verified; measure prefill/decode and RSS again under the later stream workload. API smoke alone is not a realtime result.
 - Сохранить exact commands, exit codes, upstream references, licenses, verified/unsupported/unknown в benchmarks/reports/bridge_f10/capability_matrix.md.
 - **NO-GO для B1**, если conditioning или CPU deploy path отсутствует; продолжить B0/C.
 
@@ -66,4 +67,4 @@ Pooled embedding — контроль, не гарантия, что сохра�
 
 Coding-агент обязан реализовать **как минимум две самостоятельные визуальные проверки**: IMAGE-only объектно-пространственное описание одиночного изображения без выдуманного движения; VIDEO-only упорядоченный сюжет с устойчивыми entity IDs, subject/action/object и до/после. AUDIO/music и синхронный AV — отдельные режимы и metrics. Один music_presence/instrument classifier не равен итоговой цели.
 
-**Первые PR:** F10.01 image/frame/audio token feature+Qwen CPU smoke; F10.02 typed dataset/EventGraph/B0 and masks; F10.03 trainable vision+audio projector/resampler after technical/data/budget GO; F10.04 per-mode held-out and 1x CPU live. Если IMAGE или VIDEO не работает, нельзя закрывать F10 достижениями музыки. Последний Deep Research не был завершён, поэтому API и выигрыш только через измерения.
+**Next:** continue F7.03 independent labels and F9.01 live backlog; extend the integrated B0 claim graph with independently supported visual entity/action and music-layer nodes; connect the sequence API with validated PTS alignment; build an independent evaluator and same-source A0/B0 comparison. F10.03 projector training remains behind documented technical/data/budget GO.

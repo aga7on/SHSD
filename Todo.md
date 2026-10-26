@@ -1,6 +1,6 @@
 # Todo.md — SHSD: активный backlog качества и realtime
 
-> **Версия 0.5 · 26.10.2026.** Все новые задачи ниже **открыты** до предъявления воспроизводимых доказательств. Прежний F0–F6 чеклист (исторически 157/159) [архивирован без изменений](docs/archive/2026-10-26-pre-multimodal-review/Todo.md). Эта цифра не измеряет готовность продукта.
+> **Версия 0.6 · 26.10.2026.** Все новые задачи ниже **открыты** до предъявления воспроизводимых доказательств. Прежний F0–F6 чеклист (исторически 157/159) [архивирован без изменений](docs/archive/2026-10-26-pre-multimodal-review/Todo.md). Эта цифра не измеряет готовность продукта.
 >
 > **Исполняемое ТЗ:** [F10-agent-handoff.md](docs/experiments/F10-agent-handoff.md) · [F10-GO template](docs/experiments/F10-GO.template.md).
 >
@@ -17,24 +17,26 @@
 ## F7 — Достоверность музыки и смысловой traceability
 
 ### F7.01 — Разделить music_possible и music_confirmed [P0]
-- [ ] Проверить `src/shsd/semantic/temporal.py::_music_scene_supports_details`, `analyze.py` и текущие hypothesis configs. Зафиксировать случаи, где `conversation_dominant` accepted, но music alternative с cosine≥0.60 открывает публикацию музыкальных деталей.
-- [ ] Сохранить возможность **внутреннего** coarse-to-fine поиска при `music_possible`, но **не публиковать** детали без отдельно подтверждённой музыкальной предпосылки и собственного evidence по оси.
-- [ ] Учесть реальное наложение речи и фоновой музыки: conversation-dominant не означает music-absent; разрешать подтверждённые music+speech детали при независимом evidence.
-- [ ] Явно сохранять premise state и provenance в claim/event, без разрушения L1/L2 revisions и старого JSONL.
-- [ ] Тесты: conversation-only hard negative; music-only; music+speech; uncertain music; conflicting top/runner-up; 01:10–01:25 из `Tears of Steel`.
-- **DoD:** ни одна опубликованная music detail не опирается **только** на runner-up music candidate; все accepted details имеют независимый premise/evidence; нет необоснованного запрета реального overlap; регрессии проходят.
+- [x] Проверить `src/shsd/semantic/temporal.py::_music_scene_supports_details`, `analyze.py` и текущие hypothesis configs. Сохранить исходный baseline и повторить `Tears of Steel`; см. [`real_video_quality_review.md`](benchmarks/reports/music_quality_v2/real_video_quality_review.md).
+- [x] Сохранить возможность **внутреннего** coarse-to-fine поиска при `music_possible`, но **не публиковать** детали без отдельно подтверждённой музыкальной предпосылки и собственного evidence по оси. На 01:10–01:25 ударные получили `exploratory_support`, публикация подавлена.
+- [x] Учесть наложение речи и фоновой музыки: conversation-dominant не считается music-absent; подтверждённые music+speech детали проходят независимый premise/evidence gate.
+- [x] Явно сохранять premise state и provenance в claim/event; старый JSONL остаётся читаемым при отсутствующих полях.
+- [x] Регрессии: conversation-only hard negative; music-only; music+speech; uncertain music; conflicting top/runner-up; реальный интервал 01:10–01:25. `python -m pytest tests\\unit\\test_temporal_semantic.py tests\\unit\\test_memory.py -q` — 27 passed; реальный прогон — в F7.01 отчёте.
+- **DoD:** технические условия выполнены: опубликованные детали требуют подтверждённой музыкальной предпосылки и собственного evidence; overlap покрыт тестами; реальный прогон не публикует runner-up-only percussion. Точность на независимых human labels остаётся в F7.03.
 - **Depends:** baseline `20acb747`.
 
 ### F7.02 — Исправить L2→L3 claim accounting и фактическое покрытие [P0]
-- [ ] Проверить `src/shsd/captions/narrator.py`: `used_claim_ids=tuple(sorted(request.source_ids))` для generated/fallback сейчас **не показывает**, какие claims реально выражены.
-- [ ] Развести `input_claim_ids`, `expressed_claim_ids`, `omitted_claim_ids` и неопределённое соответствие; ввести проверяемую политику semantic claim coverage, без автоматического присвоения всех входных IDs.
-- [ ] Для важных accepted L2 деталей настроить приоритет/группировку narration, чтобы Qwen мог выразить их естественно по-русски; осознанные пропуски при лимите токенов фиксировать, не маскировать.
-- [ ] Отдельно проверять unsupported factual additions (не только ключевые слова) и корректность fallback; поддержать ASR/visual claims и source-only mode.
-- [ ] Регрессия: `percussion_present` в 01:10–01:25, который Qwen в текущем отчёте не произнёс; negative test, где Qwen говорит только про разговор, не должен помечать percussion `expressed`.
-- **DoD:** выходная схема и UI/API/JSONL согласованы; omission измерим; generated caption не получает ложные used IDs; добавлены unit/integration tests на partial coverage, paraphrase, unsupported claims и fallback.
+- [x] Проверить `src/shsd/captions/narrator.py`: `used_claim_ids` раньше перечислял все входы и не отражал фактическое покрытие.
+- [x] Развести `input_claim_ids`, `expressed_claim_ids`, `omitted_claim_ids` и `uncertain_claim_ids`; добавить проверяемую source-overlap политику с coverage score без автоматического присвоения всех входных IDs.
+- [x] Ставить подтверждённые L2 музыкальные детали выше общей сцены в narrator input; остальные принятые утверждения и осознанные пропуски сохраняются отдельно.
+- [x] Проверять unsupported слова, отрицания и clause-to-source grounding, а не только общий словарь; fallback сохраняет точные claims и ASR-цитаты. Применяется к audio/video claims.
+- [x] Регрессия: 01:10–01:25 Qwen говорит только о разговоре; percussion и две cross-modal связи перечислены как omitted, не как expressed. Unit negative case покрывает разговор + percussion.
+- **DoD:** выходная схема, UI/API/JSONL и Markdown export согласованы; omission измерим; `used_claim_ids` совпадает с выраженными; unit/regression команда и полный реальный прогон отражены в [`real_video_quality_review.md`](benchmarks/reports/music_quality_v2/real_video_quality_review.md). Coverage — консервативная текстовая эвристика, не NLI; независимая ручная оценка остаётся в F7.03.
+- [x] 90s L1/L2/L3 audit with integrated B0 graph: 62 L1 + 62 L2 events, 3 captions; 100 window matches (95 `uncertain`, 5 accepted); L2 had 11 abstained, 1 confirmed, 50 skipped, and zero newly accepted details or semantic transitions. One generated caption substantively describes dialogue; two are safe temporal-coincidence fallbacks. The graph contains 62 claim-event nodes and 61 start-order edges, with no causal edges. See [review](benchmarks/reports/music_quality_v2/real_video_quality_review_b0_graph.md), [JSONL](benchmarks/reports/music_quality_v2/f701_real_tos_l3_b0_graph.jsonl), and [diagnostic](benchmarks/reports/semantic_matcher_diagnostic_20261026/semantic_matcher_diagnostic.md). This run reused cached audio and image embeddings and took 27.91s; it is offline and not realtime. A prior cache-stable reference pass took 50.56s with 2/8 image cache hits.
 - **Depends:** F7.01 для publishable claims.
 
 ### F7.03 — Независимые ручные метки и слепая оценка [P0]
+- **Текущий label status:** `benchmarks/review/iterative_speech_presence_natural/review_key/answer_key.csv` содержит 40 source-description-derived интервалов, а не независимо прослушанные метки; README набора прямо отмечает это ограничение. В label-free диагностиках использовать эти строки как ground truth запрещено. Отдельный CSV независимой оценки ещё не поступил.
 - [ ] Подготовить **10–20** независимых размеченных интервалов разных аудио/видео, включая 75–85 с `Tears of Steel`, music+speech, speech-only, ambience, music-only, transitions, визуальные действия. Это **оценка**, не training.
 - [ ] Зафиксировать схему: intervals, scene class/overlap, percussion/bass/vocals/instrument families, onset/offset/energy changes, visual entities/actions, unknown, evidence, annotator, rights/source.
 - [ ] Проверить разметку **до** просмотра предсказаний или пометить non-blind; сохранить разногласия, source-separated splits, hard negatives и audio/video swaps.
@@ -82,28 +84,35 @@
 - **DoD:** таблица quality/false claims/RU coherence/music transitions/CPU RTF/lag/RSS, решение `continue frozen | propose new ADR | blocked` с evidence.
 - **Depends:** F7.04, F8.01–02, F9.01 и результаты F10.01–02; обученный вариант — только при одобренных F10.03–05.
 
-## F10 — Обучаемый мультимодальный мост: параллельный R&D-трек
+## F10 — Multimodal AV Bridge для визуально-аудиального сюжетного описания
 
 **Первый результат агента — исполняемый код и измерения, а не очередной ресерч.** Порядок коммитов, критерии и негативные тесты — [handoff](docs/experiments/F10-agent-handoff.md).
 
 > **Не откладывать F10.01–02 до F9.** Они идут параллельно P0. **Обучение условно одобрено владельцем**: F10.03 готов к запуску после feasibility/data/budget `GO`; F10.04 — после evidence первого пилота; F10.05 — после quality/CPU сравнения. Это конкретный план пилота, не обязательство менять production.
 
 ### F10.01 — Проверка реальных интерфейсов и ограничений [P1; можно сейчас]
-- [ ] По официальным model cards и **исполняемым smoke tests** выяснить, какие EmbeddingGemma 2 outputs доступны: pooled, patch/token/time-level features, отдельные audio/video paths, timestamps, нормализация и возможность получить sequence representations без неподдерживаемых API.
-- [ ] Проверить, принимает ли конкретная Qwen3-0.6B implementation `inputs_embeds`/prefix tokens и как это соотносится с CPU GGUF/llama.cpp; сравнить PyTorch prototype и целевой runtime. Записать размерности, порядок модальностей, masking и стоимость prefill.
-- [ ] Проверить лицензии, совместимость версий и ограничения аппаратуры для отдельного GPU-training и **CPU-only** запуска. Не обещать, что pooled 768d восстанавливает действия, инструменты или временные связи.
-- [ ] Добавить исполняемые shape/API/CPU smoke tests, raw outputs и capability_matrix.md; не выдавать текстовый prompt за multimodal prefix.
-- **DoD:** таблица `supported/unsupported/unknown`, минимальные воспроизводимые smoke tests и `go/no-go` для непрерывного multimodal prefix. Не выдавать fake soft prompt за работающий bridge.
-- **Depends:** нет; стартовать параллельно F7.01–03.
+- [x] EmbeddingGemma 2: IMAGE/AUDIO/VIDEO/AV pooled vectors, pre-pooling token shapes, masks, frame PTS/timestamp markers and CPU single-call times verified in [`api_smoke.json`](benchmarks/reports/bridge_f10/api_smoke.json).
+- [x] Qwen3-0.6B: synthetic Transformers `inputs_embeds` forward/gradient/generate and the actual pinned Q8_0 GGUF on CPU with a `[4,1024]` external prefix followed by text/decode verified in [`llama_cpp_prefix_smoke.json`](benchmarks/reports/bridge_f10/llama_cpp_prefix_smoke.json). Plain text smoke: [`qwen_text_smoke.json`](benchmarks/reports/bridge_f10/qwen_text_smoke.json).
+- [x] Model/runtime revisions and local artifact hashes checked; pinned model metadata records EmbeddingGemma Apache-2.0, Qwen Apache-2.0 and llama.cpp MIT. This is not an estimate of GPU training cost.
+- [x] Added offline API probes and [`capability_matrix.md`](benchmarks/reports/bridge_f10/capability_matrix.md). The matrix distinguishes API feasibility from learned quality and sustained 1x performance.
+- [x] Expose opt-in sequence features and source PTS through the production `EmbeddingProvider`: `encode_frame_features`, `encode_audio_features`, `encode_video_features`, `encode_joint_features`; real local CPU smoke covers all four modes in [`production_sequence_smoke.json`](benchmarks/reports/bridge_f10/production_sequence_smoke.json). The main `analyze` route still uses pooled features pending EventGraph/B0 integration.
+- [ ] Confirm stable streaming cadence/RSS and B1 quality after a bounded, licensed, source-separated data/evaluation plan.
+- **DoD:** technical custom-prefix path is `GO`; B1 training remains `NO-GO` until F10.02 has independent labels, licensed train/val/held-out data, a baseline, bounded budget and stop criteria. Four-second CPU video/AV single calls are not a 1x stream claim.
+- **Depends:** API feasibility complete; continue F7.01–03 and F10.02 in parallel.
 
 ### F10.02 — Дизайн пилота и независимой оценки [P1; можно сейчас]
-- [ ] Зафиксировать варианты B1: frozen encoder+frozen Qwen+малый projector/resampler; B2: B1+ограниченный LoRA **только если B1 недостаточен**; альтернативу C с компактной pretrained AV/audio perception моделью.
-- [ ] Спроектировать token-level/temporal audio/video conditioning и fusion: 1) что видно и как меняется, 2) какие звуковые/музыкальные слои слышны, 3) что произошло раньше/позже, 4) какие утверждения имеют evidence.
-- [ ] Согласовать законные train/val/test источники **без source leakage**; training data собирать после проверки лицензий и source-separated splits. Разметка F7.03 — только evaluation, не скрытый train set.
-- [ ] Утвердить cost/quality metrics и ablations: audio-only, video-only, AV, swapped-audio, shuffled-time, missing modality, negative prompts, 1x cold-cache live, memory, CPU tok/s и prefill.
-- [ ] Реализовать B0 typed event graph→Qwen и независимый eval runner (visual actions, music transitions, input/expressed/omitted claims).
-- [ ] Заполнить [GO template](docs/experiments/F10-GO.template.md) реальными доказательствами в benchmarks/reports/bridge_f10/F10-GO.md.
-- **DoD:** [bridge pilot protocol](docs/experiments/bridge-training-pilot.md), явные критерии остановки, сравнение с frozen A0/A2 и documented technical/data/budget `GO` по уже полученному разрешению.
+- [x] Переформулировать F10 как **Multimodal AV Bridge** с равными целями для визуального сюжета, звуковой сцены, временной AV-сшивки и grounded русского narration.
+- [x] Зафиксировать исполняемый B1 tensor/data/loss design для IMAGE, VIDEO, AUDIO и AV: две modality ветки, PTS/time features, missing-modality masks, structured claims + `caption_ru`, target-only loss, negatives и per-mode metrics — [спецификация](docs/experiments/F10-multimodal-training-design.md).
+- [x] Описать B0 baseline, B1 frozen encoder/Qwen + trainable projector/resampler, B2 только после перспективы B1 и вариант C; конкретный контроль и stop/go — [pilot protocol](docs/experiments/bridge-training-pilot.md).
+- [x] Добавить production-provider методы для sequence features, masks, token IDs и source PTS; подтвердить IMAGE/VIDEO/AUDIO/AV на реальном CPU fixture — [`production_sequence_smoke.json`](benchmarks/reports/bridge_f10/production_sequence_smoke.json).
+- [x] Add a typed temporal claim graph and route it into B0 narration requests; JSONL now emits `event_graph` with source evidence, revisions, confidence type, and start-order edges: [graph.py](src/shsd/memory/graph.py).
+- [x] Define IMAGE/VIDEO/AUDIO/AV sample JSON Schema and implement a JSONL validator for PTS/evidence references, modality masks, license-permitted split use, human verification, and source-group leakage: [schema](configs/schemas/av_bridge_sample_v1.schema.json), [validator](scripts/validate_bridge_dataset.py).
+- [x] Add an alignment-safe `AVFeatureBatch` adapter that retains one unpooled IMAGE sequence per exact frame PTS and an independent interval AUDIO sequence: [features.py](src/shsd/bridge/features.py).
+- [ ] Extend the graph with independently supported visual entity/action and music-layer nodes; connect sequence features/source PTS and prove token/frame alignment. The current graph does not infer visual actions.
+- [ ] Независимо разметить evaluation set F7.03; отдельно подтвердить лицензированные source-separated train/val/held-out источники. F7.03 labels не использовать для обучения или tuning.
+- [x] Record the current evidence-backed B1 decision as **NO-GO**, with API/B0 limits and the exact data, labels, and budget blockers: [`F10-GO.md`](benchmarks/reports/bridge_f10/F10-GO.md). This is not approval to start training.
+- [ ] Unblock the GO gate with rights-cleared source-separated data, independent per-mode human labels, frozen thresholds, verified GPU-hours/VRAM budget, and a same-source A0/B0 evaluation.
+- **DoD:** дизайн закрыт ссылками выше; технический/data/budget `GO` — только после production feature/PTS path, B0 baseline, независимой оценки, прав на отдельные train/val/held-out sources, bounded budget и заранее зарегистрированных per-mode criteria. До этого training = `NO-GO`; повторно спрашивать владельца разрешение не нужно.
 - **Depends:** F10.01 и схема F7.03; F7–F9 продолжаются параллельно.
 
 ### F10.03 — Минимальный projector-only training pilot [P1; разрешено после technical GO]
@@ -127,7 +136,7 @@
 
 ## Первое задание coding-агенту
 
-**Два параллельных потока:** (A) F7.01 + F7.02, разметка F7.03 и live F9.01; (B) **F10.01 + F10.02 уже сейчас** — технический аудит EmbeddingGemma 2→Qwen3-0.6B и дизайн обучаемого моста. Обучение F10.03 и законный training data запускать после technical/data/budget `GO`, без повторного разрешения; LoRA или другое обучение F10.04 — после подтверждения перспективности первого пилота. Затем сравнить A2/B1/C по одному протоколу.
+**Параллельные потоки:** (A) F7.03 независимая ручная оценка и F9.01 live backlog; (B) F10.02 production token/PTS path, typed EventGraph/B0 и независимый evaluator. Дизайн обучения IMAGE/VIDEO/AUDIO/AV уже записан в [multimodal training design](docs/experiments/F10-multimodal-training-design.md). B1 training запускать после technical/data/budget `GO`, без повторного разрешения; LoRA/другое обучение — только после подтверждённой перспективы B1. Затем сравнить A0/A2/B1/C по одному протоколу.
 
 Каждый отчёт: `task ID | status | commit | changed files | exact commands + exit codes | tests | model revisions | independent labels | quality/error metrics | CPU/RSS/lag/drops | raw artifacts | next gate`.
 
@@ -137,6 +146,8 @@
 Владелец разрешил **любое обучение, если оно перспективно поможет решить главную боль**: содержательный, достоверный визуальный сюжет, подробные музыкальные слои/переходы и устойчивый CPU-only offline realtime. Это включает adapter/projector, LoRA, encoder/LLM fine-tuning, distillation и альтернативные модели. **Повторного согласования каждого эксперимента не требуется.**
 
 **До GPU training:** (1) подтверждённый interface/conditioning и правдоподобный CPU deploy path; (2) права на данные и source-separated train/val/held-out; (3) зафиксированный baseline и независимые quality metrics; (4) bounded GPU budget, checkpoints и stop conditions; (5) письменный `F10-GO.md` с результатом `GO`. Если что-то не выполнено — `NO-GO`, не скрывать риск. После короткого пилота продолжать лишь при измеренном улучшении без роста ложных утверждений. В production новые веса попадут только после held-out A/B и sustained 1x CPU live. Это разрешение на исследование, **не доказательство, что обучение обязательно поможет**.
+
+F10 — не музыкальный классификатор и не музыкальный fine-tuning. Цель — визуальные сущности, действия и порядок, аудиосцена и музыкальные слои, их grounded временная сшивка и связный русский narration.
 
 ## F10 — ближайшие четыре коммита агента
 
@@ -148,7 +159,7 @@
 Полный контракт: [F10 handoff](docs/experiments/F10-agent-handoff.md).
 
 
-## F10.06 — Мультимодальное обучение: IMAGE и VIDEO не менее важны, чем AUDIO [P0]
+## F10.06 — Обучаемый AV bridge: IMAGE, VIDEO, AUDIO и AV равноправны [P0]
 
 **Обязательная исполняемая спецификация: [F10-multimodal-training-design.md](docs/experiments/F10-multimodal-training-design.md).** Предыдущее F10 описывало архитектуру, но не loss, JSONL, masks и training schedule. Новый документ — первичный для деталей обучения. Музыка не может заменить выполнение задач по видео/изображениям.
 

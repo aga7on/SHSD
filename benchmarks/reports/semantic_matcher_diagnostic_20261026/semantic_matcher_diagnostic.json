@@ -1,0 +1,1512 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T18:14:05.683193+00:00",
+  "input_jsonl": "X:\\AI\\SHSD\\benchmarks\\reports\\music_quality_v2\\f701_real_tos_l3_b0_graph.jsonl",
+  "input_sha256": "3be9e441990185a5c57e616d1c3b05a221552a099874de8ed90a8efa31117ec1",
+  "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "threads": 4,
+  "decision_policy": {
+    "calibration": "provisional; inspect raw cosine and abstentions",
+    "minimum_margin": 0.05,
+    "minimum_similarity": 0.6,
+    "similarity_is_probability": false,
+    "top_k": 3
+  },
+  "window_match_count": 100,
+  "overall_decisions": {
+    "uncertain": 95,
+    "accepted": 5
+  },
+  "window_axes": [
+    {
+      "axis_id": "ambient_sound",
+      "count": 18,
+      "decisions": {
+        "uncertain": 18
+      },
+      "candidate_counts": {
+        "ambient_sound_present": 18
+      },
+      "cosine": {
+        "min": 0.677952,
+        "p25": 0.709126,
+        "median": 0.7791,
+        "mean": 0.757699,
+        "p75": 0.795537,
+        "max": 0.811544
+      },
+      "margin": {
+        "min": 0.00228,
+        "p25": 0.011914,
+        "median": 0.017867,
+        "mean": 0.01919,
+        "p75": 0.025725,
+        "max": 0.042838
+      },
+      "runner_up_cosine": {
+        "min": 0.646449,
+        "p25": 0.70223,
+        "median": 0.768178,
+        "mean": 0.738509,
+        "p75": 0.779884,
+        "max": 0.796451
+      },
+      "top_two_gap": {
+        "min": 0.00228,
+        "p25": 0.011914,
+        "median": 0.017867,
+        "mean": 0.01919,
+        "p75": 0.025725,
+        "max": 0.042838
+      },
+      "thresholds_seen": [
+        "{\"margin_basis\": \"top_candidate_gap\", \"minimum_margin\": 0.05, \"minimum_similarity\": 0.6, \"similarity_is_probability\": false, \"top_k\": 3}"
+      ],
+      "uncertain_below_similarity_floor": 0,
+      "uncertain_above_similarity_floor": 18,
+      "accepted_examples": []
+    },
+    {
+      "axis_id": "impact_sound",
+      "count": 18,
+      "decisions": {
+        "uncertain": 18
+      },
+      "candidate_counts": {
+        "impact_present": 18
+      },
+      "cosine": {
+        "min": 0.699342,
+        "p25": 0.725668,
+        "median": 0.761415,
+        "mean": 0.750202,
+        "p75": 0.77016,
+        "max": 0.788454
+      },
+      "margin": {
+        "min": 0.000735,
+        "p25": 0.011287,
+        "median": 0.01888,
+        "mean": 0.018427,
+        "p75": 0.024391,
+        "max": 0.04498
+      },
+      "runner_up_cosine": {
+        "min": 0.669337,
+        "p25": 0.709093,
+        "median": 0.752962,
+        "mean": 0.731775,
+        "p75": 0.756713,
+        "max": 0.774723
+      },
+      "top_two_gap": {
+        "min": 0.000735,
+        "p25": 0.011287,
+        "median": 0.01888,
+        "mean": 0.018427,
+        "p75": 0.024391,
+        "max": 0.04498
+      },
+      "thresholds_seen": [
+        "{\"margin_basis\": \"top_candidate_gap\", \"minimum_margin\": 0.05, \"minimum_similarity\": 0.6, \"similarity_is_probability\": false, \"top_k\": 3}"
+      ],
+      "uncertain_below_similarity_floor": 0,
+      "uncertain_above_similarity_floor": 18,
+      "accepted_examples": []
+    },
+    {
+      "axis_id": "music_presence",
+      "count": 18,
+      "decisions": {
+        "uncertain": 14,
+        "accepted": 4
+      },
+      "candidate_counts": {
+        "environment_dominant": 3,
+        "conversation_dominant": 6,
+        "music_present": 9
+      },
+      "cosine": {
+        "min": 0.728276,
+        "p25": 0.749374,
+        "median": 0.761492,
+        "mean": 0.764023,
+        "p75": 0.781642,
+        "max": 0.796454
+      },
+      "margin": {
+        "min": 0.00395,
+        "p25": 0.008158,
+        "median": 0.014044,
+        "mean": 0.025664,
+        "p75": 0.043041,
+        "max": 0.081965
+      },
+      "runner_up_cosine": {
+        "min": 0.663358,
+        "p25": 0.696885,
+        "median": 0.749262,
+        "mean": 0.738359,
+        "p75": 0.767397,
+        "max": 0.788373
+      },
+      "top_two_gap": {
+        "min": 0.00395,
+        "p25": 0.008158,
+        "median": 0.014044,
+        "mean": 0.025664,
+        "p75": 0.043041,
+        "max": 0.081965
+      },
+      "thresholds_seen": [
+        "{\"margin_basis\": \"top_candidate_gap\", \"minimum_margin\": 0.05, \"minimum_similarity\": 0.6, \"similarity_is_probability\": false, \"top_k\": 3}"
+      ],
+      "uncertain_below_similarity_floor": 0,
+      "uncertain_above_similarity_floor": 14,
+      "accepted_examples": [
+        {
+          "start_ms": 15000,
+          "candidate_id": "conversation_dominant",
+          "cosine": 0.7465559244155884,
+          "margin": 0.05191755294799805
+        },
+        {
+          "start_ms": 70000,
+          "candidate_id": "conversation_dominant",
+          "cosine": 0.7443040609359741,
+          "margin": 0.056980013847351074
+        },
+        {
+          "start_ms": 75000,
+          "candidate_id": "conversation_dominant",
+          "cosine": 0.7453230619430542,
+          "margin": 0.08196485042572021
+        },
+        {
+          "start_ms": 80000,
+          "candidate_id": "conversation_dominant",
+          "cosine": 0.7508448362350464,
+          "margin": 0.06197577714920044
+        }
+      ]
+    },
+    {
+      "axis_id": "person_presence",
+      "count": 7,
+      "decisions": {
+        "uncertain": 7
+      },
+      "candidate_counts": {
+        "person_visible": 7
+      },
+      "cosine": {
+        "min": 0.616794,
+        "p25": 0.622225,
+        "median": 0.623805,
+        "mean": 0.626042,
+        "p75": 0.628667,
+        "max": 0.639911
+      },
+      "margin": {
+        "min": 0.019235,
+        "p25": 0.024366,
+        "median": 0.029177,
+        "mean": 0.029793,
+        "p75": 0.03418,
+        "max": 0.043049
+      },
+      "runner_up_cosine": {
+        "min": 0.587607,
+        "p25": 0.592772,
+        "median": 0.595255,
+        "mean": 0.596249,
+        "p75": 0.599469,
+        "max": 0.606398
+      },
+      "top_two_gap": {
+        "min": 0.019235,
+        "p25": 0.024366,
+        "median": 0.029177,
+        "mean": 0.029793,
+        "p75": 0.03418,
+        "max": 0.043049
+      },
+      "thresholds_seen": [
+        "{\"margin_basis\": \"top_candidate_gap\", \"minimum_margin\": 0.05, \"minimum_similarity\": 0.6, \"similarity_is_probability\": false, \"top_k\": 3}"
+      ],
+      "uncertain_below_similarity_floor": 0,
+      "uncertain_above_similarity_floor": 7,
+      "accepted_examples": []
+    },
+    {
+      "axis_id": "scene_setting",
+      "count": 7,
+      "decisions": {
+        "uncertain": 7
+      },
+      "candidate_counts": {
+        "outdoor_setting": 3,
+        "indoor_setting": 4
+      },
+      "cosine": {
+        "min": 0.613501,
+        "p25": 0.615081,
+        "median": 0.632135,
+        "mean": 0.629837,
+        "p75": 0.64219,
+        "max": 0.648683
+      },
+      "margin": {
+        "min": 0.003857,
+        "p25": 0.004641,
+        "median": 0.005454,
+        "mean": 0.010599,
+        "p75": 0.0084,
+        "max": 0.038802
+      },
+      "runner_up_cosine": {
+        "min": 0.602608,
+        "p25": 0.606846,
+        "median": 0.609691,
+        "mean": 0.619238,
+        "p75": 0.632896,
+        "max": 0.642883
+      },
+      "top_two_gap": {
+        "min": 0.003857,
+        "p25": 0.004641,
+        "median": 0.005454,
+        "mean": 0.010599,
+        "p75": 0.0084,
+        "max": 0.038802
+      },
+      "thresholds_seen": [
+        "{\"margin_basis\": \"top_candidate_gap\", \"minimum_margin\": 0.05, \"minimum_similarity\": 0.6, \"similarity_is_probability\": false, \"top_k\": 3}"
+      ],
+      "uncertain_below_similarity_floor": 0,
+      "uncertain_above_similarity_floor": 7,
+      "accepted_examples": []
+    },
+    {
+      "axis_id": "scene_style",
+      "count": 7,
+      "decisions": {
+        "uncertain": 7
+      },
+      "candidate_counts": {
+        "unknown": 7
+      },
+      "cosine": {
+        "min": 0.572391,
+        "p25": 0.58038,
+        "median": 0.584274,
+        "mean": 0.584243,
+        "p75": 0.589134,
+        "max": 0.594007
+      },
+      "margin": {
+        "min": 0.0,
+        "p25": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "p75": 0.0,
+        "max": 0.0
+      },
+      "runner_up_cosine": {
+        "min": 0.553464,
+        "p25": 0.556666,
+        "median": 0.561933,
+        "mean": 0.562229,
+        "p75": 0.567127,
+        "max": 0.572618
+      },
+      "top_two_gap": {
+        "min": 0.010122,
+        "p25": 0.015194,
+        "median": 0.020377,
+        "mean": 0.022014,
+        "p75": 0.028706,
+        "max": 0.035799
+      },
+      "thresholds_seen": [
+        "{\"margin_basis\": \"similarity_threshold\", \"minimum_margin\": 0.05, \"minimum_similarity\": 0.6, \"similarity_is_probability\": false, \"top_k\": 3}"
+      ],
+      "uncertain_below_similarity_floor": 7,
+      "uncertain_above_similarity_floor": 0,
+      "accepted_examples": []
+    },
+    {
+      "axis_id": "screen_text_presence",
+      "count": 7,
+      "decisions": {
+        "uncertain": 7
+      },
+      "candidate_counts": {
+        "screen_text_visible": 3,
+        "screen_text_absent": 2,
+        "unknown": 2
+      },
+      "cosine": {
+        "min": 0.591377,
+        "p25": 0.59909,
+        "median": 0.602161,
+        "mean": 0.605117,
+        "p75": 0.612073,
+        "max": 0.619955
+      },
+      "margin": {
+        "min": 0.000523,
+        "p25": 0.003421,
+        "median": 0.007241,
+        "mean": 0.008765,
+        "p75": 0.011334,
+        "max": 0.024084
+      },
+      "runner_up_cosine": {
+        "min": 0.582345,
+        "p25": 0.595254,
+        "median": 0.595872,
+        "mean": 0.596351,
+        "p75": 0.599842,
+        "max": 0.606052
+      },
+      "top_two_gap": {
+        "min": 0.000523,
+        "p25": 0.003421,
+        "median": 0.007241,
+        "mean": 0.008765,
+        "p75": 0.011334,
+        "max": 0.024084
+      },
+      "thresholds_seen": [
+        "{\"margin_basis\": \"top_candidate_gap\", \"minimum_margin\": 0.05, \"minimum_similarity\": 0.6, \"similarity_is_probability\": false, \"top_k\": 3}"
+      ],
+      "uncertain_below_similarity_floor": 2,
+      "uncertain_above_similarity_floor": 5,
+      "accepted_examples": []
+    },
+    {
+      "axis_id": "speech_presence",
+      "count": 18,
+      "decisions": {
+        "uncertain": 17,
+        "accepted": 1
+      },
+      "candidate_counts": {
+        "speech_absent": 9,
+        "speech_present": 9
+      },
+      "cosine": {
+        "min": 0.714077,
+        "p25": 0.726914,
+        "median": 0.734144,
+        "mean": 0.737461,
+        "p75": 0.74523,
+        "max": 0.770487
+      },
+      "margin": {
+        "min": 0.001611,
+        "p25": 0.005792,
+        "median": 0.011101,
+        "mean": 0.014133,
+        "p75": 0.014379,
+        "max": 0.057623
+      },
+      "runner_up_cosine": {
+        "min": 0.68883,
+        "p25": 0.712252,
+        "median": 0.72252,
+        "mean": 0.723328,
+        "p75": 0.728267,
+        "max": 0.768714
+      },
+      "top_two_gap": {
+        "min": 0.001611,
+        "p25": 0.005792,
+        "median": 0.011101,
+        "mean": 0.014133,
+        "p75": 0.014379,
+        "max": 0.057623
+      },
+      "thresholds_seen": [
+        "{\"margin_basis\": \"top_candidate_gap\", \"minimum_margin\": 0.05, \"minimum_similarity\": 0.6, \"similarity_is_probability\": false, \"top_k\": 3}"
+      ],
+      "uncertain_below_similarity_floor": 0,
+      "uncertain_above_similarity_floor": 17,
+      "accepted_examples": [
+        {
+          "start_ms": 70000,
+          "candidate_id": "speech_present",
+          "cosine": 0.7464532852172852,
+          "margin": 0.05762290954589844
+        }
+      ]
+    }
+  ],
+  "hypothesis_axes": [
+    {
+      "profile_id": "av",
+      "profile_version": 1,
+      "embedding_language": "en",
+      "axis_id": "audio_visual_correspondence",
+      "modality": "joint",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "aligned_event",
+          "text_en": "The audible event corresponds in time to a visible event.",
+          "text_ru": "Слышимое событие совпадает по времени с видимым событием."
+        },
+        {
+          "candidate_id": "no_clear_alignment",
+          "text_en": "No clear time alignment between audible and visible events is supported.",
+          "text_ru": "Нет достаточных оснований утверждать временное совпадение звуковых и видимых событий."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "aligned_event",
+          "right_candidate": "no_clear_alignment",
+          "cosine": 0.888376,
+          "left_text_en": "The audible event corresponds in time to a visible event.",
+          "right_text_en": "No clear time alignment between audible and visible events is supported."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.888376,
+        "p25": 0.888376,
+        "median": 0.888376,
+        "mean": 0.888376,
+        "p75": 0.888376,
+        "max": 0.888376
+      }
+    },
+    {
+      "profile_id": "av",
+      "profile_version": 1,
+      "embedding_language": "en",
+      "axis_id": "speech_visual_correspondence",
+      "modality": "joint",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "visible_speech_activity",
+          "text_en": "Visible mouth movement aligns with an audible speech segment.",
+          "text_ru": "Видимое движение губ совпадает с фрагментом слышимой речи."
+        },
+        {
+          "candidate_id": "no_speech_visual_alignment",
+          "text_en": "No clear visible mouth movement aligns with audible speech.",
+          "text_ru": "Не обнаружено отчётливого совпадения движения губ со слышимой речью."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "visible_speech_activity",
+          "right_candidate": "no_speech_visual_alignment",
+          "cosine": 0.933303,
+          "left_text_en": "Visible mouth movement aligns with an audible speech segment.",
+          "right_text_en": "No clear visible mouth movement aligns with audible speech."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.933303,
+        "p25": 0.933303,
+        "median": 0.933303,
+        "mean": 0.933303,
+        "p75": 0.933303,
+        "max": 0.933303
+      }
+    },
+    {
+      "profile_id": "music",
+      "profile_version": 3,
+      "embedding_language": "en",
+      "axis_id": "music_presence",
+      "modality": "audio",
+      "mutually_exclusive": true,
+      "candidate_count": 4,
+      "candidates": [
+        {
+          "candidate_id": "music_present",
+          "text_en": "Music is the foreground sound and dominates the audio.",
+          "text_ru": "Музыка звучит на первом плане и преобладает в аудио."
+        },
+        {
+          "candidate_id": "conversation_dominant",
+          "text_en": "People are speaking and their conversation is the foreground sound.",
+          "text_ru": "На первом плане слышен разговор людей."
+        },
+        {
+          "candidate_id": "environment_dominant",
+          "text_en": "Environmental ambience and everyday sounds dominate the audio.",
+          "text_ru": "В аудио преобладают звуки окружающей среды и повседневные шумы."
+        },
+        {
+          "candidate_id": "music_and_speech",
+          "text_en": "Music and human speech are both prominent in the audio.",
+          "text_ru": "В аудио одновременно заметны музыка и человеческая речь."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "music_present",
+          "right_candidate": "environment_dominant",
+          "cosine": 0.833471,
+          "left_text_en": "Music is the foreground sound and dominates the audio.",
+          "right_text_en": "Environmental ambience and everyday sounds dominate the audio."
+        },
+        {
+          "left_candidate": "music_present",
+          "right_candidate": "music_and_speech",
+          "cosine": 0.825373,
+          "left_text_en": "Music is the foreground sound and dominates the audio.",
+          "right_text_en": "Music and human speech are both prominent in the audio."
+        },
+        {
+          "left_candidate": "environment_dominant",
+          "right_candidate": "music_and_speech",
+          "cosine": 0.79704,
+          "left_text_en": "Environmental ambience and everyday sounds dominate the audio.",
+          "right_text_en": "Music and human speech are both prominent in the audio."
+        },
+        {
+          "left_candidate": "conversation_dominant",
+          "right_candidate": "music_and_speech",
+          "cosine": 0.794128,
+          "left_text_en": "People are speaking and their conversation is the foreground sound.",
+          "right_text_en": "Music and human speech are both prominent in the audio."
+        },
+        {
+          "left_candidate": "conversation_dominant",
+          "right_candidate": "environment_dominant",
+          "cosine": 0.791401,
+          "left_text_en": "People are speaking and their conversation is the foreground sound.",
+          "right_text_en": "Environmental ambience and everyday sounds dominate the audio."
+        },
+        {
+          "left_candidate": "music_present",
+          "right_candidate": "conversation_dominant",
+          "cosine": 0.77235,
+          "left_text_en": "Music is the foreground sound and dominates the audio.",
+          "right_text_en": "People are speaking and their conversation is the foreground sound."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.77235,
+        "p25": 0.792083,
+        "median": 0.795584,
+        "mean": 0.802294,
+        "p75": 0.81829,
+        "max": 0.833471
+      }
+    },
+    {
+      "profile_id": "music",
+      "profile_version": 3,
+      "embedding_language": "en",
+      "axis_id": "vocal_presence",
+      "modality": "audio",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "vocals_present",
+          "text_en": "Singing vocals are clearly audible in the music.",
+          "text_ru": "В музыке отчётливо слышен вокал."
+        },
+        {
+          "candidate_id": "vocals_absent",
+          "text_en": "The music is instrumental, with no clear singing vocals.",
+          "text_ru": "Музыка инструментальная, отчётливого вокала не слышно."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "vocals_present",
+          "right_candidate": "vocals_absent",
+          "cosine": 0.869807,
+          "left_text_en": "Singing vocals are clearly audible in the music.",
+          "right_text_en": "The music is instrumental, with no clear singing vocals."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.869807,
+        "p25": 0.869807,
+        "median": 0.869807,
+        "mean": 0.869807,
+        "p75": 0.869807,
+        "max": 0.869807
+      }
+    },
+    {
+      "profile_id": "music",
+      "profile_version": 3,
+      "embedding_language": "en",
+      "axis_id": "percussion_presence",
+      "modality": "audio",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "percussion_present",
+          "text_en": "A clear drum or percussion rhythm is audible in the music.",
+          "text_ru": "В музыке отчётливо слышен ритм ударных."
+        },
+        {
+          "candidate_id": "percussion_absent",
+          "text_en": "The music has a sustained or melodic texture without a clear drum rhythm.",
+          "text_ru": "В музыке преобладает протяжённая или мелодическая фактура без отчётливого ритма ударных."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "percussion_present",
+          "right_candidate": "percussion_absent",
+          "cosine": 0.848897,
+          "left_text_en": "A clear drum or percussion rhythm is audible in the music.",
+          "right_text_en": "The music has a sustained or melodic texture without a clear drum rhythm."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.848897,
+        "p25": 0.848897,
+        "median": 0.848897,
+        "mean": 0.848897,
+        "p75": 0.848897,
+        "max": 0.848897
+      }
+    },
+    {
+      "profile_id": "music",
+      "profile_version": 3,
+      "embedding_language": "en",
+      "axis_id": "bass_presence",
+      "modality": "audio",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "bass_present",
+          "text_en": "A distinct low-frequency bass line is audible in the music.",
+          "text_ru": "В музыке слышна отчётливая низкочастотная басовая линия."
+        },
+        {
+          "candidate_id": "bass_absent",
+          "text_en": "The music has no distinct low-frequency bass line.",
+          "text_ru": "В музыке не слышно отчётливой низкочастотной басовой линии."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "bass_present",
+          "right_candidate": "bass_absent",
+          "cosine": 0.926215,
+          "left_text_en": "A distinct low-frequency bass line is audible in the music.",
+          "right_text_en": "The music has no distinct low-frequency bass line."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.926215,
+        "p25": 0.926215,
+        "median": 0.926215,
+        "mean": 0.926215,
+        "p75": 0.926215,
+        "max": 0.926215
+      }
+    },
+    {
+      "profile_id": "music",
+      "profile_version": 3,
+      "embedding_language": "en",
+      "axis_id": "electronic_timbre",
+      "modality": "audio",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "electronic_timbre_present",
+          "text_en": "A prominent synthesized or electronic timbre is audible in the music.",
+          "text_ru": "В музыке заметен синтезированный или электронный тембр."
+        },
+        {
+          "candidate_id": "electronic_timbre_absent",
+          "text_en": "The music has a predominantly acoustic timbre.",
+          "text_ru": "В музыке преобладает акустический тембр."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "electronic_timbre_present",
+          "right_candidate": "electronic_timbre_absent",
+          "cosine": 0.860705,
+          "left_text_en": "A prominent synthesized or electronic timbre is audible in the music.",
+          "right_text_en": "The music has a predominantly acoustic timbre."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.860705,
+        "p25": 0.860705,
+        "median": 0.860705,
+        "mean": 0.860705,
+        "p75": 0.860705,
+        "max": 0.860705
+      }
+    },
+    {
+      "profile_id": "music",
+      "profile_version": 3,
+      "embedding_language": "en",
+      "axis_id": "energy",
+      "modality": "audio",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "high_energy",
+          "text_en": "The music sounds energetic and intense.",
+          "text_ru": "Музыка звучит энергично и интенсивно."
+        },
+        {
+          "candidate_id": "low_energy",
+          "text_en": "The music has a calm, gentle, restrained energy.",
+          "text_ru": "Музыка звучит спокойно, мягко и сдержанно."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "high_energy",
+          "right_candidate": "low_energy",
+          "cosine": 0.800837,
+          "left_text_en": "The music sounds energetic and intense.",
+          "right_text_en": "The music has a calm, gentle, restrained energy."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.800837,
+        "p25": 0.800837,
+        "median": 0.800837,
+        "mean": 0.800837,
+        "p75": 0.800837,
+        "max": 0.800837
+      }
+    },
+    {
+      "profile_id": "music",
+      "profile_version": 3,
+      "embedding_language": "en",
+      "axis_id": "tempo_feel",
+      "modality": "audio",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "fast_feel",
+          "text_en": "The musical pulse feels fast.",
+          "text_ru": "Музыкальный пульс воспринимается быстрым."
+        },
+        {
+          "candidate_id": "slow_feel",
+          "text_en": "The musical pulse feels slow and unhurried.",
+          "text_ru": "Музыкальный пульс воспринимается медленным и неторопливым."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "fast_feel",
+          "right_candidate": "slow_feel",
+          "cosine": 0.889646,
+          "left_text_en": "The musical pulse feels fast.",
+          "right_text_en": "The musical pulse feels slow and unhurried."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.889646,
+        "p25": 0.889646,
+        "median": 0.889646,
+        "mean": 0.889646,
+        "p75": 0.889646,
+        "max": 0.889646
+      }
+    },
+    {
+      "profile_id": "music",
+      "profile_version": 3,
+      "embedding_language": "en",
+      "axis_id": "instrument_family",
+      "modality": "audio",
+      "mutually_exclusive": true,
+      "candidate_count": 4,
+      "candidates": [
+        {
+          "candidate_id": "electronic_timbre",
+          "text_en": "The music has a prominent electronic or synthesized timbre.",
+          "text_ru": "В музыке заметен электронный или синтезированный тембр."
+        },
+        {
+          "candidate_id": "acoustic_strings",
+          "text_en": "The music has a prominent acoustic string timbre.",
+          "text_ru": "В музыке заметен тембр акустических струнных инструментов."
+        },
+        {
+          "candidate_id": "percussion_timbre",
+          "text_en": "The music has prominent acoustic or electronic percussion timbres.",
+          "text_ru": "В музыке заметны акустические или электронные ударные тембры."
+        },
+        {
+          "candidate_id": "piano_timbre",
+          "text_en": "The music has a prominent piano timbre.",
+          "text_ru": "В музыке заметен тембр фортепиано."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "acoustic_strings",
+          "right_candidate": "piano_timbre",
+          "cosine": 0.918827,
+          "left_text_en": "The music has a prominent acoustic string timbre.",
+          "right_text_en": "The music has a prominent piano timbre."
+        },
+        {
+          "left_candidate": "electronic_timbre",
+          "right_candidate": "piano_timbre",
+          "cosine": 0.881746,
+          "left_text_en": "The music has a prominent electronic or synthesized timbre.",
+          "right_text_en": "The music has a prominent piano timbre."
+        },
+        {
+          "left_candidate": "electronic_timbre",
+          "right_candidate": "acoustic_strings",
+          "cosine": 0.868248,
+          "left_text_en": "The music has a prominent electronic or synthesized timbre.",
+          "right_text_en": "The music has a prominent acoustic string timbre."
+        },
+        {
+          "left_candidate": "electronic_timbre",
+          "right_candidate": "percussion_timbre",
+          "cosine": 0.864411,
+          "left_text_en": "The music has a prominent electronic or synthesized timbre.",
+          "right_text_en": "The music has prominent acoustic or electronic percussion timbres."
+        },
+        {
+          "left_candidate": "acoustic_strings",
+          "right_candidate": "percussion_timbre",
+          "cosine": 0.85772,
+          "left_text_en": "The music has a prominent acoustic string timbre.",
+          "right_text_en": "The music has prominent acoustic or electronic percussion timbres."
+        },
+        {
+          "left_candidate": "percussion_timbre",
+          "right_candidate": "piano_timbre",
+          "cosine": 0.848218,
+          "left_text_en": "The music has prominent acoustic or electronic percussion timbres.",
+          "right_text_en": "The music has a prominent piano timbre."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.848218,
+        "p25": 0.859393,
+        "median": 0.866329,
+        "mean": 0.873195,
+        "p75": 0.878372,
+        "max": 0.918827
+      }
+    },
+    {
+      "profile_id": "sound",
+      "profile_version": 1,
+      "embedding_language": "en",
+      "axis_id": "speech_presence",
+      "modality": "audio",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "speech_present",
+          "text_en": "A person is speaking in the audio.",
+          "text_ru": "В аудио слышна речь человека."
+        },
+        {
+          "candidate_id": "speech_absent",
+          "text_en": "No human speech is audible in the audio.",
+          "text_ru": "В аудио не слышно речи человека."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "speech_present",
+          "right_candidate": "speech_absent",
+          "cosine": 0.820994,
+          "left_text_en": "A person is speaking in the audio.",
+          "right_text_en": "No human speech is audible in the audio."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.820994,
+        "p25": 0.820994,
+        "median": 0.820994,
+        "mean": 0.820994,
+        "p75": 0.820994,
+        "max": 0.820994
+      }
+    },
+    {
+      "profile_id": "sound",
+      "profile_version": 1,
+      "embedding_language": "en",
+      "axis_id": "ambient_sound",
+      "modality": "audio",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "ambient_sound_present",
+          "text_en": "A continuous environmental background sound is audible.",
+          "text_ru": "Слышен непрерывный фоновый звук окружающей среды."
+        },
+        {
+          "candidate_id": "ambient_sound_absent",
+          "text_en": "No clear continuous environmental background sound is audible.",
+          "text_ru": "Не слышно отчётливого непрерывного фонового звука окружающей среды."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "ambient_sound_present",
+          "right_candidate": "ambient_sound_absent",
+          "cosine": 0.945353,
+          "left_text_en": "A continuous environmental background sound is audible.",
+          "right_text_en": "No clear continuous environmental background sound is audible."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.945353,
+        "p25": 0.945353,
+        "median": 0.945353,
+        "mean": 0.945353,
+        "p75": 0.945353,
+        "max": 0.945353
+      }
+    },
+    {
+      "profile_id": "sound",
+      "profile_version": 1,
+      "embedding_language": "en",
+      "axis_id": "impact_sound",
+      "modality": "audio",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "impact_present",
+          "text_en": "One or more brief impact sounds are audible.",
+          "text_ru": "Слышен один или несколько коротких ударных звуков."
+        },
+        {
+          "candidate_id": "impact_absent",
+          "text_en": "No clear brief impact sounds are audible.",
+          "text_ru": "Не слышно отчётливых коротких ударных звуков."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "impact_present",
+          "right_candidate": "impact_absent",
+          "cosine": 0.935262,
+          "left_text_en": "One or more brief impact sounds are audible.",
+          "right_text_en": "No clear brief impact sounds are audible."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.935262,
+        "p25": 0.935262,
+        "median": 0.935262,
+        "mean": 0.935262,
+        "p75": 0.935262,
+        "max": 0.935262
+      }
+    },
+    {
+      "profile_id": "visual",
+      "profile_version": 1,
+      "embedding_language": "en",
+      "axis_id": "scene_setting",
+      "modality": "image",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "indoor_setting",
+          "text_en": "The image shows an indoor setting.",
+          "text_ru": "На изображении показано помещение."
+        },
+        {
+          "candidate_id": "outdoor_setting",
+          "text_en": "The image shows an outdoor setting.",
+          "text_ru": "На изображении показано пространство под открытым небом."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "indoor_setting",
+          "right_candidate": "outdoor_setting",
+          "cosine": 0.892597,
+          "left_text_en": "The image shows an indoor setting.",
+          "right_text_en": "The image shows an outdoor setting."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.892597,
+        "p25": 0.892597,
+        "median": 0.892597,
+        "mean": 0.892597,
+        "p75": 0.892597,
+        "max": 0.892597
+      }
+    },
+    {
+      "profile_id": "visual",
+      "profile_version": 1,
+      "embedding_language": "en",
+      "axis_id": "person_presence",
+      "modality": "image",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "person_visible",
+          "text_en": "A person is visible in the image.",
+          "text_ru": "На изображении виден человек."
+        },
+        {
+          "candidate_id": "person_not_visible",
+          "text_en": "No person is visible in the image.",
+          "text_ru": "На изображении не видно людей."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "person_visible",
+          "right_candidate": "person_not_visible",
+          "cosine": 0.871393,
+          "left_text_en": "A person is visible in the image.",
+          "right_text_en": "No person is visible in the image."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.871393,
+        "p25": 0.871393,
+        "median": 0.871393,
+        "mean": 0.871393,
+        "p75": 0.871393,
+        "max": 0.871393
+      }
+    },
+    {
+      "profile_id": "visual",
+      "profile_version": 1,
+      "embedding_language": "en",
+      "axis_id": "screen_text_presence",
+      "modality": "image",
+      "mutually_exclusive": true,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "screen_text_visible",
+          "text_en": "Readable text is visible in the image.",
+          "text_ru": "На изображении виден читаемый текст."
+        },
+        {
+          "candidate_id": "screen_text_absent",
+          "text_en": "No readable text is visible in the image.",
+          "text_ru": "На изображении не видно читаемого текста."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "screen_text_visible",
+          "right_candidate": "screen_text_absent",
+          "cosine": 0.911605,
+          "left_text_en": "Readable text is visible in the image.",
+          "right_text_en": "No readable text is visible in the image."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.911605,
+        "p25": 0.911605,
+        "median": 0.911605,
+        "mean": 0.911605,
+        "p75": 0.911605,
+        "max": 0.911605
+      }
+    },
+    {
+      "profile_id": "visual",
+      "profile_version": 1,
+      "embedding_language": "en",
+      "axis_id": "scene_style",
+      "modality": "image",
+      "mutually_exclusive": false,
+      "candidate_count": 2,
+      "candidates": [
+        {
+          "candidate_id": "natural_scene",
+          "text_en": "The image is dominated by a natural landscape or vegetation.",
+          "text_ru": "На изображении преобладает природный пейзаж или растительность."
+        },
+        {
+          "candidate_id": "built_environment",
+          "text_en": "The image is dominated by buildings or a built environment.",
+          "text_ru": "На изображении преобладают здания или городская среда."
+        }
+      ],
+      "pairwise_text_cosine": [
+        {
+          "left_candidate": "natural_scene",
+          "right_candidate": "built_environment",
+          "cosine": 0.871876,
+          "left_text_en": "The image is dominated by a natural landscape or vegetation.",
+          "right_text_en": "The image is dominated by buildings or a built environment."
+        }
+      ],
+      "pairwise_cosine_distribution": {
+        "min": 0.871876,
+        "p25": 0.871876,
+        "median": 0.871876,
+        "mean": 0.871876,
+        "p75": 0.871876,
+        "max": 0.871876
+      }
+    }
+  ],
+  "closest_cross_axis_pairs": [
+    {
+      "left": "music.electronic_timbre.electronic_timbre_present",
+      "right": "music.instrument_family.electronic_timbre",
+      "modality": "audio",
+      "cosine": 0.965715,
+      "left_text_en": "A prominent synthesized or electronic timbre is audible in the music.",
+      "right_text_en": "The music has a prominent electronic or synthesized timbre."
+    },
+    {
+      "left": "music.electronic_timbre.electronic_timbre_absent",
+      "right": "music.instrument_family.acoustic_strings",
+      "modality": "audio",
+      "cosine": 0.948519,
+      "left_text_en": "The music has a predominantly acoustic timbre.",
+      "right_text_en": "The music has a prominent acoustic string timbre."
+    },
+    {
+      "left": "music.electronic_timbre.electronic_timbre_absent",
+      "right": "music.instrument_family.piano_timbre",
+      "modality": "audio",
+      "cosine": 0.894961,
+      "left_text_en": "The music has a predominantly acoustic timbre.",
+      "right_text_en": "The music has a prominent piano timbre."
+    },
+    {
+      "left": "visual.person_presence.person_not_visible",
+      "right": "visual.screen_text_presence.screen_text_absent",
+      "modality": "image",
+      "cosine": 0.894316,
+      "left_text_en": "No person is visible in the image.",
+      "right_text_en": "No readable text is visible in the image."
+    },
+    {
+      "left": "av.speech_visual_correspondence.no_speech_visual_alignment",
+      "right": "sound.speech_presence.speech_absent",
+      "modality": "joint",
+      "cosine": 0.893786,
+      "left_text_en": "No clear visible mouth movement aligns with audible speech.",
+      "right_text_en": "No human speech is audible in the audio."
+    },
+    {
+      "left": "music.energy.high_energy",
+      "right": "music.tempo_feel.fast_feel",
+      "modality": "audio",
+      "cosine": 0.877436,
+      "left_text_en": "The music sounds energetic and intense.",
+      "right_text_en": "The musical pulse feels fast."
+    },
+    {
+      "left": "music.electronic_timbre.electronic_timbre_absent",
+      "right": "music.instrument_family.electronic_timbre",
+      "modality": "audio",
+      "cosine": 0.876461,
+      "left_text_en": "The music has a predominantly acoustic timbre.",
+      "right_text_en": "The music has a prominent electronic or synthesized timbre."
+    },
+    {
+      "left": "music.electronic_timbre.electronic_timbre_present",
+      "right": "music.instrument_family.piano_timbre",
+      "modality": "audio",
+      "cosine": 0.873872,
+      "left_text_en": "A prominent synthesized or electronic timbre is audible in the music.",
+      "right_text_en": "The music has a prominent piano timbre."
+    },
+    {
+      "left": "music.music_presence.environment_dominant",
+      "right": "sound.ambient_sound.ambient_sound_present",
+      "modality": "audio",
+      "cosine": 0.872112,
+      "left_text_en": "Environmental ambience and everyday sounds dominate the audio.",
+      "right_text_en": "A continuous environmental background sound is audible."
+    },
+    {
+      "left": "visual.scene_setting.outdoor_setting",
+      "right": "visual.scene_style.natural_scene",
+      "modality": "image",
+      "cosine": 0.868525,
+      "left_text_en": "The image shows an outdoor setting.",
+      "right_text_en": "The image is dominated by a natural landscape or vegetation."
+    },
+    {
+      "left": "music.electronic_timbre.electronic_timbre_present",
+      "right": "music.instrument_family.percussion_timbre",
+      "modality": "audio",
+      "cosine": 0.867416,
+      "left_text_en": "A prominent synthesized or electronic timbre is audible in the music.",
+      "right_text_en": "The music has prominent acoustic or electronic percussion timbres."
+    },
+    {
+      "left": "music.electronic_timbre.electronic_timbre_present",
+      "right": "music.instrument_family.acoustic_strings",
+      "modality": "audio",
+      "cosine": 0.865465,
+      "left_text_en": "A prominent synthesized or electronic timbre is audible in the music.",
+      "right_text_en": "The music has a prominent acoustic string timbre."
+    },
+    {
+      "left": "visual.person_presence.person_visible",
+      "right": "visual.screen_text_presence.screen_text_absent",
+      "modality": "image",
+      "cosine": 0.864901,
+      "left_text_en": "A person is visible in the image.",
+      "right_text_en": "No readable text is visible in the image."
+    },
+    {
+      "left": "visual.scene_setting.indoor_setting",
+      "right": "visual.person_presence.person_visible",
+      "modality": "image",
+      "cosine": 0.864216,
+      "left_text_en": "The image shows an indoor setting.",
+      "right_text_en": "A person is visible in the image."
+    },
+    {
+      "left": "music.electronic_timbre.electronic_timbre_absent",
+      "right": "music.instrument_family.percussion_timbre",
+      "modality": "audio",
+      "cosine": 0.859976,
+      "left_text_en": "The music has a predominantly acoustic timbre.",
+      "right_text_en": "The music has prominent acoustic or electronic percussion timbres."
+    },
+    {
+      "left": "visual.person_presence.person_visible",
+      "right": "visual.screen_text_presence.screen_text_visible",
+      "modality": "image",
+      "cosine": 0.857792,
+      "left_text_en": "A person is visible in the image.",
+      "right_text_en": "Readable text is visible in the image."
+    },
+    {
+      "left": "music.music_presence.conversation_dominant",
+      "right": "sound.speech_presence.speech_present",
+      "modality": "audio",
+      "cosine": 0.855411,
+      "left_text_en": "People are speaking and their conversation is the foreground sound.",
+      "right_text_en": "A person is speaking in the audio."
+    },
+    {
+      "left": "music.vocal_presence.vocals_absent",
+      "right": "music.percussion_presence.percussion_absent",
+      "modality": "audio",
+      "cosine": 0.853693,
+      "left_text_en": "The music is instrumental, with no clear singing vocals.",
+      "right_text_en": "The music has a sustained or melodic texture without a clear drum rhythm."
+    },
+    {
+      "left": "visual.scene_setting.outdoor_setting",
+      "right": "visual.scene_style.built_environment",
+      "modality": "image",
+      "cosine": 0.849756,
+      "left_text_en": "The image shows an outdoor setting.",
+      "right_text_en": "The image is dominated by buildings or a built environment."
+    },
+    {
+      "left": "sound.speech_presence.speech_present",
+      "right": "visual.person_presence.person_visible",
+      "modality": "audio",
+      "cosine": 0.84836,
+      "left_text_en": "A person is speaking in the audio.",
+      "right_text_en": "A person is visible in the image."
+    },
+    {
+      "left": "visual.scene_setting.outdoor_setting",
+      "right": "visual.person_presence.person_visible",
+      "modality": "image",
+      "cosine": 0.845414,
+      "left_text_en": "The image shows an outdoor setting.",
+      "right_text_en": "A person is visible in the image."
+    },
+    {
+      "left": "av.audio_visual_correspondence.no_clear_alignment",
+      "right": "av.speech_visual_correspondence.no_speech_visual_alignment",
+      "modality": "joint",
+      "cosine": 0.842584,
+      "left_text_en": "No clear time alignment between audible and visible events is supported.",
+      "right_text_en": "No clear visible mouth movement aligns with audible speech."
+    },
+    {
+      "left": "visual.scene_setting.indoor_setting",
+      "right": "visual.screen_text_presence.screen_text_absent",
+      "modality": "image",
+      "cosine": 0.841815,
+      "left_text_en": "The image shows an indoor setting.",
+      "right_text_en": "No readable text is visible in the image."
+    },
+    {
+      "left": "music.music_presence.music_and_speech",
+      "right": "sound.speech_presence.speech_absent",
+      "modality": "audio",
+      "cosine": 0.83554,
+      "left_text_en": "Music and human speech are both prominent in the audio.",
+      "right_text_en": "No human speech is audible in the audio."
+    },
+    {
+      "left": "music.vocal_presence.vocals_present",
+      "right": "music.percussion_presence.percussion_present",
+      "modality": "audio",
+      "cosine": 0.83477,
+      "left_text_en": "Singing vocals are clearly audible in the music.",
+      "right_text_en": "A clear drum or percussion rhythm is audible in the music."
+    },
+    {
+      "left": "sound.ambient_sound.ambient_sound_absent",
+      "right": "sound.impact_sound.impact_absent",
+      "modality": "audio",
+      "cosine": 0.834165,
+      "left_text_en": "No clear continuous environmental background sound is audible.",
+      "right_text_en": "No clear brief impact sounds are audible."
+    },
+    {
+      "left": "visual.screen_text_presence.screen_text_absent",
+      "right": "visual.scene_style.natural_scene",
+      "modality": "image",
+      "cosine": 0.833885,
+      "left_text_en": "No readable text is visible in the image.",
+      "right_text_en": "The image is dominated by a natural landscape or vegetation."
+    },
+    {
+      "left": "visual.scene_setting.indoor_setting",
+      "right": "visual.scene_style.built_environment",
+      "modality": "image",
+      "cosine": 0.833501,
+      "left_text_en": "The image shows an indoor setting.",
+      "right_text_en": "The image is dominated by buildings or a built environment."
+    },
+    {
+      "left": "music.music_presence.environment_dominant",
+      "right": "sound.ambient_sound.ambient_sound_absent",
+      "modality": "audio",
+      "cosine": 0.83333,
+      "left_text_en": "Environmental ambience and everyday sounds dominate the audio.",
+      "right_text_en": "No clear continuous environmental background sound is audible."
+    },
+    {
+      "left": "visual.screen_text_presence.screen_text_absent",
+      "right": "visual.scene_style.built_environment",
+      "modality": "image",
+      "cosine": 0.832851,
+      "left_text_en": "No readable text is visible in the image.",
+      "right_text_en": "The image is dominated by buildings or a built environment."
+    },
+    {
+      "left": "av.speech_visual_correspondence.visible_speech_activity",
+      "right": "sound.speech_presence.speech_absent",
+      "modality": "joint",
+      "cosine": 0.832729,
+      "left_text_en": "Visible mouth movement aligns with an audible speech segment.",
+      "right_text_en": "No human speech is audible in the audio."
+    },
+    {
+      "left": "visual.scene_setting.outdoor_setting",
+      "right": "visual.screen_text_presence.screen_text_absent",
+      "modality": "image",
+      "cosine": 0.830976,
+      "left_text_en": "The image shows an outdoor setting.",
+      "right_text_en": "No readable text is visible in the image."
+    },
+    {
+      "left": "visual.person_presence.person_visible",
+      "right": "visual.scene_style.built_environment",
+      "modality": "image",
+      "cosine": 0.830115,
+      "left_text_en": "A person is visible in the image.",
+      "right_text_en": "The image is dominated by buildings or a built environment."
+    },
+    {
+      "left": "music.music_presence.music_present",
+      "right": "music.energy.high_energy",
+      "modality": "audio",
+      "cosine": 0.830007,
+      "left_text_en": "Music is the foreground sound and dominates the audio.",
+      "right_text_en": "The music sounds energetic and intense."
+    },
+    {
+      "left": "music.percussion_presence.percussion_absent",
+      "right": "music.bass_presence.bass_absent",
+      "modality": "audio",
+      "cosine": 0.829869,
+      "left_text_en": "The music has a sustained or melodic texture without a clear drum rhythm.",
+      "right_text_en": "The music has no distinct low-frequency bass line."
+    },
+    {
+      "left": "sound.speech_presence.speech_absent",
+      "right": "sound.ambient_sound.ambient_sound_absent",
+      "modality": "audio",
+      "cosine": 0.826817,
+      "left_text_en": "No human speech is audible in the audio.",
+      "right_text_en": "No clear continuous environmental background sound is audible."
+    },
+    {
+      "left": "visual.person_presence.person_visible",
+      "right": "visual.scene_style.natural_scene",
+      "modality": "image",
+      "cosine": 0.82508,
+      "left_text_en": "A person is visible in the image.",
+      "right_text_en": "The image is dominated by a natural landscape or vegetation."
+    },
+    {
+      "left": "av.speech_visual_correspondence.no_speech_visual_alignment",
+      "right": "sound.ambient_sound.ambient_sound_absent",
+      "modality": "joint",
+      "cosine": 0.823974,
+      "left_text_en": "No clear visible mouth movement aligns with audible speech.",
+      "right_text_en": "No clear continuous environmental background sound is audible."
+    },
+    {
+      "left": "music.vocal_presence.vocals_absent",
+      "right": "music.bass_presence.bass_absent",
+      "modality": "audio",
+      "cosine": 0.822851,
+      "left_text_en": "The music is instrumental, with no clear singing vocals.",
+      "right_text_en": "The music has no distinct low-frequency bass line."
+    },
+    {
+      "left": "av.audio_visual_correspondence.aligned_event",
+      "right": "av.speech_visual_correspondence.visible_speech_activity",
+      "modality": "joint",
+      "cosine": 0.822413,
+      "left_text_en": "The audible event corresponds in time to a visible event.",
+      "right_text_en": "Visible mouth movement aligns with an audible speech segment."
+    }
+  ],
+  "manual_label_context": {
+    "labels_joined_to_input": false,
+    "existing_40_clip_speech_pack": "source-description-derived; not independently reviewed by listening",
+    "valid_for_music_prompt_tuning": false
+  },
+  "scope": "Label-free diagnostic; no thresholds or model weights changed."
+}

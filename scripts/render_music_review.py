@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from collections import Counter
 from pathlib import Path
@@ -77,6 +78,31 @@ def render(source: Path, destination: Path) -> None:
     metrics = next(
         (item for item in records if item.get("record_type") == "metrics"), {}
     )
+    event_graph_records = [
+        item for item in records if item.get("record_type") == "event_graph"
+    ]
+    graph_nodes = {
+        (
+            str(item.get("stream_id", "")),
+            int(item.get("epoch", 0)),
+            str(node.get("event_id", "")),
+            int(node.get("revision", 0)),
+        ): node
+        for item in event_graph_records
+        for node in item.get("nodes", [])
+    }
+    graph_edges = {
+        (
+            str(item.get("stream_id", "")),
+            int(item.get("epoch", 0)),
+            str(edge.get("source", {}).get("event_id", "")),
+            int(edge.get("source", {}).get("revision", 0)),
+            str(edge.get("target", {}).get("event_id", "")),
+            int(edge.get("target", {}).get("revision", 0)),
+        ): edge
+        for item in event_graph_records
+        for edge in item.get("edges", [])
+    }
     events = _latest_events(records)
     l2_reports = [
         item for item in records if item.get("record_type") == "l2_refinement"
@@ -115,6 +141,20 @@ def render(source: Path, destination: Path) -> None:
         if detail_probe_path.exists()
         else {}
     )
+    repo_root = Path(__file__).resolve().parents[1]
+    semantic_diagnostic_path = (
+        repo_root
+        / "benchmarks"
+        / "reports"
+        / "semantic_matcher_diagnostic_20261026"
+        / "semantic_matcher_diagnostic.json"
+    )
+    semantic_diagnostic: dict[str, Any] = {}
+    if semantic_diagnostic_path.is_file():
+        candidate_diagnostic = json.loads(semantic_diagnostic_path.read_text(encoding="utf-8"))
+        source_sha256 = hashlib.sha256(source.read_bytes()).hexdigest()
+        if candidate_diagnostic.get("input_sha256") == source_sha256:
+            semantic_diagnostic = candidate_diagnostic
     multiclass_candidates = multiclass_probe.get("top_candidate_counts", {})
     detail_summary = detail_probe.get("summary", {})
     multiclass_accepted = detail_summary.get("music_presence", {}).get(
@@ -126,6 +166,12 @@ def render(source: Path, destination: Path) -> None:
     candidate_change_count = sum(
         len(item.get("candidate_changes", [])) for item in l2_reports
     )
+    embedding_by_modality = metrics.get("embedding_worker", {}).get("by_modality", {})
+    embedding_cache_text = "; ".join(
+        f"{modality}: {int(item.get('cache_hits', 0))}/{int(item.get('completed', 0))} cache hits, "
+        f"{float(item.get('inference_ms', 0)):.0f} ms inference"
+        for modality, item in sorted(embedding_by_modality.items())
+    ) or "not reported"
 
     lines = [
         "# Реальный видео прогон: L1/L2/L3",
@@ -149,6 +195,10 @@ def render(source: Path, destination: Path) -> None:
         f"без L2-ревизии: {unrecovered_pressure_events}.",
         f"- Время анализа файла: {float(metrics.get('end_to_end_elapsed', 0)):.2f} с "
         "(это офлайн полный прогон, не realtime-измерение).",
+        f"- Кэш/инференс эмбеддингов по модальностям: {embedding_cache_text}.",
+        f"- B0 event graph records: {len(event_graph_records)}; unique event revisions: "
+        f"{len(graph_nodes)}; unique start-order edges: {len(graph_edges)}; causal edges: "
+        f"{sum(bool(item.get('causality_claimed')) for item in graph_edges.values())}.",
         f"- Неподдержанные новые утверждения Qwen: "
         f"{int(metrics.get('narration_unsupported_claim_count', 0))}; "
         f"fallbacks: {int(metrics.get('narration_fallback_count', 0))}.",
@@ -212,6 +262,31 @@ def render(source: Path, destination: Path) -> None:
             )
     else:
         lines.append("- Отчёт multiclass probe рядом с JSONL не найден.")
+    if semantic_diagnostic:
+        diagnostic_policy = semantic_diagnostic.get("decision_policy", {})
+        diagnostic_cosine = diagnostic_policy.get("minimum_similarity", "—")
+        diagnostic_margin = diagnostic_policy.get("minimum_margin", "—")
+        lines.extend(
+            [
+                "",
+                "## Диагностика semantic matcher",
+                "",
+                f"- {semantic_diagnostic.get('window_match_count', 0)} window matches: "
+                f"{semantic_diagnostic.get('overall_decisions', {})}; policy: "
+                f"cosine ≥ {diagnostic_cosine}, margin ≥ {diagnostic_margin}; "
+                "[подробный отчёт](../semantic_matcher_diagnostic_20261026/"
+                "semantic_matcher_diagnostic.md).",
+            ]
+        )
+        for axis in semantic_diagnostic.get("window_axes", []):
+            if axis.get("axis_id") not in {"music_presence", "speech_presence"}:
+                continue
+            lines.append(
+                f"- `{axis['axis_id']}`: n={axis['count']}, decisions={axis['decisions']}, "
+                f"median cosine={axis['cosine']['median']:.3f}, "
+                f"median top-two margin={axis['margin']['median']:.3f}; "
+                f"uncertain above cosine floor={axis['uncertain_above_similarity_floor']}."
+            )
     if detail_summary:
         lines.extend(
             [

@@ -92,6 +92,59 @@ def _accepted_event(event_id: str, start_ms: int) -> TimelineEvent:
     )
 
 
+def test_narration_batches_put_confirmed_music_details_before_scene_claims() -> None:
+    scene_claim = TimelineClaim(
+        claim_id="scene",
+        label="conversation_dominant",
+        text_ru="На первом плане слышен разговор людей.",
+        decision="accepted",
+        raw_cosine=0.8,
+        margin=0.2,
+        evidence_refs=("audio:1000-6000",),
+        window_ids=("window-scene",),
+        model_revision="embedding-test",
+        sample_count=2,
+        premise_state="music_confirmed",
+        premise_claim_id="music-premise",
+        premise_evidence_refs=("axis:music_presence",),
+    )
+    percussion_claim = TimelineClaim(
+        claim_id="percussion",
+        label="percussion_present",
+        text_ru="В музыке отчётливо слышен ритм ударных.",
+        decision="accepted",
+        raw_cosine=0.8,
+        margin=0.2,
+        evidence_refs=("axis:percussion_presence",),
+        window_ids=("window-detail",),
+        model_revision="embedding-test",
+        sample_count=2,
+        premise_state="music_confirmed",
+        premise_claim_id="music-premise",
+        premise_evidence_refs=("axis:music_presence",),
+    )
+    event = TimelineEvent(
+        stream_id="stream-test",
+        epoch=0,
+        event_id="event-test",
+        revision=1,
+        start_ms=1_000,
+        end_ms=6_000,
+        kind="audio_scene_changed",
+        level="L2",
+        state="refined",
+        modality_mask={"audio": True, "video": False, "speech": False},
+        claims=(scene_claim, percussion_claim),
+    )
+
+    batches = _narration_batches([event], stream_id="stream-test", epoch=0)
+
+    assert [claim.claim_id.rsplit(":", 1)[-1] for claim in batches[0].claims] == [
+        "percussion",
+        "scene",
+    ]
+
+
 def test_timed_audio_work_is_monotonic_when_window_arrives_after_capture_spans() -> None:
     items = [
         CaptureSpan("audio", 0, 20, "done"),

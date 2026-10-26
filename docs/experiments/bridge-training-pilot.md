@@ -1,10 +1,10 @@
-# F10 — план пилота обучаемого мультимодального моста SHSD
+# F10 — пилот Multimodal AV Bridge для grounded визуально-аудиального сюжетного описания SHSD
 
 > **Статус 26.10.2026:** design + interface validation разрешены. **Владелец условно разрешил любое перспективное обучение; запускать после technical/data/budget `GO`, без повторного запроса.** Этот документ описывает **проверяемую гипотезу**, а не доказанные результаты или уже обученную модель. [Todo F10](../../Todo.md) · [ADR-002](../adr/ADR-002-multimodal-bridge-evaluation.md) · [общий evaluation](av-bridge-evaluation-protocol.md).
 
 ## 1. Проверяемая цель
 
-Получать из синхронизированного аудио и видео **grounded последовательность событий** и содержательное русское описание через Qwen3-0.6B, а не просто music/video теги. Система должна различать:
+F10 проверяет не музыкальный классификатор, а **мультимодальный AV grounding bridge**: изображение и временная последовательность видео плюс аудио → grounded events/claims → связный русский narration через Qwen3-0.6B. Визуальный сюжет, аудиосцена и временная AV-сшивка — равноправные цели. Подробный исполняемый training recipe с IMAGE/VIDEO/AUDIO/AV режимами, samples, masks, loss и sampling зафиксирован в [F10 multimodal design](F10-multimodal-training-design.md). Система должна различать:
 
 - что видно, какие объекты/люди остаются теми же и **что именно они делают** во времени;
 - музыку, речь, шумы и наложения; инструменты/слои только при наличии различимых признаков;
@@ -16,31 +16,25 @@
 
 ## 2. Архитектурные гипотезы
 
-```text
-audio windows + video frames + PTS
-  ├── EmbeddingGemma 2: available audio/video sequence/pooled features?
-  ├── optional DSP / ASR / independent grounding evidence
-  └── temporal sampler / alignment
-         ↓
-   small trainable projector or resampler (B1)
-         ↓
-   bounded multimodal prefix / equivalent conditioning
-         ↓
-   frozen Qwen3-0.6B -> Russian grounded AV description
-         ↓
-   claim/evidence verifier + temporal event memory + L3 publication
-```
+- IMAGE: один кадр → видимые сущности, атрибуты и пространственные отношения.
+- VIDEO: упорядоченные кадры с исходными PTS → устойчивые entity IDs, действия, взаимодействия и порядок событий.
+- AUDIO: окно звука → речь, музыка, окружение, overlap и подтверждённые слои/переходы.
+- AV: синхронные аудио и видео claims → совместное grounded описание без неподтверждённой причинности.
+
+F10.01 confirmed that EmbeddingGemma 2 exposes pre-pooling token sequences for IMAGE/VIDEO/AUDIO/AV and that the pinned llama.cpp CPU C API accepts an external Qwen prefix. The production `EmbeddingProvider` exposes opt-in sequence methods with masks, token IDs and sampled source PTS; the CPU fixture smoke is [`production_sequence_smoke.json`](../../benchmarks/reports/bridge_f10/production_sequence_smoke.json). `AVFeatureBatch` now keeps one IMAGE sequence per sampled source PTS and a separate AUDIO interval, avoiding an unproven split of flattened VIDEO tokens. It is not yet connected to `analyze` or EventGraph/B0, which still consumes pooled-path timeline claims. Two small projector/resamplers can map modality-specific token streams to Qwen's 1024-wide input; temporal fusion must carry source PTS. Claim/evidence verification and event memory remain separate components. See the [capability matrix](../../benchmarks/reports/bridge_f10/capability_matrix.md) and executable [F10 multimodal design](F10-multimodal-training-design.md).
+
+Transport is verified, but a trained bridge is not implemented: random probe values prove no useful conditioning. F10.03 remains NO-GO until independently labeled evaluation, licensed source-separated training splits and bounded cost/stop criteria are recorded.
 
 **Критические неопределённости:**
-1. Реально ли EmbeddingGemma 2 предоставляет **token/patch/time-level** representations для аудио и видео? Если только pooled vector — точные действия, инструменты и переходы могут быть невосстановимы. Нужен shape/probe test на реальном чекпойнте.
-2. Поддерживает ли конкретная реализация Qwen3-0.6B корректный **не-текстовый** conditioning (`inputs_embeds`, prefix, KV, custom token projection)? Проверить обучение и инференс, а не просто совместимость размерностей.
-3. Можно ли перенести этот conditioning в **CPU llama.cpp/GGUF** без неподдерживаемого патча или тяжёлого PyTorch-only runtime? Проверить prefill, KV cache, квантование, RAM.
+1. **Provider API and safe frame grouping exist:** sequence records retain token masks/IDs and source PTS; `AVFeatureBatch` holds one feature sequence per IMAGE PTS. This is only a typed adapter: no EventGraph/B0/default-analyze integration or end-to-end inference smoke has been performed. Flattened VIDEO token-to-frame spans and per-audio-token PTS remain unavailable.
+2. **API answer from F10.01:** pinned Qwen3 GGUF on CPU accepts external 1024-wide token embeddings through llama.cpp `llama_batch.embd`, followed by normal text and decode. The probe uses untrained values and therefore establishes transport, not conditioning quality; integrated prefill/RSS and 1x live performance remain open.
+3. Можно ли в sustained live потоке сохранить приемлемый CPU prefill/decode/RSS и 1x cadence при этой длине prefix? Нужен измеренный end-to-end прогон; одиночный API smoke на это не отвечает.
 4. Достаточны ли маленький projector и frozen Qwen для обучения мультимодального языка? Это гипотеза. Если не обучается, рассмотреть B2 LoRA или более глубокое обучение после evidence первого пилота и отдельного bounded budget gate или C готовую pretrained AV модель.
 5. Как получить легальные, разнообразные AV→RU training targets с независимыми источниками и без утечки в evaluation? Teacher-generated captions **не** ground truth.
 
 ## 2.1. Контроль для обучаемого моста
 
-B0: grounded temporal event graph → текстовый Qwen3-0.6B. B1: тот же evidence + обучаемый projector/resampler → Qwen. Сравнивать на одинаковых источниках и независимых метках, чтобы не спутать новые perception facts с эффектом bridge. Pooled-only — контроль, а не гарантия деталей. Последний Deep Research не завершён, API проверять smoke tests. Исполняемое задание: [F10 handoff](F10-agent-handoff.md), [GO template](F10-GO.template.md).
+B0: grounded temporal event graph → текстовый Qwen3-0.6B. B1: тот же evidence + обучаемый projector/resampler → Qwen. Сравнивать на одинаковых источниках и независимых метках, чтобы не спутать новые perception facts с эффектом bridge. Pooled-only — контроль, а не гарантия деталей. API smoke passed; bridge quality remains unmeasured. Исполняемое задание: [F10 handoff](F10-agent-handoff.md), [GO template](F10-GO.template.md).
 
 ## 3. Этапы с stop/go
 
@@ -52,10 +46,9 @@ B0: grounded temporal event graph → текстовый Qwen3-0.6B. B1: тот 
 
 ### F10.02 — Спецификация обучения и данных (разрешено без сбора training corpus)
 
-- Спроектировать B1: frozen encoder+LLM, минимальный projector/resampler; ограниченный temporal prefix; независимый grounding/verification.
-- Зафиксировать data schema: `source_id, interval_ms, modality, features_version, entity/action/music/transition annotations, caption_ru, evidence_refs, rights, split`.
-- Train/val/test **source-separated**, вручную проверенный held-out и negatives; отсутствие тестовых `Tears of Steel` интервалов в training при использовании их как test.
-- Предварительно выбрать budget токенов/окон, latency, критерии улучшения и условия остановки; документированный technical/data/budget `GO` до F10.03; разрешение владельца уже получено.
+- **Design completed:** use [F10-multimodal-training-design.md](F10-multimodal-training-design.md) as the primary tensor/data/loss/training recipe. It defines IMAGE (single-frame entities/relations), VIDEO (ordered PTS, identity/actions/order), AUDIO (speech/music/ambience/layers/transitions) and synchronized AV; separate vision/audio projectors and temporal fusion; structured evidence targets + Russian caption; missing-modality masks; target-only CE; source-separated splits; negative controls; per-mode evaluation.
+- **Still open:** connect the provider sequence features and source PTS to a typed evidence graph; add visual entity/action and music-layer nodes; prove token/frame alignment; build an independent per-mode evaluator and human labels; document licensed source-separated splits and bounded budget/stop criteria. F7.03 labels must not be reused for training or tuning.
+- **Still open:** verify licensed source-separated train/val/held-out availability, freeze baseline and per-mode success criteria, set bounded budget/checkpoints/stop rules, and fill `benchmarks/reports/bridge_f10/F10-GO.md`. No GPU training before evidence-backed `GO`; owner authorization is already recorded and is not a blocker.
 
 ### F10.03 — Adapter-only training (разрешён после technical GO)
 
@@ -96,7 +89,7 @@ B0: grounded temporal event graph → текстовый Qwen3-0.6B. B1: тот 
 - `train_manifest.json` + checkpoints metadata (после technical/data `GO`);
 - `eval_per_interval.jsonl`, `ablation_results.json`, `cpu_live_report.json`, `decision.md`.
 
-**Следующее действие coding-агента:** F10.01 в параллель с F7.01/F7.02. Перед F10.03 создать `F10-GO.md` с проверенным интерфейсом, лицензиями, source-separated splits, frozen baseline, заранее определёнными quality/CPU метриками, bounded GPU budget и stop criteria. При неуспехе — `NO-GO`; при успехе — начать обучение без повторного запроса владельца. После B1 продолжать только при измеренном прогрессе; не расходовать ресурсы безлимитно.
+**Next coding work:** continue F10.02 alongside F7.03/F9.01: (1) add independently supported visual entity/action and music-layer nodes to EventGraph; (2) connect `AVFeatureBatch` to B0 and verify full PTS/evidence flow; (3) build the per-mode evaluator and same-source A0/B0 comparison; (4) obtain independent labels and confirm rights for source-separated train/val/held-out sets; (5) set a real GPU-hours/VRAM budget and numeric success thresholds. Current evidence-backed **NO-GO** and missing prerequisites are recorded in [`F10-GO.md`](../../benchmarks/reports/bridge_f10/F10-GO.md). No bridge training until those items are resolved.
 
 
 ## Условное разрешение на R&D обучение — 26.10.2026

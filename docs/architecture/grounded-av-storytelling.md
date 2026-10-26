@@ -1,6 +1,6 @@
 # Grounded AV storytelling — целевой контракт SHSD
 
-> 26.10.2026. Дизайн, не реализованное состояние. Основан на текущих baseline и инженерных гипотезах, а не на завершённом Deep Research.
+> 26.10.2026. Target design with partial implementation: a claim-level temporal graph and B0 narrator path are integrated in `src/shsd/memory/graph.py`; visual entity/action nodes, sequence-token PTS alignment, independent evaluation, and bridge training remain open.
 
 **Цель:** связный достоверный русский сюжет: кто/что видно, какое действие, взаимодействие, последовательность; параллельно — музыка, слои/инструменты, вокал/бас/ударные, onset/offset/переходы и наложение речи. Теги, cut и acoustic novelty — только сигналы, не готовая история.
 

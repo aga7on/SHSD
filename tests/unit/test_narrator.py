@@ -16,6 +16,7 @@ from shsd.captions.narrator import (
     NarrationResponse,
     NarrationResult,
     QwenNarrator,
+    _claim_coverage,
 )
 
 
@@ -145,6 +146,10 @@ def test_generated_caption_uses_known_sources_and_matching_interval(
     result = narrator.narrate(request)
     assert result.status == "generated"
     assert result.response.used_claim_ids == ("asr-1", "claim-1")
+    assert result.response.input_claim_ids == ("asr-1", "claim-1")
+    assert result.response.expressed_claim_ids == ("asr-1", "claim-1")
+    assert result.response.omitted_claim_ids == ()
+    assert result.response.uncertain_claim_ids == ()
     assert result.response.start_ms == 1000
     assert result.response.end_ms == 3000
     payload = result.to_dict()
@@ -154,6 +159,12 @@ def test_generated_caption_uses_known_sources_and_matching_interval(
         "record_type",
         "caption_ru",
         "used_claim_ids",
+        "input_claim_ids",
+        "expressed_claim_ids",
+        "omitted_claim_ids",
+        "uncertain_claim_ids",
+        "claim_coverage",
+        "claim_coverage_method",
         "new_unsupported_claims",
         "time_range",
         "warnings",
@@ -169,6 +180,94 @@ def test_generated_caption_uses_known_sources_and_matching_interval(
     }
     assert payload["event_revisions"] == [{"event_id": "event-1", "revision": 2}]
     assert payload["new_unsupported_claims"] == []
+
+
+def test_generated_caption_marks_only_claims_it_expresses(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    narrator = _narrator(tmp_path)
+    request = NarrationRequest(
+        stream_id="stream-1",
+        epoch=0,
+        event_refs=(
+            NarrationEventRef("event-1", 1),
+            NarrationEventRef("event-2", 1),
+            NarrationEventRef("event-3", 1),
+        ),
+        claims=(
+            NarrationClaim(
+                claim_id="conversation",
+                event_id="event-1",
+                revision=1,
+                start_ms=1_000,
+                end_ms=3_000,
+                text_ru="На первом плане слышен разговор людей.",
+                evidence_refs=("audio:1000-3000",),
+            ),
+            NarrationClaim(
+                claim_id="scene-cut",
+                event_id="event-2",
+                revision=1,
+                start_ms=2_000,
+                end_ms=3_000,
+                text_ru="Смена кадра совпадает по времени с обнаруженным звуковым началом.",
+                evidence_refs=("video:2000-3000",),
+            ),
+            NarrationClaim(
+                claim_id="percussion",
+                event_id="event-3",
+                revision=1,
+                start_ms=1_000,
+                end_ms=3_000,
+                text_ru="В музыке отчётливо слышен ритм ударных.",
+                evidence_refs=("audio:1000-3000", "axis:percussion_presence"),
+            ),
+        ),
+    )
+
+    def run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[bytes]:
+        command = args[0]
+        output_path = Path(command[command.index("--output-file") + 1])  # type: ignore[union-attr]
+        output_path.write_text("На первом плане слышен разговор.", encoding="utf-8")
+        return subprocess.CompletedProcess(args, 0, stdout=b"", stderr=b"")
+
+    monkeypatch.setattr(subprocess, "run", run)
+    result = narrator.narrate(request)
+
+    assert result.status == "generated"
+    assert result.response.input_claim_ids == ("conversation", "percussion", "scene-cut")
+    assert result.response.used_claim_ids == ("conversation",)
+    assert result.response.expressed_claim_ids == ("conversation",)
+    assert result.response.omitted_claim_ids == ("percussion", "scene-cut")
+    assert result.response.uncertain_claim_ids == ()
+    assert result.response.claim_coverage_method == "conservative_token_overlap_v2"
+
+
+def test_claim_coverage_keeps_low_overlap_as_uncertain() -> None:
+    request = _request()
+    claim = request.claims[0]
+    request = NarrationRequest(
+        stream_id=request.stream_id,
+        epoch=request.epoch,
+        event_refs=request.event_refs,
+        claims=(
+            NarrationClaim(
+                claim_id=claim.claim_id,
+                event_id=claim.event_id,
+                revision=claim.revision,
+                start_ms=claim.start_ms,
+                end_ms=claim.end_ms,
+                text_ru="Слышна спокойная инструментальная музыка.",
+                evidence_refs=claim.evidence_refs,
+            ),
+        ),
+        asr_quotes=request.asr_quotes,
+    )
+    coverage = _claim_coverage("Музыка.", request)
+
+    assert coverage["expressed_claim_ids"] == ()
+    assert coverage["omitted_claim_ids"] == ("asr-1",)
+    assert coverage["uncertain_claim_ids"] == ("claim-1",)
 
 
 @pytest.mark.parametrize("bad_output", ["", "No music is audible.", "<think>reasoning</think>"])
@@ -243,7 +342,39 @@ def test_provenance_accepts_safe_russian_inflection_and_sound_equivalent() -> No
             "\u0438 \u0441\u043b\u044b\u0448\u043d\u043e \u0433\u0438\u0442\u0430\u0440\u0443."
         ),
         request,
-    ) == ("\u0433\u0438\u0442\u0430\u0440\u0443",)
+    ) == ("<unsupported_relation>", "\u0433\u0438\u0442\u0430\u0440\u0443")
+
+
+def test_provenance_rejects_new_relation_made_only_from_supported_words() -> None:
+    request = NarrationRequest(
+        stream_id="stream-1",
+        epoch=0,
+        event_refs=(NarrationEventRef("event-1", 1), NarrationEventRef("event-2", 1)),
+        claims=(
+            NarrationClaim(
+                claim_id="person",
+                event_id="event-1",
+                revision=1,
+                start_ms=1_000,
+                end_ms=2_000,
+                text_ru="Человек виден на изображении.",
+                evidence_refs=("image:1000-2000",),
+            ),
+            NarrationClaim(
+                claim_id="music",
+                event_id="event-2",
+                revision=1,
+                start_ms=1_000,
+                end_ms=2_000,
+                text_ru="Слышна музыка.",
+                evidence_refs=("audio:1000-2000",),
+            ),
+        ),
+    )
+
+    assert QwenNarrator._unsupported_provenance_terms("Человек виден с музыкой.", request) == (
+        "<unsupported_relation>",
+    )
 
 
 def test_facts_payload_collapses_repeated_adjacent_claims_but_keeps_provenance() -> None:

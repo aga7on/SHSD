@@ -24,6 +24,8 @@ if TYPE_CHECKING:
     from shsd.workers.embedding_worker import SharedEmbeddingDispatcher
 
 PREPROCESS_VERSION = "embeddinggemma2-st-v4-audio-video-metadata"
+VIDEO_PREPROCESS_VERSION = "embeddinggemma2-st-v5-video-source-pts"
+JOINT_PREPROCESS_VERSION = "embeddinggemma2-st-v5-av-source-pts"
 SAMPLE_RATE = 16_000
 DEFAULT_IMAGE_SOFT_TOKENS = 280
 COMPACT_IMAGE_SOFT_TOKENS = 140
@@ -45,10 +47,7 @@ class _FairSemaphore:
     def acquire(self, blocking: bool = True, timeout: float = -1) -> bool:
         with self._condition:
             if not blocking:
-                if (
-                    self._next_ticket != self._serving_ticket
-                    or self._active >= self._capacity
-                ):
+                if self._next_ticket != self._serving_ticket or self._active >= self._capacity:
                     return False
                 self._next_ticket += 1
                 self._serving_ticket += 1
@@ -60,8 +59,7 @@ class _FairSemaphore:
             self._next_ticket += 1
             if timeout < 0:
                 self._condition.wait_for(
-                    lambda: ticket == self._serving_ticket
-                    and self._active < self._capacity
+                    lambda: ticket == self._serving_ticket and self._active < self._capacity
                 )
                 self._active += 1
                 self._serving_ticket += 1
@@ -69,8 +67,7 @@ class _FairSemaphore:
                 self._condition.notify_all()
                 return True
             if self._condition.wait_for(
-                lambda: ticket == self._serving_ticket
-                and self._active < self._capacity,
+                lambda: ticket == self._serving_ticket and self._active < self._capacity,
                 timeout=timeout,
             ):
                 self._active += 1
@@ -116,31 +113,37 @@ class _FairSemaphore:
 _FairLock = _FairSemaphore
 
 
-def _load_video_frames(
+def _load_video_sample(
     video_path: Path,
     *,
     interval_ms: tuple[int, int] | None = None,
     max_frames: int = 32,
-) -> list[Any]:
-    """Decode a bounded, evenly sampled frame list for Sentence Transformers video input."""
+) -> tuple[list[Any], tuple[int, ...], dict[str, Any]]:
+    """Decode sampled frames while retaining original source PTS and model metadata."""
     if max_frames < 1:
         raise ValueError("max_frames must be positive")
-    if interval_ms is not None and (
-        interval_ms[0] < 0 or interval_ms[1] <= interval_ms[0]
-    ):
+    if interval_ms is not None and (interval_ms[0] < 0 or interval_ms[1] <= interval_ms[0]):
         raise ValueError("interval must satisfy 0 <= start_ms < end_ms")
     import av
     from PIL import Image
 
     frames: list[Any] = []
+    frame_pts_ms: list[int] = []
     with av.open(str(video_path), mode="r") as container:
         if not container.streams.video:
             raise ValueError(f"video input has no video stream: {video_path}")
+        stream = container.streams.video[0]
         duration_ms = (
             round(container.duration * 1000 / av.time_base)
             if container.duration is not None
+            else round(float(stream.duration * stream.time_base) * 1000)
+            if stream.duration is not None and stream.time_base is not None
             else None
         )
+        source_fps = float(stream.average_rate) if stream.average_rate else 1.0
+        if not np.isfinite(source_fps) or source_fps <= 0:
+            source_fps = 1.0
+        source_frame_count = int(stream.frames) if stream.frames else 0
         clip_start_ms = interval_ms[0] if interval_ms is not None else 0
         clip_end_ms = (
             min(duration_ms, interval_ms[1])
@@ -170,7 +173,7 @@ def _load_video_frames(
                 time_base = Fraction(
                     int(frame.time_base.numerator), int(frame.time_base.denominator)
                 )
-                timestamp_ms = max(0, pts_to_ms(int(frame.pts), time_base))
+                timestamp_ms = pts_to_ms(int(frame.pts), time_base)
             fallback_ms = max(timestamp_ms + 1, fallback_ms + 1)
             if target_index >= len(target_times):
                 break
@@ -179,18 +182,42 @@ def _load_video_frames(
             image = Image.fromarray(frame.to_ndarray(format="rgb24"))
             while target_index < len(target_times) and timestamp_ms >= target_times[target_index]:
                 frames.append(image)
+                frame_pts_ms.append(timestamp_ms)
                 target_index += 1
             if len(frames) >= max_frames:
                 break
     if not frames:
         raise ValueError(f"video input did not decode any frames: {video_path}")
+    resolved_duration_ms = duration_ms or max(frame_pts_ms) + 1
+    total_num_frames = source_frame_count or max(1, round(resolved_duration_ms * source_fps / 1000))
+    video_metadata = {
+        "total_num_frames": total_num_frames,
+        "fps": source_fps,
+        "duration": resolved_duration_ms / 1000,
+        "frames_indices": [max(0, round(pts_ms * source_fps / 1000)) for pts_ms in frame_pts_ms],
+    }
+    return frames, tuple(frame_pts_ms), video_metadata
+
+
+def _load_video_frames(
+    video_path: Path,
+    *,
+    interval_ms: tuple[int, int] | None = None,
+    max_frames: int = 32,
+) -> list[Any]:
+    """Compatibility wrapper for callers that only need sampled frame pixels."""
+    frames, _frame_pts_ms, _video_metadata = _load_video_sample(
+        video_path,
+        interval_ms=interval_ms,
+        max_frames=max_frames,
+    )
     return frames
 
 
-def _video_input(frames: list[Any]) -> dict[str, Any]:
-    """Mark already-sampled video frames so the model does not sample them twice."""
+def _video_input(frames: list[Any], video_metadata: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Mark sampled frames so the model does not sample them twice."""
     return {
-        "video": {"array": frames, "video_metadata": None},
+        "video": {"array": frames, "video_metadata": video_metadata},
     }
 
 
@@ -219,6 +246,56 @@ class EmbeddingRecord:
         return result
 
 
+@dataclass(frozen=True, slots=True)
+class SequenceFeatureRecord:
+    """Unpooled encoder tokens plus masks and source-time metadata for bridge R&D."""
+
+    token_embeddings: np.ndarray
+    attention_mask: np.ndarray
+    input_token_ids: np.ndarray | None
+    encoder_metadata: dict[str, np.ndarray]
+    model_revision: str
+    input_preprocess_version: str
+    modality: str
+    interval_ms: tuple[int, int] | None
+    frame_pts_ms: tuple[int, ...]
+    video_metadata: dict[str, Any] | None
+    latency_ms: float
+
+    def to_dict(self, *, include_features: bool = False) -> dict[str, Any]:
+        result: dict[str, Any] = {
+            "model_revision": self.model_revision,
+            "input_preprocess_version": self.input_preprocess_version,
+            "modality": self.modality,
+            "interval_ms": list(self.interval_ms) if self.interval_ms else None,
+            "frame_pts_ms": list(self.frame_pts_ms),
+            "video_metadata": self.video_metadata,
+            "latency_ms": self.latency_ms,
+            "token_embeddings_shape": list(self.token_embeddings.shape),
+            "attention_mask_shape": list(self.attention_mask.shape),
+            "input_token_ids_shape": (
+                list(self.input_token_ids.shape) if self.input_token_ids is not None else None
+            ),
+            "encoder_metadata_shapes": {
+                name: list(value.shape) for name, value in self.encoder_metadata.items()
+            },
+        }
+        if include_features:
+            result.update(
+                {
+                    "token_embeddings": self.token_embeddings.tolist(),
+                    "attention_mask": self.attention_mask.tolist(),
+                    "input_token_ids": (
+                        self.input_token_ids.tolist() if self.input_token_ids is not None else None
+                    ),
+                    "encoder_metadata": {
+                        name: value.tolist() for name, value in self.encoder_metadata.items()
+                    },
+                }
+            )
+        return result
+
+
 class EmbeddingProvider:
     """Load the pinned model once and expose cached audio, frame, and text encoders."""
 
@@ -240,9 +317,7 @@ class EmbeddingProvider:
             {"audio", "image", "video"}
         ):
             raise ValueError("enabled_modalities may contain audio, image, and video")
-        self.enabled_modalities = (
-            None if enabled_modalities is None else set(enabled_modalities)
-        )
+        self.enabled_modalities = None if enabled_modalities is None else set(enabled_modalities)
         self.model = model
         self.inference_concurrency = inference_concurrency
         self.model_dir = models_dir / "embeddinggemma2"
@@ -270,9 +345,7 @@ class EmbeddingProvider:
         )
         if str(self.encoder.device) != "cpu":
             raise RuntimeError(f"EmbeddingGemma did not load on CPU: {self.encoder.device}")
-        self.cache = DiskEmbeddingCache(
-            cache_dir or models_dir / "cache" / "embeddinggemma2"
-        )
+        self.cache = DiskEmbeddingCache(cache_dir or models_dir / "cache" / "embeddinggemma2")
         self._inference_lock = _FairSemaphore(inference_concurrency)
         self._revision = str(model["revision"])
         self._torch = torch
@@ -284,10 +357,16 @@ class EmbeddingProvider:
         self._torch.set_num_threads(threads)
         self.threads = threads
 
-    def _cache_key(self, modality: str, content: bytes) -> str:
+    def _cache_key(
+        self,
+        modality: str,
+        content: bytes,
+        *,
+        preprocess_version: str = PREPROCESS_VERSION,
+    ) -> str:
         return self.cache.key(
             model_revision=self._revision,
-            preprocess_version=PREPROCESS_VERSION,
+            preprocess_version=preprocess_version,
             modality=modality,
             content=content,
         )
@@ -353,6 +432,105 @@ class EmbeddingProvider:
             )
         return array, latency_ms
 
+    def _encode_sequence(
+        self,
+        inputs: Any,
+        *,
+        modality: str,
+        interval_ms: tuple[int, int] | None,
+        frame_pts_ms: tuple[int, ...] = (),
+        video_metadata: dict[str, Any] | None = None,
+        processing_kwargs: dict[str, Any] | None = None,
+        input_preprocess_version: str = PREPROCESS_VERSION,
+    ) -> SequenceFeatureRecord:
+        """Return encoder tokens before pooling without changing the cached API."""
+        captured: dict[str, Any] = {}
+        metadata_names = (
+            "image_position_ids",
+            "video_position_ids",
+            "num_frames_per_video",
+            "modality",
+            "input_features_mask",
+        )
+
+        def capture_transformer_output(_module: Any, _args: Any, output: Any) -> None:
+            if not hasattr(output, "get"):
+                return
+            for name in ("token_embeddings", "attention_mask", "input_ids", *metadata_names):
+                value = output.get(name)
+                if self._torch.is_tensor(value):
+                    captured[name] = value.detach().to(device="cpu")
+
+        transformer = self.encoder[0]
+        hook = transformer.register_forward_hook(capture_transformer_output)
+        try:
+            with self._inference_lock, self._torch.inference_mode():
+                started = time.perf_counter()
+                encode = cast(Any, self.encoder).encode
+                kwargs = (
+                    {} if processing_kwargs is None else {"processing_kwargs": processing_kwargs}
+                )
+                encode(
+                    inputs,
+                    batch_size=1,
+                    convert_to_numpy=True,
+                    normalize_embeddings=False,
+                    show_progress_bar=False,
+                    **kwargs,
+                )
+                latency_ms = (time.perf_counter() - started) * 1000
+        finally:
+            hook.remove()
+
+        tokens = captured.get("token_embeddings")
+        if tokens is None or tokens.ndim != 3 or tokens.shape[0] != 1:
+            raise RuntimeError("EmbeddingGemma did not expose one unpooled token sequence")
+        token_array = np.asarray(tokens[0].float().numpy(), dtype=np.float32)
+        if token_array.shape[1] != EMBEDDING_DIM or not np.isfinite(token_array).all():
+            raise RuntimeError(
+                f"EmbeddingGemma returned invalid token features: {token_array.shape}"
+            )
+        attention = captured.get("attention_mask")
+        if attention is None:
+            attention_array = np.ones(token_array.shape[0], dtype=np.bool_)
+        else:
+            if attention.ndim != 2 or attention.shape[0] != 1:
+                raise RuntimeError("EmbeddingGemma returned an invalid token attention mask")
+            attention_array = np.asarray(attention[0].numpy(), dtype=np.bool_)
+        if attention_array.shape != (token_array.shape[0],):
+            raise RuntimeError("token sequence and attention mask lengths differ")
+        token_ids = captured.get("input_ids")
+        token_id_array = None
+        if token_ids is not None:
+            if token_ids.ndim != 2 or token_ids.shape[0] != 1:
+                raise RuntimeError("EmbeddingGemma returned invalid input token IDs")
+            token_id_array = np.asarray(token_ids[0].numpy(), dtype=np.int64)
+            if token_id_array.shape != attention_array.shape:
+                raise RuntimeError("input token IDs and attention mask lengths differ")
+            token_id_array.setflags(write=False)
+        metadata_arrays = {
+            name: np.asarray(
+                value.float().numpy() if value.is_floating_point() else value.numpy()
+            ).copy()
+            for name in metadata_names
+            if (value := captured.get(name)) is not None
+        }
+        for value in (token_array, attention_array, *metadata_arrays.values()):
+            value.setflags(write=False)
+        return SequenceFeatureRecord(
+            token_embeddings=token_array,
+            attention_mask=attention_array,
+            input_token_ids=token_id_array,
+            encoder_metadata=metadata_arrays,
+            model_revision=self._revision,
+            input_preprocess_version=input_preprocess_version,
+            modality=modality,
+            interval_ms=interval_ms,
+            frame_pts_ms=frame_pts_ms,
+            video_metadata=dict(video_metadata) if video_metadata is not None else None,
+            latency_ms=round(latency_ms, 3),
+        )
+
     @staticmethod
     def _audio_array(samples: ArrayLike) -> tuple[np.ndarray, bytes]:
         audio = np.asarray(samples)
@@ -381,9 +559,7 @@ class EmbeddingProvider:
         expected_samples = round((end_ms - start_ms) * SAMPLE_RATE / 1000)
         if abs(audio.size - expected_samples) > SAMPLE_RATE // 10:
             raise ValueError("audio sample count does not match the supplied interval")
-        window_identity = (
-            f"{start_ms}:{end_ms}\0".encode("ascii") + identity
-        )
+        window_identity = f"{start_ms}:{end_ms}\0".encode("ascii") + identity
         key = self._cache_key("audio", identity)
         cached = self.cache.get(key)
         if cached is not None:
@@ -494,21 +670,20 @@ class EmbeddingProvider:
             raise RuntimeError("vision encoder was disabled when EmbeddingGemma was loaded")
         if not video_path.is_file():
             raise FileNotFoundError(video_path)
-        if interval_ms is not None and (
-            interval_ms[0] < 0 or interval_ms[1] <= interval_ms[0]
-        ):
+        if interval_ms is not None and (interval_ms[0] < 0 or interval_ms[1] <= interval_ms[0]):
             raise ValueError("interval must satisfy 0 <= start_ms < end_ms")
         digest = hashlib.sha256()
         with video_path.open("rb") as source:
             for chunk in iter(lambda: source.read(1024 * 1024), b""):
                 digest.update(chunk)
-        identity = digest.digest()
-        window_identity = (
-            f"{interval_ms[0]}:{interval_ms[1]}\0".encode("ascii") + identity
+        file_identity = digest.digest()
+        identity = (
+            f"{interval_ms[0]}:{interval_ms[1]}\0".encode("ascii") + file_identity
             if interval_ms is not None
-            else identity
+            else file_identity
         )
-        key = self._cache_key("video", identity)
+        window_identity = identity
+        key = self._cache_key("video", identity, preprocess_version=VIDEO_PREPROCESS_VERSION)
         cached = None if force_recompute else self.cache.get(key)
         if cached is not None:
             return self._record(
@@ -519,12 +694,16 @@ class EmbeddingProvider:
                 cache_hit=True,
                 identity=identity,
                 window_identity=window_identity,
+                input_preprocess_version=VIDEO_PREPROCESS_VERSION,
             )
-        frames = _load_video_frames(video_path)
+        frames, _frame_pts_ms, video_metadata = _load_video_sample(
+            video_path,
+            interval_ms=interval_ms,
+        )
         encoded, latency_ms = self._encode_missing(
-            _video_input(frames),
+            _video_input(frames, video_metadata),
             1,
-            processing_kwargs={"video": {"do_sample_frames": False}},
+            processing_kwargs={"video": {"do_sample_frames": False, "add_timestamps": True}},
         )
         vector = encoded[0]
         self.cache.put(key, vector)
@@ -536,6 +715,7 @@ class EmbeddingProvider:
             cache_hit=False,
             identity=identity,
             window_identity=window_identity,
+            input_preprocess_version=VIDEO_PREPROCESS_VERSION,
         )
 
     def encode_joint(
@@ -569,7 +749,7 @@ class EmbeddingProvider:
             + video_digest.digest()
         )
         window_identity = f"{start_ms}:{end_ms}\0".encode("ascii") + identity
-        key = self._cache_key("joint", identity)
+        key = self._cache_key("joint", identity, preprocess_version=JOINT_PREPROCESS_VERSION)
         cached = None if force_recompute else self.cache.get(key)
         if cached is not None:
             return self._record(
@@ -580,15 +760,19 @@ class EmbeddingProvider:
                 cache_hit=True,
                 identity=identity,
                 window_identity=window_identity,
+                input_preprocess_version=JOINT_PREPROCESS_VERSION,
             )
-        frames = _load_video_frames(video_path, interval_ms=interval_ms)
+        frames, _frame_pts_ms, video_metadata = _load_video_sample(
+            video_path,
+            interval_ms=interval_ms,
+        )
         encoded, latency_ms = self._encode_missing(
             {
                 "audio": {"array": audio, "sampling_rate": SAMPLE_RATE},
-                **_video_input(frames),
+                **_video_input(frames, video_metadata),
             },
             1,
-            processing_kwargs={"video": {"do_sample_frames": False}},
+            processing_kwargs={"video": {"do_sample_frames": False, "add_timestamps": True}},
         )
         vector = encoded[0]
         self.cache.put(key, vector)
@@ -600,6 +784,128 @@ class EmbeddingProvider:
             cache_hit=False,
             identity=identity,
             window_identity=window_identity,
+            input_preprocess_version=JOINT_PREPROCESS_VERSION,
+        )
+
+    def encode_audio_features(
+        self, pcm_16k_mono: ArrayLike, interval_ms: tuple[int, int]
+    ) -> SequenceFeatureRecord:
+        """Expose unpooled audio token features for an opt-in bridge caller."""
+        if self._modalities_disabled("audio"):
+            raise RuntimeError("audio encoder was disabled when EmbeddingGemma was loaded")
+        start_ms, end_ms = interval_ms
+        if start_ms < 0 or end_ms <= start_ms:
+            raise ValueError("interval must satisfy 0 <= start_ms < end_ms")
+        audio, _identity = self._audio_array(pcm_16k_mono)
+        expected_samples = round((end_ms - start_ms) * SAMPLE_RATE / 1000)
+        if abs(audio.size - expected_samples) > SAMPLE_RATE // 10:
+            raise ValueError("audio sample count does not match the supplied interval")
+        return self._encode_sequence(
+            {"audio": {"array": audio, "sampling_rate": SAMPLE_RATE}},
+            modality="audio",
+            interval_ms=interval_ms,
+        )
+
+    def encode_frame_features(
+        self,
+        image_rgb: ArrayLike,
+        pts_ms: int,
+        *,
+        max_soft_tokens: int = DEFAULT_IMAGE_SOFT_TOKENS,
+    ) -> SequenceFeatureRecord:
+        """Expose unpooled IMAGE tokens and the exact source frame timestamp."""
+        if self._modalities_disabled("image"):
+            raise RuntimeError("vision encoder was disabled when EmbeddingGemma was loaded")
+        if pts_ms < 0:
+            raise ValueError("pts_ms must be non-negative")
+        if max_soft_tokens not in {70, 140, 280, 560, 1120}:
+            raise ValueError("max_soft_tokens must be one of 70, 140, 280, 560, or 1120")
+        from PIL import Image
+
+        image, _identity = self._rgb_image(image_rgb)
+        kwargs = (
+            None
+            if max_soft_tokens == DEFAULT_IMAGE_SOFT_TOKENS
+            else {"image": {"max_soft_tokens": max_soft_tokens}}
+        )
+        preprocess_version = (
+            PREPROCESS_VERSION
+            if max_soft_tokens == DEFAULT_IMAGE_SOFT_TOKENS
+            else f"{PREPROCESS_VERSION}-vision-soft-tokens-{max_soft_tokens}"
+        )
+        return self._encode_sequence(
+            {"image": Image.fromarray(image)},
+            modality="image",
+            interval_ms=(pts_ms, pts_ms + 1),
+            frame_pts_ms=(pts_ms,),
+            processing_kwargs=kwargs,
+            input_preprocess_version=preprocess_version,
+        )
+
+    def encode_video_features(
+        self,
+        video_path: Path,
+        interval_ms: tuple[int, int] | None = None,
+        *,
+        max_frames: int = 32,
+    ) -> SequenceFeatureRecord:
+        """Expose VIDEO tokens with sampled source PTS and frame-index metadata."""
+        if self._modalities_disabled("video"):
+            raise RuntimeError("vision encoder was disabled when EmbeddingGemma was loaded")
+        if not video_path.is_file():
+            raise FileNotFoundError(video_path)
+        frames, frame_pts_ms, video_metadata = _load_video_sample(
+            video_path,
+            interval_ms=interval_ms,
+            max_frames=max_frames,
+        )
+        return self._encode_sequence(
+            _video_input(frames, video_metadata),
+            modality="video",
+            interval_ms=interval_ms,
+            frame_pts_ms=frame_pts_ms,
+            video_metadata=video_metadata,
+            processing_kwargs={"video": {"do_sample_frames": False, "add_timestamps": True}},
+            input_preprocess_version=f"{VIDEO_PREPROCESS_VERSION}-max-frames-{max_frames}",
+        )
+
+    def encode_joint_features(
+        self,
+        pcm_16k_mono: ArrayLike,
+        video_path: Path,
+        interval_ms: tuple[int, int],
+        *,
+        max_frames: int = 32,
+    ) -> SequenceFeatureRecord:
+        """Expose AV tokens with aligned source interval and sampled video PTS."""
+        if self._modalities_disabled("audio") or self._modalities_disabled("video"):
+            raise RuntimeError("joint input requires enabled audio and vision encoders")
+        if not video_path.is_file():
+            raise FileNotFoundError(video_path)
+        start_ms, end_ms = interval_ms
+        if start_ms < 0 or end_ms <= start_ms:
+            raise ValueError("interval must satisfy 0 <= start_ms < end_ms")
+        audio, _identity = self._audio_array(pcm_16k_mono)
+        expected_samples = round((end_ms - start_ms) * SAMPLE_RATE / 1000)
+        if abs(audio.size - expected_samples) > SAMPLE_RATE // 10:
+            raise ValueError("audio sample count does not match the supplied interval")
+        frames, frame_pts_ms, video_metadata = _load_video_sample(
+            video_path,
+            interval_ms=interval_ms,
+            max_frames=max_frames,
+        )
+        inputs = {
+            "audio": {"array": audio, "sampling_rate": SAMPLE_RATE},
+            **_video_input(frames, video_metadata),
+        }
+        return self._encode_sequence(
+            inputs,
+            modality="joint",
+            interval_ms=interval_ms,
+            frame_pts_ms=frame_pts_ms,
+            video_metadata=video_metadata,
+            processing_kwargs={"video": {"do_sample_frames": False, "add_timestamps": True}},
+            input_preprocess_version=f"{JOINT_PREPROCESS_VERSION}-max-frames-{max_frames}",
         )
 
     def encode_texts(
@@ -647,9 +953,7 @@ class EmbeddingProvider:
                 cached_vectors[index],
                 modality="text",
                 interval_ms=None,
-                latency_ms=0.0
-                if index not in missing_indices
-                else inference_ms_per_vector,
+                latency_ms=0.0 if index not in missing_indices else inference_ms_per_vector,
                 cache_hit=index not in missing_indices,
                 identity=identities[index],
             )
@@ -715,13 +1019,9 @@ class EmbeddingProviderPool:
         """Build identical providers once, keeping concurrent first loads serialized."""
         resolved_models_dir = models_dir.resolve()
         resolved_cache_dir = (cache_dir or models_dir / "cache" / "embeddinggemma2").resolve()
-        modality_key = (
-            None if enabled_modalities is None else tuple(sorted(enabled_modalities))
-        )
+        modality_key = None if enabled_modalities is None else tuple(sorted(enabled_modalities))
         concurrency = (
-            self.inference_concurrency
-            if inference_concurrency is None
-            else inference_concurrency
+            self.inference_concurrency if inference_concurrency is None else inference_concurrency
         )
         if concurrency < 1:
             raise ValueError("inference_concurrency must be positive")

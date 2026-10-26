@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shsd.local/schemas/av_bridge_sample_v1.schema.json",
+  "title": "SHSD Multimodal AV Bridge training/evaluation sample v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "sample_id", "source_id", "source_group_id", "source_sha256",
+    "split", "mode", "epoch", "start_ms", "end_ms", "frames", "audio",
+    "modality_present", "target", "rights", "annotation"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "sample_id": { "type": "string", "minLength": 1 },
+    "source_id": { "type": "string", "minLength": 1 },
+    "source_group_id": { "type": "string", "minLength": 1 },
+    "source_sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+    "split": { "enum": ["train", "val", "test"] },
+    "mode": { "enum": ["IMAGE", "VIDEO", "AUDIO", "AV"] },
+    "epoch": { "type": "integer", "minimum": 0 },
+    "start_ms": { "type": "integer", "minimum": 0 },
+    "end_ms": { "type": "integer", "minimum": 1 },
+    "frames": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["path", "pts_ms"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "pts_ms": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "audio": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["path", "start_ms", "end_ms", "sample_rate_hz"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "start_ms": { "type": "integer", "minimum": 0 },
+          "end_ms": { "type": "integer", "minimum": 1 },
+          "sample_rate_hz": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "modality_present": {
+      "type": "object", "additionalProperties": false,
+      "required": ["vision", "audio"],
+      "properties": { "vision": { "type": "boolean" }, "audio": { "type": "boolean" } }
+    },
+    "target": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "visual_entities", "visual_relations", "visual_actions", "scene_events",
+        "audio_scene", "speech_segments", "music_layers", "av_relations",
+        "temporal_relations", "coverage", "caption_ru"
+      ],
+      "properties": {
+        "visual_entities": {
+          "type": "array", "items": { "$ref": "#/$defs/visualEntity" }
+        },
+        "visual_relations": {
+          "type": "array", "items": { "$ref": "#/$defs/visualRelation" }
+        },
+        "visual_actions": {
+          "type": "array", "items": { "$ref": "#/$defs/visualAction" }
+        },
+        "scene_events": {
+          "type": "array", "items": { "$ref": "#/$defs/sceneEvent" }
+        },
+        "audio_scene": {
+          "type": "object", "additionalProperties": false,
+          "required": ["speech", "music", "ambience", "overlap"],
+          "properties": {
+            "speech": { "$ref": "#/$defs/presence" },
+            "music": { "$ref": "#/$defs/presence" },
+            "ambience": { "$ref": "#/$defs/presence" },
+            "overlap": { "$ref": "#/$defs/presence" }
+          }
+        },
+        "speech_segments": {
+          "type": "array", "items": { "$ref": "#/$defs/speechSegment" }
+        },
+        "music_layers": {
+          "type": "array", "items": { "$ref": "#/$defs/musicLayer" }
+        },
+        "av_relations": {
+          "type": "array", "items": { "$ref": "#/$defs/avRelation" }
+        },
+        "temporal_relations": {
+          "type": "array", "items": { "$ref": "#/$defs/temporalRelation" }
+        },
+        "coverage": {
+          "type": "object", "additionalProperties": false,
+          "required": [
+            "visual_entities", "visual_relations", "visual_actions", "scene_events",
+            "audio_scene", "speech_segments", "music_layers", "av_relations",
+            "temporal_relations"
+          ],
+          "properties": {
+            "visual_entities": { "$ref": "#/$defs/coverageState" },
+            "visual_relations": { "$ref": "#/$defs/coverageState" },
+            "visual_actions": { "$ref": "#/$defs/coverageState" },
+            "scene_events": { "$ref": "#/$defs/coverageState" },
+            "audio_scene": { "$ref": "#/$defs/coverageState" },
+            "speech_segments": { "$ref": "#/$defs/coverageState" },
+            "music_layers": { "$ref": "#/$defs/coverageState" },
+            "av_relations": { "$ref": "#/$defs/coverageState" },
+            "temporal_relations": { "$ref": "#/$defs/coverageState" }
+          }
+        },
+        "caption_ru": { "type": "string", "minLength": 1 }
+      }
+    },
+    "rights": {
+      "type": "object", "additionalProperties": false,
+      "required": ["license_id", "permitted_uses"],
+      "properties": {
+        "license_id": { "type": "string", "minLength": 1 },
+        "license_uri": { "type": "string", "format": "uri" },
+        "permitted_uses": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": { "enum": ["train", "validation", "evaluation"] }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "annotation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["verification", "annotator_id", "guide_version"],
+      "properties": {
+        "verification": { "enum": ["human_verified", "partial", "unverified"] },
+        "annotator_id": { "type": "string", "minLength": 1 },
+        "guide_version": { "type": "string", "minLength": 1 },
+        "verified_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "$defs": {
+    "presence": { "enum": ["present", "absent", "unknown"] },
+    "coverageState": { "enum": ["complete", "partial", "not_applicable"] },
+    "timeList": {
+      "type": "array", "uniqueItems": true,
+      "items": { "type": "integer", "minimum": 0 }
+    },
+    "visualEntity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["entity_id", "label_ru", "evidence_frame_ms"],
+      "properties": {
+        "entity_id": { "type": "string", "minLength": 1 },
+        "label_ru": { "type": "string", "minLength": 1 },
+        "attributes": { "type": "array", "items": { "type": "string" } },
+        "evidence_frame_ms": { "$ref": "#/$defs/timeList", "minItems": 1 }
+      }
+    },
+    "visualRelation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["subject_id", "relation", "object_id", "evidence_frame_ms"],
+      "properties": {
+        "subject_id": { "type": "string", "minLength": 1 },
+        "relation": { "type": "string", "minLength": 1 },
+        "object_id": { "type": "string", "minLength": 1 },
+        "evidence_frame_ms": { "$ref": "#/$defs/timeList", "minItems": 1 }
+      }
+    },
+    "visualAction": {
+      "type": "object", "additionalProperties": false,
+      "required": ["event_id", "subject_id", "verb_ru", "start_ms", "end_ms", "evidence_frame_ms"],
+      "properties": {
+        "event_id": { "type": "string", "minLength": 1 },
+        "subject_id": { "type": "string", "minLength": 1 },
+        "verb_ru": { "type": "string", "minLength": 1 },
+        "object_id": { "type": "string", "minLength": 1 },
+        "start_ms": { "type": "integer", "minimum": 0 },
+        "end_ms": { "type": "integer", "minimum": 1 },
+        "evidence_frame_ms": { "$ref": "#/$defs/timeList", "minItems": 1 }
+      }
+    },
+    "sceneEvent": {
+      "type": "object", "additionalProperties": false,
+      "required": ["event_id", "type", "start_ms", "end_ms", "evidence_frame_ms"],
+      "properties": {
+        "event_id": { "type": "string", "minLength": 1 },
+        "type": { "enum": ["appearance", "disappearance", "scene_change", "cut"] },
+        "entity_id": { "type": "string", "minLength": 1 },
+        "start_ms": { "type": "integer", "minimum": 0 },
+        "end_ms": { "type": "integer", "minimum": 1 },
+        "evidence_frame_ms": { "$ref": "#/$defs/timeList" }
+      }
+    },
+    "speechSegment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["event_id", "start_ms", "end_ms", "evidence_audio_ms"],
+      "properties": {
+        "event_id": { "type": "string", "minLength": 1 },
+        "text_ru": { "type": "string" },
+        "speaker_id": { "type": "string", "minLength": 1 },
+        "start_ms": { "type": "integer", "minimum": 0 },
+        "end_ms": { "type": "integer", "minimum": 1 },
+        "evidence_audio_ms": { "$ref": "#/$defs/timeList", "minItems": 1 }
+      }
+    },
+    "musicLayer": {
+      "type": "object", "additionalProperties": false,
+      "required": ["event_id", "type", "state", "start_ms", "end_ms", "evidence_audio_ms"],
+      "properties": {
+        "event_id": { "type": "string", "minLength": 1 },
+        "type": { "enum": ["vocal", "percussion", "bass", "instrument_family", "music_presence"] },
+        "instrument_family_ru": { "type": "string", "minLength": 1 },
+        "instrument_ru": { "type": "string", "minLength": 1 },
+        "state": { "enum": ["present", "absent", "onset", "offset", "changed", "unknown"] },
+        "start_ms": { "type": "integer", "minimum": 0 },
+        "end_ms": { "type": "integer", "minimum": 1 },
+        "evidence_audio_ms": { "$ref": "#/$defs/timeList", "minItems": 1 }
+      }
+    },
+    "avRelation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["visual_event_id", "audio_event_id", "relation", "evidence_refs"],
+      "properties": {
+        "visual_event_id": { "type": "string", "minLength": 1 },
+        "audio_event_id": { "type": "string", "minLength": 1 },
+        "relation": { "enum": ["co_occurs", "before", "after", "synchronized"] },
+        "evidence_refs": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "temporalRelation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["before_event_id", "after_event_id", "relation"],
+      "properties": {
+        "before_event_id": { "type": "string", "minLength": 1 },
+        "after_event_id": { "type": "string", "minLength": 1 },
+        "relation": { "enum": ["before", "overlaps", "starts_within", "ends_within"] }
+      }
+    }
+  },
+  "allOf": [
+    { "if": { "properties": { "mode": { "const": "IMAGE" } }, "required": ["mode"] }, "then": { "properties": { "frames": { "minItems": 1, "maxItems": 1 }, "audio": { "maxItems": 0 }, "modality_present": { "properties": { "vision": { "const": true }, "audio": { "const": false } } } } } },
+    { "if": { "properties": { "mode": { "const": "VIDEO" } }, "required": ["mode"] }, "then": { "properties": { "frames": { "minItems": 2 }, "audio": { "maxItems": 0 }, "modality_present": { "properties": { "vision": { "const": true }, "audio": { "const": false } } } } } },
+    { "if": { "properties": { "mode": { "const": "AUDIO" } }, "required": ["mode"] }, "then": { "properties": { "frames": { "maxItems": 0 }, "audio": { "minItems": 1 }, "modality_present": { "properties": { "vision": { "const": false }, "audio": { "const": true } } } } } },
+    { "if": { "properties": { "mode": { "const": "AV" } }, "required": ["mode"] }, "then": { "properties": { "frames": { "minItems": 1 }, "audio": { "minItems": 1 }, "modality_present": { "properties": { "vision": { "const": true }, "audio": { "const": true } } } } } }
+  ]
+}

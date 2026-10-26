@@ -78,6 +78,25 @@ def _event(revision: int = 1) -> TimelineEvent:
     )
 
 
+def test_timeline_claim_premise_provenance_round_trips_and_legacy_json_defaults() -> None:
+    claim = replace(
+        _event().claims[0],
+        premise_state="music_confirmed",
+        premise_claim_id="claim-music-scene",
+        premise_evidence_refs=("audio:0-1000", "axis:music_presence"),
+    )
+
+    assert TimelineClaim.from_dict(claim.to_dict()) == claim
+    legacy = claim.to_dict()
+    legacy.pop("premise_state")
+    legacy.pop("premise_claim_id")
+    legacy.pop("premise_evidence_refs")
+    legacy_claim = TimelineClaim.from_dict(legacy)
+    assert legacy_claim.premise_state is None
+    assert legacy_claim.premise_claim_id is None
+    assert legacy_claim.premise_evidence_refs == ()
+
+
 def test_watermark_revisioned_mark_atomically_changes_status() -> None:
     tracker = WatermarkTracker("revisioned", required_modalities={"audio"})
     tracker.mark("D", 0, 1_000, "done", level="L1")

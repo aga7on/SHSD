@@ -1,6 +1,6 @@
 # Workspace.md — SHSD: текущая цель и архитектурная спецификация
 
-> **Версия 0.5 · 26.10.2026 · статус: активный план улучшения качества и CPU realtime.**
+> **Версия 0.6 · 26.10.2026 · статус: активный план улучшения качества и CPU realtime.**
 > Исходная полная спецификация v0.1 сохранена [без изменений в архиве](docs/archive/2026-10-26-pre-multimodal-review/Workspace.md). Задачи — [Todo.md](Todo.md), правила — [Agents.md](Agents.md), протокол измерений — [docs/experiments/av-bridge-evaluation-protocol.md](docs/experiments/av-bridge-evaluation-protocol.md).
 >
 > **Практическое ТЗ:** [F10 coding-agent handoff](docs/experiments/F10-agent-handoff.md) · [AV event graph](docs/architecture/grounded-av-storytelling.md) · [F10-GO template](docs/experiments/F10-GO.template.md).
@@ -9,13 +9,14 @@
 
 ## 1. Что строим
 
-SHSD (Streaming Hierarchical Semantic Decoder) должен получать живые аудио и видео и **с небольшой измеренной задержкой** выдавать конкретные, проверяемые и связные **русскоязычные** описания происходящего. Важны одновременно:
+SHSD должен получать синхронизированные аудио и видео и с небольшой измеренной задержкой выдавать конкретное, проверяемое и связное русскоязычное описание. Важны четыре равноправные цели:
 
-1. **Музыка и её развитие:** различать музыку, речь и окружающую среду (включая их наложение); описывать реально различимые ударные, бас, вокал, семейства инструментов, тембр, энергию, ощущение темпа; замечать появление/исчезновение слоёв и переходы **во времени**, а не выдавать один общий ярлык.
-2. **Визуальные события и сюжет:** кто/что видно, какие действия происходят и как меняются, устойчивость объектов между кадрами, порядок событий; не заменять содержание фразами «обнаружено изменение изображения».
-3. **Своевременность:** обработка уникального 1x live источника без систематически растущего lag, потери покрытия и скрытого отбрасывания окон; 2x/5x — отдельные нагрузочные сценарии.
+1. **Изображение и визуальный сюжет:** для IMAGE — видимые сущности, атрибуты и отношения; для VIDEO — устойчивость сущностей, действия и взаимодействия между кадрами, смены сцен и правильный временной порядок.
+2. **Аудиосцена и музыкальная динамика:** речь, музыка и окружение, в том числе наложение; подтверждённые вокал, ударные, бас, семейства инструментов, появление/исчезновение слоёв и изменения во времени.
+3. **Сшивка AV и русское повествование:** связывать визуальные и звуковые события по PTS и evidence, различать совпадение и причинность, передавать подтверждённые claims в связный L3 текст и явно учитывать пропуски и неопределённость.
+4. **Своевременность:** обрабатывать уникальный 1x live источник без систематически растущего lag, потери покрытия и скрытого отбрасывания окон; 2x/5x — отдельные нагрузочные сценарии.
 
-Всё, что модель не может подтвердить, помечать `uncertain/unknown/abstained`. Не превращать cosine similarity в вероятность и не выдумывать точные инструменты, BPM, действия, причинность или сюжетные мотивы.
+Успех в одной модальности не компенсирует провал в другой: отдельно принимать IMAGE, VIDEO, AUDIO и AV режимы. Всё, что нельзя подтвердить, помечать uncertain, unknown или abstained; не выдумывать точные инструменты, BPM, действия, причинность или сюжетные мотивы.
 
 ## 2. Сохраняемые решения и контракты
 
@@ -25,7 +26,7 @@ SHSD (Streaming Hierarchical Semantic Decoder) должен получать ж�
 - **L0–L3:** L0 — измеримые признаки и evidence; L1 — грубые события; L2 — подтверждённые детали и временные переходы; L3 — связное русское описание без неподтверждённых добавлений.
 - **Temporal Event Memory:** стабильные event/claim IDs, интервалы в source time, PTS/time_base, epoch, ревизии, ссылки на evidence; отдельно фиксировать `observed`, `hypothesis`, `accepted_by_policy`, `human_verified`, `published`.
 - **Поток:** bounded 600-секундный ring, очереди/backpressure, C/E/D/R watermarks и явные skipped/dropped intervals; L3 не блокирует ingest. Совпадение audio onset и video cut не означает причинную связь.
-- **No-training production baseline:** текущие frozen веса не менять без разрешения. F10 параллельно изучает **обучаемый** projector/resampler между EmbeddingGemma 2 и Qwen3-0.6B; training experiment допускается после проверки интерфейса, данных, лицензий, CPU feasibility и bounded budget по уже полученному условному разрешению владельца. Малый независимый **оценочный** набор нужен уже сейчас.
+- **No-training production baseline:** текущие frozen веса не менять без решения production gate. F10 — отдельный R&D трек Multimodal AV Bridge для grounded визуально-аудиального сюжетного описания, а не музыкальный тюнинг: IMAGE/VIDEO и AUDIO branches совместно поддерживают grounded events/claims и русское narration. Обучаемый projector/resampler допускается после проверки интерфейса, данных, лицензий, CPU feasibility и bounded budget по уже полученному условному разрешению владельца. Малый независимый оценочный набор нужен уже сейчас.
 
 Подробные исходные схемы API/JSONL/SQLite, контракты интервалов и watermarks — в [архивной v0.1 спецификации](docs/archive/2026-10-26-pre-multimodal-review/Workspace.md). При расхождении описания и реализации агент проверяет актуальный код, тесты и сообщает о несовместимости; не меняет контракт молча.
 
@@ -84,11 +85,11 @@ SHSD (Streaming Hierarchical Semantic Decoder) должен получать ж�
 
 **Почему:** если frozen similarity matcher не извлекает действий, инструментов и временных связей, бесконечное расширение словаря гипотез может не решить задачу. Trainable alignment между аудио/видео представлениями и языковой моделью — серьёзная альтернатива, а не декоративный пункт.
 
-**Гипотеза, не установленный факт:** небольшой projector/resampler и temporal fusion могут помочь Qwen строить последовательные grounded русские описания без обучения всей LLM. Однако **один pooled embedding** может потерять детали и время, а Qwen3-0.6B может не принимать произвольные prefix embeddings в целевом GGUF runtime. Сначала подтвердить доступные encoder tokens, LLM embedding API, latency и реальные права на данные.
+**Проверено на уровне интерфейсов, не качества:** EmbeddingGemma 2 отдаёт перед pooling sequence token embeddings для IMAGE/VIDEO/AUDIO/AV; четырёхтокенный внешний prefix ширины 1024 прошёл через реальный Qwen3-0.6B GGUF и llama.cpp CPU, после него прошёл обычный текстовый prefill и decode. Значения prefix были детерминированными probe-векторами — обучения и полезного conditioning не проверяли. Один pooled 768d вектор может потерять детали и время. Текущему SHSD ещё нужно открыть token sequence на production пути и передавать видео PTS: сейчас provider пулает признаки и ставит `video_metadata=None`. Изолированные VIDEO/AV вызовы заняли около 4 секунд на 5-секундном CPU fixture, поэтому 1x realtime не подтверждён.
 
 **Сравнение:** frozen baseline A0/A2 vs обучаемый adapter B1 vs при необходимости B2 adapter+LoRA vs компактная готовая модель C; отдельно audio-only, video-only, AV, shuffled-time, swapped-audio, отсутствующая модальность, negatives и held-out sources. Успех измеряется не cosine, а factual visual story, музыкальными переходами, omissions/hallucinations и **1x CPU live**.
 
-**Статус:** F10.01–F10.02 (исследование интерфейсов и проектирование) можно выполнять сейчас параллельно F7–F9. F10.03 (обучение) разрешено после technical/data/budget `GO`; F10.04 (LoRA, encoder/LLM fine-tuning, distillation или другие методы) разрешено при доказанной перспективности и отдельном ограниченном experimental budget; F10.05 — решение о production только после held-out и sustained 1x CPU live. Детали — [F10](Todo.md#f10--обучаемый-мультимодальный-мост-параллельный-rd-трек) и [план эксперимента](docs/experiments/bridge-training-pilot.md).
+**Status:** F10.01 verified the CPU external-prefix path. The production EmbeddingProvider exposes opt-in sequence features, masks, token IDs, and source PTS for IMAGE/VIDEO/AUDIO/AV. `analyze` now builds a typed temporal claim graph from L2 revisions and uses it as the training-free B0 input to Qwen; this graph has no visual entity/action extraction and does not consume sequence tokens. See the [paired L1/L2/L3 review](benchmarks/reports/music_quality_v2/real_video_quality_review_b0_graph.md) and [cosine/margin diagnosis](benchmarks/reports/semantic_matcher_diagnostic_20261026/semantic_matcher_diagnostic.md).
 
 Исполнять [Todo.md](Todo.md). [ADR-002](docs/adr/ADR-002-multimodal-bridge-evaluation.md) — формальная рамка выбора; она принимает условное разрешение на обучение; production architecture не выбрана.
 
@@ -101,9 +102,9 @@ SHSD (Streaming Hierarchical Semantic Decoder) должен получать ж�
 
 ## 9. Порядок реализации после архитектурного анализа
 
-**Инженерная рекомендация, не доказанный результат обучения:** исправить музыкальную предпосылку, L2→L3 claim accounting и live backlog; создать grounded temporal graph объектов, действий и музыкальных слоёв; сравнить B0 (graph→текстовый Qwen) с B1 (обучаемый bridge→Qwen). Если EmbeddingGemma не содержит нужных token/time-level фактов, сравнить специализированные visual action/audio music encoders, а не учить Qwen придумывать отсутствующие факты.
+**Engineering recommendation, not a learned result:** a typed temporal claim graph and B0 graph-to-accepted-facts-to-Qwen path are now integrated. Next add independently supported visual entity/action and music-layer nodes, validate frame-token PTS alignment, and run independent evaluation plus same-source A0/B0. The current graph does not improve perception by itself.
 
-Обучение B1/LoRA/fine-tune разрешено владельцем **при документированном technical/data/CPU/budget GO**; не нужно повторно запрашивать разрешение. Нельзя объявлять GPU prototype production-ready без sustained CPU 1x. Последний Deep Research был остановлен до отчёта: конкретные API и численные улучшения остаются непроверенными до smoke tests. Следовать [F10 handoff](docs/experiments/F10-agent-handoff.md).
+Обучение B1/LoRA/fine-tune разрешено владельцем **при документированном technical/data/CPU/budget GO**; не нужно повторно запрашивать разрешение. Нельзя объявлять GPU prototype production-ready без sustained CPU 1x. Предыдущий Deep Research был остановлен до отчёта; интерфейсные вопросы с тех пор проверены F10.01 smoke tests, но выигрыш качества и потоковая производительность не измерены. Следовать [F10 handoff](docs/experiments/F10-agent-handoff.md).
 
 
 ## F10 — исполняемое обучение IMAGE, VIDEO, AUDIO и AV

@@ -1,0 +1,329 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T17:09:00.185681+00:00",
+  "task": "F10.01",
+  "network_disabled": true,
+  "host": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD"
+  },
+  "embeddinggemma": {
+    "status": "passed",
+    "model_repo": "google/embeddinggemma-2",
+    "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+    "verified_files": {
+      "model.safetensors": "197a32965d4b1105faf060417baa899e193fb73cd401f42ec9295234d5553d79",
+      "tokenizer.json": "4d777ef5bdc1aa36227abdfb77c3e49e7b9c892d16e1b6bda41c393504828be4",
+      "tokenizer.model": "e594c8a90eb08d8bda498ff4747977dc827ae0c3c56b5c0d41a605a22d02ef03"
+    },
+    "device": "cpu",
+    "dtype": "torch.bfloat16",
+    "torch": "2.14.0+cpu",
+    "sentence_transformers": "6.2.0",
+    "transformers": "5.20.2",
+    "threads": 4,
+    "video_fixture": "tests\\fixtures\\media\\video_scene_cuts_8s.mp4",
+    "sampled_video_pts_ms": [
+      0,
+      1300,
+      2500,
+      3800
+    ],
+    "video_metadata": {
+      "total_num_frames": 80,
+      "fps": 10.0,
+      "duration": 8.0,
+      "frames_indices": [
+        0,
+        13,
+        25,
+        38
+      ]
+    },
+    "audio_fixture": "tests\\fixtures\\media\\audio_speech_ru.wav",
+    "audio_samples": 80000,
+    "audio_seconds": 5.0,
+    "modes": {
+      "IMAGE": {
+        "status": "passed",
+        "pooled_shape": [
+          768
+        ],
+        "pooled_finite": true,
+        "token_embeddings": {
+          "shape": [
+            1,
+            264,
+            768
+          ],
+          "dtype": "torch.bfloat16",
+          "finite": true
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            264
+          ],
+          "dtype": "torch.int64",
+          "finite": true
+        },
+        "position_or_frame_metadata": {
+          "image_position_ids": {
+            "shape": [
+              1,
+              2520,
+              2
+            ],
+            "dtype": "torch.int64",
+            "finite": true,
+            "first_values": [
+              0,
+              0,
+              1,
+              0,
+              2,
+              0,
+              3,
+              0,
+              4,
+              0,
+              5,
+              0
+            ]
+          }
+        },
+        "input_token_keys": [
+          "attention_mask",
+          "image_position_ids",
+          "input_ids",
+          "modality",
+          "num_images_per_sample",
+          "pixel_values",
+          "token_embeddings"
+        ],
+        "decoded_input_prefix": "<bos><|image><|image|><|image|><|image|><|image|><|image|><|image|><|image|><|image|><|image|><|image|><|image|><|image|><|image|><|image|><|image|><|image|><|image|><|image|><|ima",
+        "video_timestamp_markers": [],
+        "latency_ms": 2672.14
+      },
+      "AUDIO": {
+        "status": "passed",
+        "pooled_shape": [
+          768
+        ],
+        "pooled_finite": true,
+        "token_embeddings": {
+          "shape": [
+            1,
+            129,
+            768
+          ],
+          "dtype": "torch.bfloat16",
+          "finite": true
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            129
+          ],
+          "dtype": "torch.int64",
+          "finite": true
+        },
+        "position_or_frame_metadata": {},
+        "input_token_keys": [
+          "attention_mask",
+          "input_features",
+          "input_features_mask",
+          "input_ids",
+          "modality",
+          "token_embeddings"
+        ],
+        "decoded_input_prefix": "<bos><|audio><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|aud",
+        "video_timestamp_markers": [],
+        "latency_ms": 170.45
+      },
+      "VIDEO": {
+        "status": "passed",
+        "pooled_shape": [
+          768
+        ],
+        "pooled_finite": true,
+        "token_embeddings": {
+          "shape": [
+            1,
+            517,
+            768
+          ],
+          "dtype": "torch.bfloat16",
+          "finite": true
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            517
+          ],
+          "dtype": "torch.int64",
+          "finite": true
+        },
+        "position_or_frame_metadata": {
+          "video_position_ids": {
+            "shape": [
+              4,
+              1260,
+              2
+            ],
+            "dtype": "torch.int64",
+            "finite": true,
+            "first_values": [
+              0,
+              0,
+              1,
+              0,
+              2,
+              0,
+              3,
+              0,
+              4,
+              0,
+              5,
+              0
+            ]
+          },
+          "num_frames_per_video": {
+            "shape": [
+              1
+            ],
+            "dtype": "torch.int64",
+            "finite": true,
+            "first_values": [
+              4
+            ]
+          }
+        },
+        "input_token_keys": [
+          "attention_mask",
+          "input_ids",
+          "modality",
+          "num_frames_per_video",
+          "pixel_values_videos",
+          "token_embeddings",
+          "video_position_ids"
+        ],
+        "decoded_input_prefix": "<bos>00:00 <|image><|video|><|video|><|video|><|video|><|video|><|video|><|video|><|video|><|video|><|video|><|video|><|video|><|video|><|video|><|video|><|video|><|video|><|video|",
+        "video_timestamp_markers": [
+          "00:00",
+          "00:01",
+          "00:02",
+          "00:03"
+        ],
+        "latency_ms": 4125.27
+      },
+      "AV": {
+        "status": "passed",
+        "pooled_shape": [
+          768
+        ],
+        "pooled_finite": true,
+        "token_embeddings": {
+          "shape": [
+            1,
+            644,
+            768
+          ],
+          "dtype": "torch.bfloat16",
+          "finite": true
+        },
+        "attention_mask": {
+          "shape": [
+            1,
+            644
+          ],
+          "dtype": "torch.int64",
+          "finite": true
+        },
+        "position_or_frame_metadata": {
+          "video_position_ids": {
+            "shape": [
+              4,
+              1260,
+              2
+            ],
+            "dtype": "torch.int64",
+            "finite": true,
+            "first_values": [
+              0,
+              0,
+              1,
+              0,
+              2,
+              0,
+              3,
+              0,
+              4,
+              0,
+              5,
+              0
+            ]
+          },
+          "num_frames_per_video": {
+            "shape": [
+              1
+            ],
+            "dtype": "torch.int64",
+            "finite": true,
+            "first_values": [
+              4
+            ]
+          }
+        },
+        "input_token_keys": [
+          "attention_mask",
+          "input_features",
+          "input_features_mask",
+          "input_ids",
+          "modality",
+          "num_frames_per_video",
+          "pixel_values_videos",
+          "token_embeddings",
+          "video_position_ids"
+        ],
+        "decoded_input_prefix": "<bos><|audio><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|audio|><|aud",
+        "video_timestamp_markers": [
+          "00:00",
+          "00:01",
+          "00:02",
+          "00:03"
+        ],
+        "latency_ms": 3917.98
+      }
+    }
+  },
+  "qwen_transformers_synthetic": {
+    "status": "passed",
+    "transformers": "5.20.2",
+    "class": "Qwen3ForCausalLM",
+    "checkpoint_loaded": false,
+    "synthetic_config": {
+      "vocab_size": 64,
+      "hidden_size": 32,
+      "layers": 2,
+      "attention_heads": 4,
+      "kv_heads": 2,
+      "head_dim": 8
+    },
+    "soft_prefix_api": "inputs_embeds accepted by actual forward and generate calls on a synthetic Qwen3ForCausalLM instance",
+    "forward_logits_shape": [
+      1,
+      6,
+      64
+    ],
+    "loss_finite": true,
+    "prefix_gradient_finite": true,
+    "generate_status": "passed",
+    "generated_shape": [
+      1,
+      2
+    ],
+    "frozen_parameter_tensors_unchanged": true
+  },
+  "scope": "Synthetic Qwen API smoke is not a checkpoint quality/performance result; GGUF CPU custom-prefix path requires a separate native C API prototype."
+}

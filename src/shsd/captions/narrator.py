@@ -146,6 +146,8 @@ _RUSSIAN_PROVENANCE_EQUIVALENTS = (
     frozenset({"изображен", "кадр"}),
     frozenset({"изменен", "меня", "смен"}),
 )
+_CLAIM_COVERAGE_THRESHOLD = 0.75
+_CLAIM_COVERAGE_METHOD = "conservative_token_overlap_v2"
 
 
 @dataclass(frozen=True, slots=True)
@@ -243,8 +245,8 @@ class NarrationRequest:
 
     def facts_payload(self) -> dict[str, object]:
         # Repeated detector claims in adjacent windows do not add new facts.
-        # Keep one readable instance in the prompt while retaining every
-        # claim/event ID so the resulting caption remains fully traceable.
+        # Keep one readable instance in the prompt while retaining every input
+        # claim/event ID for post-generation coverage accounting.
         accepted_claims: list[dict[str, object]] = []
         groups_by_signature: dict[str, dict[str, Any]] = {}
         for claim in self.claims:
@@ -292,6 +294,101 @@ class NarrationRequest:
         }
 
 
+def _coverage_stem(token: str) -> str:
+    normalized = token.casefold().replace("ё", "е")
+    if not any("а" <= char <= "я" for char in normalized):
+        return normalized
+    for suffix in _RUSSIAN_SUFFIXES:
+        if normalized.endswith(suffix) and len(normalized) - len(suffix) >= 3:
+            return normalized[: -len(suffix)]
+    return normalized
+
+
+def _coverage_content_stems(text: str) -> set[str]:
+    stems = {
+        _coverage_stem(token)
+        for token in _TOKEN_PATTERN.findall(text)
+        if token.casefold().replace("ё", "е") not in _RUSSIAN_FUNCTION_WORDS
+    }
+    # Generic perception verbs ("слышно", "звучит") carry provenance, not
+    # claim identity; counting them made unrelated audio claims look covered.
+    stems = {stem for stem in stems if not stem.startswith(("слыш", "звуч"))}
+    for equivalents in _RUSSIAN_PROVENANCE_EQUIVALENTS:
+        stems.difference_update(equivalents)
+    return stems
+
+
+def _claim_coverage(caption: str, request: NarrationRequest) -> dict[str, object]:
+    """Map caption text to source IDs conservatively; this is not an entailment model."""
+    sources = [(claim.claim_id, claim.text_ru) for claim in request.claims]
+    sources.extend((quote.segment_id, quote.text) for quote in request.asr_quotes)
+    caption_signature = CaptionDeduplicator.signature(caption)
+    caption_segments = [
+        segment.strip() for segment in re.split(r"[.!?;:,]+", caption) if segment.strip()
+    ] or [caption]
+    coverage: list[dict[str, object]] = []
+    for source_id, source_text in sources:
+        source_signature = CaptionDeduplicator.signature(source_text)
+        source_stems = _coverage_content_stems(source_text)
+        exact_source_match = bool(
+            source_signature and f" {source_signature} " in f" {caption_signature} "
+        )
+        best_score = 1.0 if exact_source_match else 0.0
+        best_segment = source_text if exact_source_match else ""
+        if source_stems and not exact_source_match:
+            for segment in caption_segments:
+                segment_stems = _coverage_content_stems(segment)
+                score = len(source_stems.intersection(segment_stems)) / len(source_stems)
+                if score > best_score:
+                    best_score = score
+                    best_segment = segment
+        source_has_negation = any(
+            token.casefold().replace("ё", "е")
+            in {"не", "нет", "без", "ни", "никогда", "никто", "ничто"}
+            for token in _TOKEN_PATTERN.findall(source_text)
+        )
+        segment_has_negation = any(
+            token.casefold().replace("ё", "е")
+            in {"не", "нет", "без", "ни", "никогда", "никто", "ничто"}
+            for token in _TOKEN_PATTERN.findall(best_segment)
+        )
+        if not source_stems:
+            status = "uncertain"
+        elif (
+            best_score >= _CLAIM_COVERAGE_THRESHOLD and source_has_negation == segment_has_negation
+        ):
+            status = "expressed"
+        elif best_score == 0:
+            status = "omitted"
+        else:
+            status = "uncertain"
+        coverage.append(
+            {
+                "claim_id": source_id,
+                "status": status,
+                "lexical_coverage": round(best_score, 3),
+            }
+        )
+    expressed = tuple(
+        sorted(item["claim_id"] for item in coverage if item["status"] == "expressed")
+    )
+    omitted = tuple(sorted(item["claim_id"] for item in coverage if item["status"] == "omitted"))
+    uncertain = tuple(
+        sorted(item["claim_id"] for item in coverage if item["status"] == "uncertain")
+    )
+    return {
+        "input_claim_ids": tuple(sorted(request.source_ids)),
+        "expressed_claim_ids": expressed,
+        "omitted_claim_ids": omitted,
+        "uncertain_claim_ids": uncertain,
+        "claim_coverage": tuple(coverage),
+    }
+
+
+def _merge_unique_ids(*groups: tuple[str, ...]) -> tuple[str, ...]:
+    return tuple(dict.fromkeys(item for group in groups for item in group))
+
+
 @dataclass(frozen=True, slots=True)
 class NarrationResponse:
     caption_ru: str
@@ -300,6 +397,12 @@ class NarrationResponse:
     end_ms: int
     warnings: tuple[str, ...] = ()
     new_unsupported_claims: tuple[str, ...] = ()
+    input_claim_ids: tuple[str, ...] = ()
+    expressed_claim_ids: tuple[str, ...] = ()
+    omitted_claim_ids: tuple[str, ...] = ()
+    uncertain_claim_ids: tuple[str, ...] = ()
+    claim_coverage: tuple[dict[str, object], ...] = ()
+    claim_coverage_method: str = _CLAIM_COVERAGE_METHOD
 
     def __post_init__(self) -> None:
         if (
@@ -314,6 +417,41 @@ class NarrationResponse:
             or len(set(self.used_claim_ids)) != len(self.used_claim_ids)
         ):
             raise ValueError("used_claim_ids must be non-empty and unique")
+        if not self.input_claim_ids:
+            object.__setattr__(self, "input_claim_ids", tuple(sorted(self.used_claim_ids)))
+        if not self.expressed_claim_ids:
+            object.__setattr__(self, "expressed_claim_ids", tuple(sorted(self.used_claim_ids)))
+        id_groups = (
+            self.input_claim_ids,
+            self.expressed_claim_ids,
+            self.omitted_claim_ids,
+            self.uncertain_claim_ids,
+        )
+        if any(len(group) != len(set(group)) for group in id_groups):
+            raise ValueError("claim coverage IDs must be unique")
+        if set(self.used_claim_ids) != set(self.expressed_claim_ids):
+            raise ValueError("used_claim_ids must match expressed_claim_ids")
+        if set(self.input_claim_ids) != (
+            set(self.expressed_claim_ids)
+            | set(self.omitted_claim_ids)
+            | set(self.uncertain_claim_ids)
+        ):
+            raise ValueError("claim coverage statuses must partition input_claim_ids")
+        if not self.claim_coverage:
+            object.__setattr__(
+                self,
+                "claim_coverage",
+                tuple(
+                    {
+                        "claim_id": claim_id,
+                        "status": "expressed",
+                        "lexical_coverage": 1.0,
+                    }
+                    for claim_id in self.expressed_claim_ids
+                ),
+            )
+        if {item.get("claim_id") for item in self.claim_coverage} != set(self.input_claim_ids):
+            raise ValueError("claim_coverage must include every input claim ID")
         if (
             type(self.start_ms) is not int
             or type(self.end_ms) is not int
@@ -330,6 +468,12 @@ class NarrationResponse:
         return {
             "caption_ru": self.caption_ru,
             "used_claim_ids": list(self.used_claim_ids),
+            "input_claim_ids": list(self.input_claim_ids),
+            "expressed_claim_ids": list(self.expressed_claim_ids),
+            "omitted_claim_ids": list(self.omitted_claim_ids),
+            "uncertain_claim_ids": list(self.uncertain_claim_ids),
+            "claim_coverage": [dict(item) for item in self.claim_coverage],
+            "claim_coverage_method": self.claim_coverage_method,
             "new_unsupported_claims": list(self.new_unsupported_claims),
             "time_range": {"start_ms": self.start_ms, "end_ms": self.end_ms},
             "warnings": list(self.warnings),
@@ -416,6 +560,35 @@ class _CaptionGroup:
     used_claim_ids: tuple[str, ...]
     event_revisions: tuple[NarrationEventRef, ...]
     caption_ru: str | None = None
+    input_claim_ids: tuple[str, ...] = ()
+    expressed_claim_ids: tuple[str, ...] = ()
+    omitted_claim_ids: tuple[str, ...] = ()
+    uncertain_claim_ids: tuple[str, ...] = ()
+    claim_coverage: tuple[dict[str, object], ...] = ()
+
+
+def _merge_group_coverage(group: _CaptionGroup, coverage: dict[str, object]) -> None:
+    group.input_claim_ids = _merge_unique_ids(
+        group.input_claim_ids,
+        cast(tuple[str, ...], coverage["input_claim_ids"]),
+    )
+    group.expressed_claim_ids = _merge_unique_ids(
+        group.expressed_claim_ids,
+        cast(tuple[str, ...], coverage["expressed_claim_ids"]),
+    )
+    group.omitted_claim_ids = _merge_unique_ids(
+        group.omitted_claim_ids,
+        cast(tuple[str, ...], coverage["omitted_claim_ids"]),
+    )
+    group.uncertain_claim_ids = _merge_unique_ids(
+        group.uncertain_claim_ids,
+        cast(tuple[str, ...], coverage["uncertain_claim_ids"]),
+    )
+    by_id = {str(item["claim_id"]): item for item in group.claim_coverage}
+    coverage_rows = cast(tuple[dict[str, object], ...], coverage["claim_coverage"])
+    by_id.update({str(item["claim_id"]): item for item in coverage_rows})
+    group.claim_coverage = tuple(by_id.values())
+    group.used_claim_ids = group.expressed_claim_ids
 
 
 class CaptionDeduplicator:
@@ -459,6 +632,16 @@ class CaptionDeduplicator:
                     previous.used_claim_ids = tuple(
                         dict.fromkeys((*previous.used_claim_ids, *response.used_claim_ids))
                     )
+                    _merge_group_coverage(
+                        previous,
+                        {
+                            "input_claim_ids": response.input_claim_ids,
+                            "expressed_claim_ids": response.expressed_claim_ids,
+                            "omitted_claim_ids": response.omitted_claim_ids,
+                            "uncertain_claim_ids": response.uncertain_claim_ids,
+                            "claim_coverage": response.claim_coverage,
+                        },
+                    )
                     previous.event_revisions = tuple(revisions.values())
                     self._groups.move_to_end(signature)
                     record["record_type"] = "caption_deduplicated"
@@ -470,6 +653,11 @@ class CaptionDeduplicator:
                             "end_ms": previous.end_ms,
                         },
                         "covered_used_claim_ids": list(previous.used_claim_ids),
+                        "covered_input_claim_ids": list(previous.input_claim_ids),
+                        "covered_expressed_claim_ids": list(previous.expressed_claim_ids),
+                        "covered_omitted_claim_ids": list(previous.omitted_claim_ids),
+                        "covered_uncertain_claim_ids": list(previous.uncertain_claim_ids),
+                        "covered_claim_coverage": [dict(item) for item in previous.claim_coverage],
                         "covered_event_revisions": [
                             asdict(item) for item in previous.event_revisions
                         ],
@@ -480,6 +668,11 @@ class CaptionDeduplicator:
                 end_ms=response.end_ms,
                 used_claim_ids=response.used_claim_ids,
                 event_revisions=result.event_revisions,
+                input_claim_ids=response.input_claim_ids,
+                expressed_claim_ids=response.expressed_claim_ids,
+                omitted_claim_ids=response.omitted_claim_ids,
+                uncertain_claim_ids=response.uncertain_claim_ids,
+                claim_coverage=response.claim_coverage,
             )
             while len(self._groups) > self.capacity:
                 self._groups.popitem(last=False)
@@ -516,7 +709,7 @@ class NarrationRequestDeduplicator:
         start_ms, end_ms = request.time_range
         with self._lock:
             previous = self._groups.get(signature)
-            if previous is None:
+            if previous is None or previous.caption_ru is None:
                 return None
             previous_range = {"start_ms": previous.start_ms, "end_ms": previous.end_ms}
             if not (
@@ -524,6 +717,7 @@ class NarrationRequestDeduplicator:
                 and end_ms >= previous.start_ms - self.max_gap_ms
             ):
                 return None
+            coverage = _claim_coverage(previous.caption_ru, request)
             revisions = {item.event_id: item for item in previous.event_revisions}
             for item in request.event_refs:
                 existing = revisions.get(item.event_id)
@@ -531,9 +725,7 @@ class NarrationRequestDeduplicator:
                     revisions[item.event_id] = item
             previous.start_ms = min(previous.start_ms, start_ms)
             previous.end_ms = max(previous.end_ms, end_ms)
-            previous.used_claim_ids = tuple(
-                dict.fromkeys((*previous.used_claim_ids, *request.source_ids))
-            )
+            _merge_group_coverage(previous, coverage)
             previous.event_revisions = tuple(revisions.values())
             self._groups.move_to_end(signature)
             return {
@@ -549,6 +741,18 @@ class NarrationRequestDeduplicator:
                     "end_ms": previous.end_ms,
                 },
                 "covered_claim_ids": list(previous.used_claim_ids),
+                "input_claim_ids": list(coverage["input_claim_ids"]),
+                "expressed_claim_ids": list(coverage["expressed_claim_ids"]),
+                "omitted_claim_ids": list(coverage["omitted_claim_ids"]),
+                "uncertain_claim_ids": list(coverage["uncertain_claim_ids"]),
+                "claim_coverage": [
+                    dict(item)
+                    for item in cast(tuple[dict[str, object], ...], coverage["claim_coverage"])
+                ],
+                "covered_input_claim_ids": list(previous.input_claim_ids),
+                "covered_expressed_claim_ids": list(previous.expressed_claim_ids),
+                "covered_omitted_claim_ids": list(previous.omitted_claim_ids),
+                "covered_uncertain_claim_ids": list(previous.uncertain_claim_ids),
                 "covered_event_revisions": [asdict(item) for item in previous.event_revisions],
             }
 
@@ -563,9 +767,9 @@ class NarrationRequestDeduplicator:
             ):
                 previous.start_ms = min(previous.start_ms, start_ms)
                 previous.end_ms = max(previous.end_ms, end_ms)
-                previous.used_claim_ids = tuple(
-                    dict.fromkeys((*previous.used_claim_ids, *request.source_ids))
-                )
+                selected_caption = previous.caption_ru or caption_ru
+                if selected_caption is not None:
+                    _merge_group_coverage(previous, _claim_coverage(selected_caption, request))
                 revisions = {item.event_id: item for item in previous.event_revisions}
                 revisions.update({item.event_id: item for item in request.event_refs})
                 previous.event_revisions = tuple(revisions.values())
@@ -576,10 +780,14 @@ class NarrationRequestDeduplicator:
                 self._groups[signature] = _CaptionGroup(
                     start_ms=start_ms,
                     end_ms=end_ms,
-                    used_claim_ids=tuple(request.source_ids),
+                    used_claim_ids=(),
                     event_revisions=request.event_refs,
                     caption_ru=caption_ru,
                 )
+                if caption_ru is not None:
+                    _merge_group_coverage(
+                        self._groups[signature], _claim_coverage(caption_ru, request)
+                    )
             while len(self._groups) > self.capacity:
                 self._groups.popitem(last=False)
 
@@ -718,6 +926,34 @@ class QwenNarrator:
         return None, None, float(rate_match.group(1)) if rate_match is not None else None
 
     @staticmethod
+    def _unsupported_relationship_statements(
+        caption: str,
+        request: NarrationRequest,
+    ) -> tuple[str, ...]:
+        """Flag clauses whose content words cannot be grounded in one source claim."""
+        source_texts = [claim.text_ru for claim in request.claims]
+        source_texts.extend(quote.text for quote in request.asr_quotes)
+        source_stems = [stems for text in source_texts if (stems := _coverage_content_stems(text))]
+        if not source_stems:
+            return ("<unsupported_relation>",)
+        clauses = re.split(
+            r"[.!?;:,]+|\b(?:а|и|но|однако|затем|пока)\b",
+            caption,
+            flags=re.IGNORECASE,
+        )
+        for clause in clauses:
+            generated_stems = _coverage_content_stems(clause)
+            if not generated_stems:
+                continue
+            best_precision = max(
+                len(generated_stems.intersection(source)) / len(generated_stems)
+                for source in source_stems
+            )
+            if best_precision < _CLAIM_COVERAGE_THRESHOLD:
+                return ("<unsupported_relation>",)
+        return ()
+
+    @staticmethod
     def _unsupported_provenance_terms(caption: str, request: NarrationRequest) -> tuple[str, ...]:
         """List generated words and polarity changes not traceable to accepted sources."""
         accepted_sources = cast(list[dict[str, object]], request.facts_payload()["accepted_claims"])
@@ -783,6 +1019,7 @@ class QwenNarrator:
                         break
         if not generated_tokens:
             unsupported.add("<empty_caption>")
+        unsupported.update(QwenNarrator._unsupported_relationship_statements(caption, request))
         return tuple(sorted(unsupported))
 
     @staticmethod
@@ -800,13 +1037,31 @@ class QwenNarrator:
         accepted_sources = cast(list[dict[str, object]], request.facts_payload()["accepted_claims"])
         texts = [str(claim["text_ru"]).strip() for claim in accepted_sources]
         texts.extend(f"Цитата: «{quote.text.strip()}»" for quote in request.asr_quotes)
+        input_claim_ids = tuple(sorted(request.source_ids))
+        coverage = _claim_coverage(" ".join(texts), request)
+        coverage["expressed_claim_ids"] = input_claim_ids
+        coverage["omitted_claim_ids"] = ()
+        coverage["uncertain_claim_ids"] = ()
+        coverage["claim_coverage"] = tuple(
+            {
+                "claim_id": claim_id,
+                "status": "expressed",
+                "lexical_coverage": 1.0,
+            }
+            for claim_id in input_claim_ids
+        )
         return NarrationResponse(
             caption_ru=" ".join(texts),
-            used_claim_ids=tuple(sorted(request.source_ids)),
+            used_claim_ids=input_claim_ids,
             start_ms=request.time_range[0],
             end_ms=request.time_range[1],
             warnings=(warning,),
             new_unsupported_claims=unsupported_terms,
+            input_claim_ids=input_claim_ids,
+            expressed_claim_ids=input_claim_ids,
+            omitted_claim_ids=(),
+            uncertain_claim_ids=(),
+            claim_coverage=cast(tuple[dict[str, object], ...], coverage["claim_coverage"]),
         )
 
     def narrate(self, request: NarrationRequest) -> NarrationResult:
@@ -850,13 +1105,26 @@ class QwenNarrator:
                 )
                 status = "fallback"
             else:
-                response = NarrationResponse(
-                    caption_ru=caption,
-                    used_claim_ids=tuple(sorted(request.source_ids)),
-                    start_ms=request.time_range[0],
-                    end_ms=request.time_range[1],
-                )
-                status = "generated"
+                coverage = _claim_coverage(caption, request)
+                expressed_claim_ids = cast(tuple[str, ...], coverage["expressed_claim_ids"])
+                if not expressed_claim_ids:
+                    response = self._fallback(request, "claim_mapping_uncertain")
+                    status = "fallback"
+                else:
+                    response = NarrationResponse(
+                        caption_ru=caption,
+                        used_claim_ids=expressed_claim_ids,
+                        start_ms=request.time_range[0],
+                        end_ms=request.time_range[1],
+                        input_claim_ids=cast(tuple[str, ...], coverage["input_claim_ids"]),
+                        expressed_claim_ids=expressed_claim_ids,
+                        omitted_claim_ids=cast(tuple[str, ...], coverage["omitted_claim_ids"]),
+                        uncertain_claim_ids=cast(tuple[str, ...], coverage["uncertain_claim_ids"]),
+                        claim_coverage=cast(
+                            tuple[dict[str, object], ...], coverage["claim_coverage"]
+                        ),
+                    )
+                    status = "generated"
         except subprocess.TimeoutExpired:
             response = self._fallback(request, "qwen_timeout")
             status = "fallback"

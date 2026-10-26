@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T18:03:20.949402+00:00",
+  "status": "passed",
+  "network_disabled": true,
+  "host": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD"
+  },
+  "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata",
+  "threads": 4,
+  "input": {
+    "video_fixture": "tests\\fixtures\\media\\video_scene_cuts_8s.mp4",
+    "audio_fixture": "tests\\fixtures\\media\\audio_speech_ru.wav",
+    "interval_ms": [
+      0,
+      5000
+    ],
+    "frame_pts_ms": [
+      0,
+      1300,
+      2500,
+      3800
+    ],
+    "video_metadata": {
+      "total_num_frames": 80,
+      "fps": 10.0,
+      "duration": 8.0,
+      "frames_indices": [
+        0,
+        13,
+        25,
+        38
+      ]
+    }
+  },
+  "modes": {
+    "IMAGE": {
+      "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+      "input_preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata",
+      "modality": "image",
+      "interval_ms": [
+        0,
+        1
+      ],
+      "frame_pts_ms": [
+        0
+      ],
+      "video_metadata": null,
+      "latency_ms": 3157.207,
+      "token_embeddings_shape": [
+        268,
+        768
+      ],
+      "attention_mask_shape": [
+        268
+      ],
+      "input_token_ids_shape": [
+        268
+      ],
+      "encoder_metadata_shapes": {
+        "image_position_ids": [
+          1,
+          2520,
+          2
+        ]
+      },
+      "token_embeddings_finite": true,
+      "active_tokens": 268
+    },
+    "AUDIO": {
+      "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+      "input_preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata",
+      "modality": "audio",
+      "interval_ms": [
+        0,
+        5000
+      ],
+      "frame_pts_ms": [],
+      "video_metadata": null,
+      "latency_ms": 175.705,
+      "token_embeddings_shape": [
+        129,
+        768
+      ],
+      "attention_mask_shape": [
+        129
+      ],
+      "input_token_ids_shape": [
+        129
+      ],
+      "encoder_metadata_shapes": {
+        "input_features_mask": [
+          1,
+          499
+        ]
+      },
+      "token_embeddings_finite": true,
+      "active_tokens": 129
+    },
+    "VIDEO": {
+      "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+      "input_preprocess_version": "embeddinggemma2-st-v5-video-source-pts-max-frames-4",
+      "modality": "video",
+      "interval_ms": [
+        0,
+        5000
+      ],
+      "frame_pts_ms": [
+        0,
+        1300,
+        2500,
+        3800
+      ],
+      "video_metadata": {
+        "total_num_frames": 80,
+        "fps": 10.0,
+        "duration": 8.0,
+        "frames_indices": [
+          0,
+          13,
+          25,
+          38
+        ]
+      },
+      "latency_ms": 4177.131,
+      "token_embeddings_shape": [
+        517,
+        768
+      ],
+      "attention_mask_shape": [
+        517
+      ],
+      "input_token_ids_shape": [
+        517
+      ],
+      "encoder_metadata_shapes": {
+        "video_position_ids": [
+          4,
+          1260,
+          2
+        ],
+        "num_frames_per_video": [
+          1
+        ]
+      },
+      "token_embeddings_finite": true,
+      "active_tokens": 517
+    },
+    "AV": {
+      "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+      "input_preprocess_version": "embeddinggemma2-st-v5-av-source-pts-max-frames-4",
+      "modality": "joint",
+      "interval_ms": [
+        0,
+        5000
+      ],
+      "frame_pts_ms": [
+        0,
+        1300,
+        2500,
+        3800
+      ],
+      "video_metadata": {
+        "total_num_frames": 80,
+        "fps": 10.0,
+        "duration": 8.0,
+        "frames_indices": [
+          0,
+          13,
+          25,
+          38
+        ]
+      },
+      "latency_ms": 3970.134,
+      "token_embeddings_shape": [
+        644,
+        768
+      ],
+      "attention_mask_shape": [
+        644
+      ],
+      "input_token_ids_shape": [
+        644
+      ],
+      "encoder_metadata_shapes": {
+        "video_position_ids": [
+          4,
+          1260,
+          2
+        ],
+        "num_frames_per_video": [
+          1
+        ],
+        "input_features_mask": [
+          1,
+          499
+        ]
+      },
+      "token_embeddings_finite": true,
+      "active_tokens": 644
+    }
+  },
+  "scope": "Production provider exposes unpooled sequence tokens, masks, and sampled source PTS. This verifies interface transport only, not learned bridge quality or realtime."
+}

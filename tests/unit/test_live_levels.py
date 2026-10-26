@@ -14,9 +14,22 @@ from shsd.workers.scheduler import RuntimeLoadController
 
 class _NarratorResult:
     def __init__(self, request: Any) -> None:
+        claim_ids = tuple(request.source_ids)
         self.response = SimpleNamespace(
             caption_ru="\u0421\u043b\u044b\u0448\u043d\u0430 \u043c\u0443\u0437\u044b\u043a\u0430.",
-            used_claim_ids=tuple(request.source_ids),
+            used_claim_ids=claim_ids,
+            input_claim_ids=claim_ids,
+            expressed_claim_ids=claim_ids,
+            omitted_claim_ids=(),
+            uncertain_claim_ids=(),
+            claim_coverage=tuple(
+                {
+                    "claim_id": claim_id,
+                    "status": "expressed",
+                    "lexical_coverage": 1.0,
+                }
+                for claim_id in claim_ids
+            ),
             start_ms=request.time_range[0],
             end_ms=request.time_range[1],
             new_unsupported_claims=(),

@@ -11,6 +11,44 @@
       "minItems": 1,
       "uniqueItems": true
     },
+    "input_claim_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "expressed_claim_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "omitted_claim_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "uncertain_claim_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "claim_coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "claim_id": {"type": "string", "minLength": 1},
+          "status": {"type": "string", "enum": ["expressed", "omitted", "uncertain"]},
+          "lexical_coverage": {"type": "number", "minimum": 0, "maximum": 1}
+        },
+        "required": ["claim_id", "status", "lexical_coverage"],
+        "additionalProperties": false
+      },
+      "uniqueItems": true
+    },
+    "claim_coverage_method": {
+      "type": "string",
+      "enum": ["conservative_token_overlap_v1", "conservative_token_overlap_v2"]
+    },
     "new_unsupported_claims": {
       "type": "array",
       "items": {"type": "string", "minLength": 1}
@@ -34,7 +72,7 @@
     "model_revision": {"type": "string", "minLength": 1},
     "prompt_version": {
       "type": "string",
-      "enum": ["narrator-ru-v1", "template-source-only-v1"]
+      "enum": ["narrator-ru-v1", "narrator-ru-v2", "template-source-only-v1"]
     },
     "event_revisions": {
       "type": "array",

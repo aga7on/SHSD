@@ -423,9 +423,9 @@ function claimSummary(claim) {
 }
 
 function matchingCaption(event) {
-  if (event.caption_ru) return event.caption_ru;
+  if (event.caption_ru) return { caption_ru: event.caption_ru };
   const claimIds = new Set((event.claims || []).map((claim) => claim.claim_id));
-  const match = state.captions.find((caption) => {
+  return state.captions.find((caption) => {
     const used = caption.used_claim_ids || caption.claim_ids || [];
     if (used.some((id) => claimIds.has(id))) return true;
     const range = caption.time_range || {};
@@ -433,7 +433,6 @@ function matchingCaption(event) {
     const end = Number(caption.end_ms ?? range.end_ms ?? -1);
     return start < event.end_ms && end > event.start_ms;
   });
-  return match?.caption_ru || "Для этого события caption ещё не получен.";
 }
 
 async function showEvent(event) {
@@ -461,8 +460,26 @@ async function showEvent(event) {
   summary.append(heading, chip);
   root.append(summary);
 
-  const caption = node("div", "caption-block", matchingCaption(latest));
+  const captionRecord = matchingCaption(latest);
+  const caption = node(
+    "div",
+    "caption-block",
+    captionRecord?.caption_ru || "Для этого события caption ещё не получен.",
+  );
   caption.setAttribute("aria-label", "Caption события");
+  if (captionRecord?.input_claim_ids) {
+    const inputIds = captionRecord.input_claim_ids;
+    const expressedIds = captionRecord.expressed_claim_ids || captionRecord.used_claim_ids || [];
+    const omittedIds = captionRecord.omitted_claim_ids || [];
+    const uncertainIds = captionRecord.uncertain_claim_ids || [];
+    caption.append(
+      node(
+        "span",
+        "caption-coverage",
+        `Claims: ${expressedIds.length}/${inputIds.length} выражено · ${omittedIds.length} пропущено · ${uncertainIds.length} неясно`,
+      ),
+    );
+  }
   root.append(caption);
 
   root.append(node("p", "detail-label", `Claims · ${(latest.claims || []).length}`));

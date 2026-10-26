@@ -1,6 +1,6 @@
 # Agents.md — правила coding-агента SHSD
 
-> **Версия 0.5 · 26.10.2026.** Перед правкой читать [Workspace.md](Workspace.md), [Todo.md](Todo.md), [протокол](docs/experiments/av-bridge-evaluation-protocol.md). Полный набор прежних v0.1 инструкций сохранён [в архиве](docs/archive/2026-10-26-pre-multimodal-review/Agents.md). Его инженерные инварианты действуют, если не противоречат явно описанному новому плану.
+> **Версия 0.6 · 26.10.2026.** Перед правкой читать [Workspace.md](Workspace.md), [Todo.md](Todo.md), [протокол](docs/experiments/av-bridge-evaluation-protocol.md). Полный набор прежних v0.1 инструкций сохранён [в архиве](docs/archive/2026-10-26-pre-multimodal-review/Agents.md). Его инженерные инварианты действуют, если не противоречат явно описанному новому плану.
 
 ## 1. Неприкосновенные ограничения
 
@@ -50,6 +50,10 @@ Known limitations / next task: ...
 ```
 
 ## 5. Отдельный порядок для F10
+
+F10 означает **Multimodal AV Bridge** для grounded визуально-аудиального сюжетного описания, а не музыкальный классификатор. Видео и аудио — два равноправных канала: ordered frames с PTS дают сущности, действия, взаимодействия и порядок сцен; waveform/encoder features дают речь, музыку, окружение и их временные слои. Мост должен выдавать проверяемые structured AV events/claims и связное русское описание с temporal order и evidence provenance. IMAGE, VIDEO, AUDIO и синхронный AV — четыре обязательных режима с самостоятельными метриками; улучшение только музыкальных labels не закрывает F10.
+
+Перед изменениями F10 сверяться с [исполняемым tensor/data/loss design](docs/experiments/F10-multimodal-training-design.md) и [pilot protocol](docs/experiments/bridge-training-pilot.md). Не заменять temporal video features pooled-only captioning без явной ablation; missing modality должна маскироваться, а AV coincidence не доказывает причинность.
 
 - Начать **параллельно** с P0, не дожидаясь F9: прочитать [bridge pilot protocol](docs/experiments/bridge-training-pilot.md), проверить официальные model APIs и написать smoke tests для sequence features и Qwen embedding inputs без training.
 - В отчёте различать `hypothesis`, `upstream documented`, `smoke-test verified`, `trained/benchmarked`. Если GGUF/llama.cpp не поддерживает multimodal prefix, это blocker, а не задача, которую можно замолчать.

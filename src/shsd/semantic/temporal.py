@@ -385,10 +385,42 @@ class TemporalAudioRefiner:
             ),
             None,
         )
+        premise_state = (
+            _music_premise_state(
+                scene_claim.label,
+                scene_claim.decision,
+                scene_claim.raw_cosine,
+                scene_claim.candidate_hypotheses,
+                minimum_similarity=self.policy.minimum_similarity,
+            )
+            if scene_claim is not None
+            else "not_supported"
+        )
+        premise_claim_id = scene_claim.claim_id if scene_claim is not None else None
+        premise_evidence_refs = scene_claim.evidence_refs if scene_claim is not None else ()
+        if scene_claim is not None:
+            updated_scene_claim = replace(
+                scene_claim,
+                premise_state=premise_state,
+                premise_claim_id=scene_claim.claim_id,
+                premise_evidence_refs=scene_claim.evidence_refs,
+            )
+            any_refined = any_refined or updated_scene_claim != scene_claim
+            scene_claim = updated_scene_claim
+            refined_claims = [
+                scene_claim if claim.claim_id == scene_claim.claim_id else claim
+                for claim in refined_claims
+            ]
         new_details: list[TimelineClaim] = []
         detail_report: dict[str, Any] = {
             "detail_status": "skipped",
             "reason": "music_scene_not_confirmed",
+            "music_premise": {
+                "state": premise_state,
+                "claim_id": premise_claim_id,
+                "evidence_refs": list(premise_evidence_refs),
+                "publication_allowed": premise_state == "music_confirmed",
+            },
             "new_details": [],
             "static_details": [],
             "acoustic_changes": [],
@@ -406,7 +438,14 @@ class TemporalAudioRefiner:
                 minimum_similarity=self.policy.minimum_similarity,
             )
         ):
-            new_details, detail_report = self._discover_music_details(event, scene_claim)
+            new_details, detail_report = self._discover_music_details(
+                event,
+                scene_claim,
+                publish_details=premise_state == "music_confirmed",
+                premise_state=premise_state,
+                premise_claim_id=scene_claim.claim_id,
+                premise_evidence_refs=scene_claim.evidence_refs,
+            )
             refined_claims.extend(new_details)
             any_refined = any_refined or bool(new_details)
 
@@ -437,9 +476,16 @@ class TemporalAudioRefiner:
         }
 
     def _discover_music_details(
-        self, event: TimelineEvent, scene_claim: TimelineClaim
+        self,
+        event: TimelineEvent,
+        scene_claim: TimelineClaim,
+        *,
+        publish_details: bool,
+        premise_state: str,
+        premise_claim_id: str,
+        premise_evidence_refs: tuple[str, ...],
     ) -> tuple[list[TimelineClaim], dict[str, Any]]:
-        """Probe L2 music axes only after L1 selects a music-containing scene."""
+        """Explore possible music internally; publish detail claims only on a confirmed premise."""
         context = self.history.context(
             start_ms=event.start_ms,
             end_ms=event.end_ms,
@@ -476,6 +522,12 @@ class TemporalAudioRefiner:
             return [], {
                 "detail_status": "skipped",
                 "reason": "insufficient_in_event_audio_windows",
+                "music_premise": {
+                    "state": premise_state,
+                    "claim_id": premise_claim_id,
+                    "evidence_refs": list(premise_evidence_refs),
+                    "publication_allowed": publish_details,
+                },
                 "new_details": [],
                 "static_details": [],
                 "acoustic_changes": acoustic_changes,
@@ -493,6 +545,12 @@ class TemporalAudioRefiner:
             return [], {
                 "detail_status": "skipped",
                 "reason": "aggregate_embedding_not_comparable",
+                "music_premise": {
+                    "state": premise_state,
+                    "claim_id": premise_claim_id,
+                    "evidence_refs": list(premise_evidence_refs),
+                    "publication_allowed": publish_details,
+                },
                 "new_details": [],
                 "static_details": [],
                 "acoustic_changes": acoustic_changes,
@@ -608,7 +666,19 @@ class TemporalAudioRefiner:
                     "candidate_id": candidate_id,
                     "text_ru": candidate.text_ru,
                     "decision": "accepted" if confirmed else "uncertain",
-                    "status": "confirmed" if confirmed else "abstained",
+                    "status": (
+                        "confirmed" if confirmed and publish_details
+                        else "exploratory_support" if confirmed
+                        else "abstained"
+                    ),
+                    "publication_status": (
+                        "published"
+                        if confirmed and publish_details
+                        else "suppressed_music_premise_not_confirmed"
+                        if confirmed
+                        else "not_supported"
+                    ),
+                    "premise_state": premise_state,
                     "aggregate_raw_cosine": candidate_score.raw_cosine,
                     "aggregate_decision": aggregate.decision,
                     "aggregate_supported": aggregate_accepted,
@@ -667,26 +737,49 @@ class TemporalAudioRefiner:
                     if window_by_id[window_id].signal_summary
                 )
                 refs.extend((f"axis:{axis.axis_id}", f"l2:coarse-to-fine:{event.event_id}"))
-                added.append(
-                    TimelineClaim(
-                        claim_id=f"claim-l2-{axis.axis_id}-{candidate_id}-{event.event_id}",
-                        label=candidate_id,
-                        text_ru=candidate.text_ru,
-                        decision="accepted",
-                        raw_cosine=candidate_score.raw_cosine,
-                        margin=max(
-                            0.0,
-                            candidate_score.raw_cosine - self.policy.minimum_similarity,
-                        ),
-                        evidence_refs=tuple(dict.fromkeys(refs)),
-                        window_ids=tuple(support_ids),
-                        model_revision=scene_claim.model_revision,
-                        sample_count=len(support_ids),
+                if publish_details:
+                    added.append(
+                        TimelineClaim(
+                            claim_id=f"claim-l2-{axis.axis_id}-{candidate_id}-{event.event_id}",
+                            label=candidate_id,
+                            text_ru=candidate.text_ru,
+                            decision="accepted",
+                            raw_cosine=candidate_score.raw_cosine,
+                            margin=max(
+                                0.0,
+                                candidate_score.raw_cosine - self.policy.minimum_similarity,
+                            ),
+                            evidence_refs=tuple(dict.fromkeys(refs)),
+                            window_ids=tuple(support_ids),
+                            model_revision=scene_claim.model_revision,
+                            sample_count=len(support_ids),
+                            premise_state=premise_state,
+                            premise_claim_id=premise_claim_id,
+                            premise_evidence_refs=premise_evidence_refs,
+                        )
                     )
-                )
         return added, {
-            "detail_status": "confirmed" if added else "abstained",
-            "reason": None if added else "no_detail_met_temporal_support",
+            "detail_status": (
+                "confirmed"
+                if added
+                else "exploratory_only"
+                if any(item["status"] == "exploratory_support" for item in reports)
+                else "abstained"
+            ),
+            "reason": (
+                None
+                if added
+                else "music_premise_not_confirmed"
+                if not publish_details
+                and any(item["status"] == "exploratory_support" for item in reports)
+                else "no_detail_met_temporal_support"
+            ),
+            "music_premise": {
+                "state": premise_state,
+                "claim_id": premise_claim_id,
+                "evidence_refs": list(premise_evidence_refs),
+                "publication_allowed": publish_details,
+            },
             "coarse_concept": {
                 "axis_id": "music_presence",
                 "candidate_id": scene_claim.label,
@@ -829,6 +922,37 @@ def _music_scene_supports_details(
     ):
         return True
     return any(
-        hypothesis_id in music_candidates and score >= minimum_similarity
-        for hypothesis_id, score, _hypothesis_decision in candidate_hypotheses
+        hypothesis_id in music_candidates
+        and score >= minimum_similarity
+        and hypothesis_decision in {"accepted", "uncertain"}
+        for hypothesis_id, score, hypothesis_decision in candidate_hypotheses
     )
+
+
+def _music_premise_state(
+    candidate_id: str | None,
+    decision: str | None,
+    raw_cosine: float | None,
+    candidate_hypotheses: tuple[tuple[str, float, str], ...],
+    *,
+    minimum_similarity: float,
+) -> str:
+    """Separate an internal positive music possibility from a publishable premise."""
+    if (
+        candidate_id in {"music_present", "music_and_speech"}
+        and decision == "accepted"
+        and raw_cosine is not None
+        and raw_cosine >= minimum_similarity
+    ):
+        return "music_confirmed"
+    if candidate_id == "music_absent" and decision == "accepted":
+        return "music_absent"
+    if _music_scene_supports_details(
+        candidate_id,
+        decision,
+        raw_cosine,
+        candidate_hypotheses,
+        minimum_similarity=minimum_similarity,
+    ):
+        return "music_possible"
+    return "not_supported"

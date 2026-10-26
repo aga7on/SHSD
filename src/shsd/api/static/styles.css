@@ -366,6 +366,7 @@ input::placeholder { color: var(--color-text-tertiary); opacity: 1; }
 .state-chip { flex: none; padding: var(--scale-5) var(--scale-7); border: var(--scale-1) solid var(--color-border); border-radius: var(--radius-pill); color: var(--color-text-secondary); font-size: var(--scale-8); }
 .state-chip[data-state="committed"], .state-chip[data-state="refined"] { border-color: var(--color-info-border); background: var(--color-info-bg); color: var(--color-blue); }
 .caption-block { padding: var(--scale-10) var(--scale-12); border-inline-start: var(--scale-2) solid var(--color-violet-bright); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; background: var(--color-surface-sunken); color: var(--color-text-primary); font-size: var(--scale-11); line-height: 1.55; }
+.caption-coverage { display: block; margin-block-start: var(--scale-6); color: var(--color-text-secondary); font-size: var(--scale-10); }
 .detail-label { margin: 0 0 var(--scale-6); color: var(--color-text-tertiary); font-size: var(--scale-8); font-weight: 730; letter-spacing: 0.09em; text-transform: uppercase; }
 .claim-list, .evidence-list, .revision-list { display: grid; gap: var(--scale-6); margin: 0; padding: 0; list-style: none; }
 .claim-item, .evidence-item, .revision-item { padding: var(--scale-8) var(--scale-9); border: var(--scale-1) solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-sunken); }

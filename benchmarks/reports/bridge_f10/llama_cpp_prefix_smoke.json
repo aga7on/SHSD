@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T17:08:32.244525+00:00",
+  "task": "F10.01",
+  "host": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD"
+  },
+  "result": {
+    "status": "passed",
+    "runtime_version": "b11886",
+    "model_repo": "ggml-org/Qwen3-0.6B-GGUF",
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "model_quantization": "Q8_0",
+    "verified_files": {
+      "Qwen3-0.6B-Q8_0.gguf": "361cc68159042c36ebff7715dc5a2e4612153e88f3e9c9c234820849d6dc9e1d"
+    },
+    "execution": "CPU",
+    "threads": 4,
+    "model_load_ms": 147.02,
+    "llama_model_n_embd": 1024,
+    "vocab_size": 151936,
+    "external_prefix": {
+      "shape": [
+        4,
+        1024
+      ],
+      "dtype": "float32",
+      "values": "deterministic small probe values; untrained, no quality claim",
+      "decode_ms": 86.31
+    },
+    "text_after_prefix": {
+      "token_count": 5,
+      "decode_ms": 24.62
+    },
+    "greedy_decode_tokens": [
+      3555,
+      374,
+      279,
+      829
+    ],
+    "generation_status": "passed",
+    "scope": "Real GGUF checkpoint accepted external token embeddings through llama_batch.embd, followed by ordinary text tokens and CPU decode. This verifies API/deployment shape only, not a learned projector or useful conditioning quality."
+  }
+}

@@ -44,9 +44,20 @@ def _axis() -> tuple[HypothesisAxis, dict[str, np.ndarray]]:
                     polarity="negative",
                     opposes=("music_present",),
                 ),
+                HypothesisCandidate(
+                    candidate_id="music_and_speech",
+                    text_en="Music and speech are prominent.",
+                    text_ru="Заметны музыка и речь.",
+                    polarity="positive",
+                    opposes=(),
+                ),
             ),
         ),
-        {"music_present": _unit(0), "music_absent": _unit(1)},
+        {
+            "music_present": _unit(0),
+            "music_absent": _unit(1),
+            "music_and_speech": _unit(2),
+        },
     )
 
 
@@ -118,6 +129,7 @@ def test_l2_confirms_candidate_with_aggregate_and_neighbor_audio() -> None:
 
     assert report["status"] == "confirmed"
     assert refined.claims[0].decision == "accepted"
+    assert refined.claims[0].premise_state == "music_confirmed"
     assert refined.claims[0].sample_count == 2
     assert "l2:temporal-audio:1000-3000" in refined.claims[0].evidence_refs
     claim_report = report["claims"][0]
@@ -224,15 +236,18 @@ def test_l2_adds_new_music_details_with_signal_and_neighbor_evidence() -> None:
     )
     refined, report = refiner.refine(replace(source_event, claims=(source_claim,)))
 
-    assert [claim.label for claim in refined.claims] == [
-        "conversation_dominant",
-        "solo_vocals",
-    ]
-    assert refined.claims[1].decision == "accepted"
-    assert refined.claims[1].sample_count == 2
-    assert "axis:vocal_presence" in refined.claims[1].evidence_refs
+    assert [claim.label for claim in refined.claims] == ["conversation_dominant"]
+    assert refined.claims[0].premise_state == "music_possible"
     assert report["strategy"] == "coarse_to_fine_temporal_audio_v2"
-    assert report["new_details"][0]["label"] == "solo_vocals"
+    assert report["music_premise"]["state"] == "music_possible"
+    assert report["music_premise"]["publication_allowed"] is False
+    assert report["detail_status"] == "exploratory_only"
+    assert report["new_details"] == []
+    assert report["static_details"][0]["candidate_id"] == "solo_vocals"
+    assert report["static_details"][0]["per_window_accepted_count"] == 2
+    assert report["static_details"][0]["publication_status"] == (
+        "suppressed_music_premise_not_confirmed"
+    )
     assert report["coarse_candidates"][1]["candidate_id"] == "music_and_speech"
     assert report["signal_context"]
     assert report["acoustic_changes"][0]["subtype"] == "onset_count_delta"
@@ -313,3 +328,199 @@ def test_music_scene_detail_routing_accepts_mixed_music_and_speech() -> None:
         0.8,
         (("conversation_dominant", 0.8, "accepted"),),
     )
+    assert not _music_scene_supports_details(
+        "conversation_dominant",
+        "accepted",
+        0.8,
+        (("conversation_dominant", 0.8, "accepted"), ("music_and_speech", 0.68, "rejected")),
+    )
+
+
+def test_l2_publishes_music_detail_with_confirmed_music_and_speech_premise() -> None:
+    history = BoundedAudioEmbeddingHistory(capacity=8)
+    for window_id, start_ms in (
+        ("before", 0),
+        ("window-1", 1_000),
+        ("window-2", 2_000),
+        ("after", 3_000),
+    ):
+        history.add(
+            start_ms=start_ms,
+            end_ms=start_ms + 1_000,
+            window_id=window_id,
+            model_revision=MODEL_REVISION,
+            embedding=_unit(2),
+        )
+    scene_axis, scene_vectors = _axis()
+    vocal_axis = HypothesisAxis(
+        axis_id="vocal_presence",
+        modality="audio",
+        mutually_exclusive=True,
+        level="L2",
+        candidates=(
+            HypothesisCandidate("solo_vocals", "Solo vocals.", "Сольный вокал.", "positive", ()),
+            HypothesisCandidate(
+                "choral_vocals", "Choral vocals.", "Хоровой вокал.", "positive", ()
+            ),
+        ),
+    )
+    refiner = TemporalAudioRefiner(
+        history=history,
+        axes=[(scene_axis, scene_vectors)],
+        detail_axes=[(vocal_axis, {"solo_vocals": _unit(2), "choral_vocals": _unit(3)})],
+        matcher=SemanticMatcher(),
+        policy=MatchPolicy(minimum_similarity=0.6, minimum_margin=0.05),
+        context_padding_ms=1_000,
+    )
+    source_event = _event("music_and_speech")
+    source_claim = replace(
+        source_event.claims[0],
+        text_ru="Заметны музыка и речь.",
+        raw_cosine=0.95,
+        margin=0.9,
+    )
+
+    refined, report = refiner.refine(replace(source_event, claims=(source_claim,)))
+
+    detail = next(claim for claim in refined.claims if claim.label == "solo_vocals")
+    assert report["music_premise"]["state"] == "music_confirmed"
+    assert report["music_premise"]["publication_allowed"] is True
+    assert detail.decision == "accepted"
+    assert detail.premise_state == "music_confirmed"
+    assert detail.premise_claim_id == source_claim.claim_id
+    assert "axis:music_presence" in detail.premise_evidence_refs
+    assert "axis:vocal_presence" in detail.evidence_refs
+
+
+def test_l2_publishes_music_detail_with_confirmed_music_only_premise() -> None:
+    history = BoundedAudioEmbeddingHistory(capacity=8)
+    for window_id, start_ms in (
+        ("before", 0),
+        ("window-1", 1_000),
+        ("window-2", 2_000),
+        ("after", 3_000),
+    ):
+        history.add(
+            start_ms=start_ms,
+            end_ms=start_ms + 1_000,
+            window_id=window_id,
+            model_revision=MODEL_REVISION,
+            embedding=_unit(0),
+        )
+    scene_axis, scene_vectors = _axis()
+    detail_axis = HypothesisAxis(
+        axis_id="percussion_presence",
+        modality="audio",
+        mutually_exclusive=True,
+        level="L2",
+        candidates=(
+            HypothesisCandidate(
+                "percussion_present", "Drums are audible.", "Слышны ударные.", "positive", ()
+            ),
+            HypothesisCandidate(
+                "percussion_absent",
+                "No drums are audible.",
+                "Ударных не слышно.",
+                "negative",
+                (),
+            ),
+        ),
+    )
+    refiner = TemporalAudioRefiner(
+        history=history,
+        axes=[(scene_axis, scene_vectors)],
+        detail_axes=[
+            (detail_axis, {"percussion_present": _unit(0), "percussion_absent": _unit(3)})
+        ],
+        matcher=SemanticMatcher(),
+        policy=MatchPolicy(minimum_similarity=0.6, minimum_margin=0.05),
+        context_padding_ms=1_000,
+    )
+
+    refined, report = refiner.refine(_event("music_present"))
+
+    detail = next(claim for claim in refined.claims if claim.label == "percussion_present")
+    assert report["music_premise"]["state"] == "music_confirmed"
+    assert detail.decision == "accepted"
+    assert detail.premise_state == "music_confirmed"
+    assert detail.premise_claim_id == "claim-music_presence-music_present"
+
+
+def test_conversation_only_with_no_music_candidate_does_not_probe_music_details() -> None:
+    refiner = _refiner(
+        [
+            ("before", 0, 1_000, _unit(1)),
+            ("window-1", 1_000, 2_000, _unit(1)),
+            ("window-2", 2_000, 3_000, _unit(1)),
+            ("after", 3_000, 4_000, _unit(1)),
+        ]
+    )
+    source_claim = replace(
+        _event().claims[0],
+        label="conversation_dominant",
+        decision="accepted",
+        text_ru="На первом плане слышен разговор.",
+        candidate_hypotheses=(("conversation_dominant", 0.82, "accepted"),),
+    )
+
+    refined, report = refiner.refine(replace(_event(), claims=(source_claim,)))
+
+    assert len(refined.claims) == 1
+    assert refined.claims[0].premise_state == "not_supported"
+    assert report["music_premise"]["state"] == "not_supported"
+    assert report["static_details"] == []
+    assert report["new_details"] == []
+
+
+def test_uncertain_music_premise_allows_internal_l2_search_but_no_claim_publication() -> None:
+    mixed = _unit(0) + _unit(1)
+    mixed = mixed / np.linalg.norm(mixed)
+    history = BoundedAudioEmbeddingHistory(capacity=8)
+    for window_id, start_ms in (
+        ("before", 0),
+        ("window-1", 1_000),
+        ("window-2", 2_000),
+        ("after", 3_000),
+    ):
+        history.add(
+            start_ms=start_ms,
+            end_ms=start_ms + 1_000,
+            window_id=window_id,
+            model_revision=MODEL_REVISION,
+            embedding=mixed,
+        )
+    scene_axis, scene_vectors = _axis()
+    vocal_axis = HypothesisAxis(
+        axis_id="vocal_presence",
+        modality="audio",
+        mutually_exclusive=True,
+        level="L2",
+        candidates=(
+            HypothesisCandidate("solo_vocals", "Solo vocals.", "Сольный вокал.", "positive", ()),
+            HypothesisCandidate(
+                "choral_vocals", "Choral vocals.", "Хоровой вокал.", "positive", ()
+            ),
+        ),
+    )
+    refiner = TemporalAudioRefiner(
+        history=history,
+        axes=[(scene_axis, scene_vectors)],
+        detail_axes=[(vocal_axis, {"solo_vocals": mixed, "choral_vocals": _unit(3)})],
+        matcher=SemanticMatcher(),
+        policy=MatchPolicy(minimum_similarity=0.6, minimum_margin=0.05),
+        context_padding_ms=1_000,
+    )
+    source_claim = replace(
+        _event().claims[0],
+        decision="uncertain",
+        raw_cosine=float(1 / np.sqrt(2)),
+        margin=0.0,
+    )
+
+    refined, report = refiner.refine(replace(_event(), claims=(source_claim,)))
+
+    assert report["music_premise"]["state"] == "music_possible"
+    assert report["detail_status"] == "exploratory_only"
+    assert report["static_details"][0]["per_window_accepted_count"] == 2
+    assert report["new_details"] == []
+    assert not any(claim.label == "solo_vocals" for claim in refined.claims)
