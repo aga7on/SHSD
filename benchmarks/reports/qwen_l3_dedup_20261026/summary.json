@@ -1,0 +1,399 @@
+{
+  "configuration": {
+    "device": "CPU",
+    "levels": [
+      "L0",
+      "L1",
+      "L2",
+      "L3"
+    ],
+    "narrator_mode": "qwen",
+    "speech": "disabled",
+    "threads": 4,
+    "window_ms": 5000
+  },
+  "end_to_end_elapsed_seconds": 45.532632,
+  "final_watermarks": {
+    "C": 90000,
+    "D": {
+      "L1": 90000,
+      "L2": 90000,
+      "L3": 90000
+    },
+    "E": 90000,
+    "R": {
+      "L1": 90000,
+      "L2": 90000,
+      "L3": 90000
+    },
+    "epoch": 0,
+    "issues": [
+      {
+        "end_ms": 20000,
+        "level": null,
+        "modality": "video",
+        "reason": "runtime_backpressure",
+        "revision": 1,
+        "stage": "E",
+        "start_ms": 0,
+        "status": "skipped"
+      },
+      {
+        "end_ms": 40000,
+        "level": null,
+        "modality": "video",
+        "reason": "embedding_stride",
+        "revision": 1,
+        "stage": "E",
+        "start_ms": 20001,
+        "status": "skipped"
+      },
+      {
+        "end_ms": 60000,
+        "level": null,
+        "modality": "video",
+        "reason": "embedding_stride",
+        "revision": 1,
+        "stage": "E",
+        "start_ms": 40001,
+        "status": "skipped"
+      },
+      {
+        "end_ms": 80000,
+        "level": null,
+        "modality": "video",
+        "reason": "embedding_stride",
+        "revision": 1,
+        "stage": "E",
+        "start_ms": 60001,
+        "status": "skipped"
+      },
+      {
+        "end_ms": 90000,
+        "level": null,
+        "modality": "video",
+        "reason": "embedding_stride",
+        "revision": 1,
+        "stage": "E",
+        "start_ms": 80001,
+        "status": "skipped"
+      },
+      {
+        "end_ms": 90000,
+        "level": "L2",
+        "modality": null,
+        "reason": "runtime_backpressure",
+        "revision": 1,
+        "stage": "D",
+        "start_ms": 0,
+        "status": "skipped"
+      },
+      {
+        "end_ms": 90000,
+        "level": "L2",
+        "modality": null,
+        "reason": "runtime_backpressure",
+        "revision": 1,
+        "stage": "R",
+        "start_ms": 0,
+        "status": "skipped"
+      },
+      {
+        "end_ms": 1000,
+        "level": "L3",
+        "modality": null,
+        "reason": "no_supported_claim_in_interval",
+        "revision": 1,
+        "stage": "R",
+        "start_ms": 0,
+        "status": "skipped"
+      },
+      {
+        "end_ms": 23000,
+        "level": "L3",
+        "modality": null,
+        "reason": "no_supported_claim_in_interval",
+        "revision": 1,
+        "stage": "R",
+        "start_ms": 20105,
+        "status": "skipped"
+      },
+      {
+        "end_ms": 38000,
+        "level": "L3",
+        "modality": null,
+        "reason": "no_supported_claim_in_interval",
+        "revision": 1,
+        "stage": "R",
+        "start_ms": 33055,
+        "status": "skipped"
+      },
+      {
+        "end_ms": 90000,
+        "level": "L3",
+        "modality": null,
+        "reason": "no_supported_claim_in_interval",
+        "revision": 1,
+        "stage": "R",
+        "start_ms": 55000,
+        "status": "skipped"
+      }
+    ],
+    "lag_ms": {
+      "L1": 0,
+      "L2": 0,
+      "L3": 0
+    },
+    "modality_cursors": {
+      "audio": {
+        "C": 90000,
+        "E": 90000
+      },
+      "video": {
+        "C": 90000,
+        "E": 90000
+      }
+    },
+    "stream_id": "tears_of_steel_120_210s-20261026T131735409569Z"
+  },
+  "l1_l2_claim_decisions": {
+    "accepted": 72,
+    "uncertain": 13
+  },
+  "l2_refined_axes": {
+    "ambient_sound": 1,
+    "impact_sound": 1,
+    "music_presence": 4,
+    "speech_presence": 4,
+    "unknown": 26
+  },
+  "l2_refinement_status_counts": {
+    "abstained": 10,
+    "skipped": 52
+  },
+  "l2_semantic_refinement": {
+    "abstained": 10,
+    "confirmed": 0,
+    "skipped": 52,
+    "total": 62
+  },
+  "l3_record_counts": {
+    "caption": 2,
+    "narration_deduplicated": 16
+  },
+  "latest_event_count": 105,
+  "latest_event_counts": {
+    "L0": 20,
+    "L1": 23,
+    "L2": 62
+  },
+  "matcher_axes": {
+    "ambient_sound": {
+      "cosine_below_threshold": 0,
+      "cosine_min_mean_max": [
+        0.6779520511627197,
+        0.7576993107795715,
+        0.8115444183349609
+      ],
+      "decision_counts": {
+        "uncertain": 18
+      },
+      "margin_basis": "top_candidate_gap",
+      "margin_below_threshold": 18,
+      "margin_min_mean_max": [
+        0.0022796988487243652,
+        0.019190337922838,
+        0.04283779859542847
+      ],
+      "minimum_margin": 0.05,
+      "minimum_similarity": 0.6,
+      "modality": "audio",
+      "windows": 18
+    },
+    "impact_sound": {
+      "cosine_below_threshold": 0,
+      "cosine_min_mean_max": [
+        0.6993423104286194,
+        0.7502021458413866,
+        0.7884538173675537
+      ],
+      "decision_counts": {
+        "uncertain": 18
+      },
+      "margin_basis": "top_candidate_gap",
+      "margin_below_threshold": 18,
+      "margin_min_mean_max": [
+        0.000735163688659668,
+        0.018427378601498075,
+        0.04498046636581421
+      ],
+      "minimum_margin": 0.05,
+      "minimum_similarity": 0.6,
+      "modality": "audio",
+      "windows": 18
+    },
+    "music_presence": {
+      "cosine_below_threshold": 0,
+      "cosine_min_mean_max": [
+        0.6727597117424011,
+        0.7363197373019325,
+        0.7746123671531677
+      ],
+      "decision_counts": {
+        "uncertain": 18
+      },
+      "margin_basis": "top_candidate_gap",
+      "margin_below_threshold": 18,
+      "margin_min_mean_max": [
+        6.073713302612305e-05,
+        0.00956531696849399,
+        0.01791989803314209
+      ],
+      "minimum_margin": 0.05,
+      "minimum_similarity": 0.6,
+      "modality": "audio",
+      "windows": 18
+    },
+    "person_presence": {
+      "cosine_below_threshold": 0,
+      "cosine_min_mean_max": [
+        0.6213098764419556,
+        0.6284036636352539,
+        0.6399110555648804
+      ],
+      "decision_counts": {
+        "uncertain": 4
+      },
+      "margin_basis": "top_candidate_gap",
+      "margin_below_threshold": 4,
+      "margin_min_mean_max": [
+        0.019235074520111084,
+        0.03016790747642517,
+        0.04304856061935425
+      ],
+      "minimum_margin": 0.05,
+      "minimum_similarity": 0.6,
+      "modality": "image",
+      "windows": 4
+    },
+    "scene_setting": {
+      "cosine_below_threshold": 0,
+      "cosine_min_mean_max": [
+        0.6135009527206421,
+        0.6212684512138367,
+        0.6414105892181396
+      ],
+      "decision_counts": {
+        "uncertain": 4
+      },
+      "margin_basis": "top_candidate_gap",
+      "margin_below_threshold": 4,
+      "margin_min_mean_max": [
+        0.004251718521118164,
+        0.014770835638046265,
+        0.038802385330200195
+      ],
+      "minimum_margin": 0.05,
+      "minimum_similarity": 0.6,
+      "modality": "image",
+      "windows": 4
+    },
+    "scene_style": {
+      "cosine_below_threshold": 4,
+      "cosine_min_mean_max": [
+        0.5817264318466187,
+        0.5863198935985565,
+        0.5940065383911133
+      ],
+      "decision_counts": {
+        "uncertain": 4
+      },
+      "margin_basis": "similarity_threshold",
+      "margin_below_threshold": 4,
+      "margin_min_mean_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "minimum_margin": 0.05,
+      "minimum_similarity": 0.6,
+      "modality": "image",
+      "windows": 4
+    },
+    "screen_text_presence": {
+      "cosine_below_threshold": 1,
+      "cosine_min_mean_max": [
+        0.5913766622543335,
+        0.6088694781064987,
+        0.6199554204940796
+      ],
+      "decision_counts": {
+        "uncertain": 4
+      },
+      "margin_basis": "top_candidate_gap",
+      "margin_below_threshold": 4,
+      "margin_min_mean_max": [
+        0.005126357078552246,
+        0.01296958327293396,
+        0.024083733558654785
+      ],
+      "minimum_margin": 0.05,
+      "minimum_similarity": 0.6,
+      "modality": "image",
+      "windows": 4
+    },
+    "speech_presence": {
+      "cosine_below_threshold": 0,
+      "cosine_min_mean_max": [
+        0.7140766978263855,
+        0.7374608847830031,
+        0.7704869508743286
+      ],
+      "decision_counts": {
+        "accepted": 1,
+        "uncertain": 17
+      },
+      "margin_basis": "top_candidate_gap",
+      "margin_below_threshold": 17,
+      "margin_min_mean_max": [
+        0.0016105175018310547,
+        0.014133208327823214,
+        0.05762290954589844
+      ],
+      "minimum_margin": 0.05,
+      "minimum_similarity": 0.6,
+      "modality": "audio",
+      "windows": 18
+    }
+  },
+  "narration_backend_counts": {
+    "qwen": 2,
+    "template": 0
+  },
+  "narration_deduplicated_count": 16,
+  "narration_fallback_count": 0,
+  "narration_latency_ms_samples": [
+    3522.317,
+    2463.655
+  ],
+  "narration_token_throughput": {
+    "caption_count": 2,
+    "deduplicated_count": 16,
+    "fallback_count": 0,
+    "generated_tokens": null,
+    "generation_ms": null,
+    "measured_generations": 2,
+    "tokens_per_second": 53.4
+  },
+  "narration_unsupported_claim_count": 0,
+  "process_resources": {
+    "available": true,
+    "current_process_tree_rss_bytes": 2382327808,
+    "peak_process_count": 2,
+    "peak_process_tree_rss_bytes": 3299278848,
+    "sample_interval_ms": 50,
+    "system_cpu_percent": 39.2
+  },
+  "source": "benchmarks/fixtures/real_poc/tears_of_steel_120_210s.mp4",
+  "source_duration_ms": 90000
+}

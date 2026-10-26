@@ -1,0 +1,127 @@
+level,start_ms,end_ms,kind,state,event_id,claim_id,decision,raw_cosine,margin,sample_count,text_ru
+L1,0,10000,unknown,committed,63b81e3f8a884a0fbcfdf1a707fa33c9,speech_absent,uncertain,0.7291640639305115,0.0034630298614501953,2,В аудио не слышно речи человека.
+L1,0,10000,unknown,committed,fa5f975027c440ba9d2ad186226d2a90,music_absent,uncertain,0.7444772124290466,0.00865781307220459,2,В аудио не слышно музыки.
+L2,0,10000,unknown,committed,63b81e3f8a884a0fbcfdf1a707fa33c9,speech_absent,uncertain,0.7291640639305115,0.0034630298614501953,2,В аудио не слышно речи человека.
+L2,0,10000,unknown,committed,fa5f975027c440ba9d2ad186226d2a90,music_absent,uncertain,0.7444772124290466,0.00865781307220459,2,В аудио не слышно музыки.
+L1,0,90000,unknown,committed,884a19c032464215afc8b26676b4288b,ambient_sound_present,uncertain,0.7576993107795715,0.0022796988487243652,18,Слышен непрерывный фоновый звук окружающей среды.
+L1,0,90000,unknown,committed,b2fa76d7feac4867a150f9194539b245,impact_present,uncertain,0.7502021458413866,0.000735163688659668,18,Слышен один или несколько коротких ударных звуков.
+L2,0,90000,unknown,committed,884a19c032464215afc8b26676b4288b,ambient_sound_present,uncertain,0.7576993107795715,0.0022796988487243652,18,Слышен непрерывный фоновый звук окружающей среды.
+L2,0,90000,unknown,committed,b2fa76d7feac4867a150f9194539b245,impact_present,uncertain,0.7502021458413866,0.000735163688659668,18,Слышен один или несколько коротких ударных звуков.
+L1,1000,2000,cross_modal_coincidence,committed,35ed6dfe5faf4128a3a4ac41c1c3b1bc,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,1000,2000,cross_modal_coincidence,committed,35ed6dfe5faf4128a3a4ac41c1c3b1bc,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,1000,2000,scene_changed,refined,9c26d929f6e4491ab5f1d71eb52139b3,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,2000,3000,cross_modal_coincidence,committed,d1406f6784f6492f99e3c560f7733edb,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,2000,3000,scene_changed,refined,a6fe4d1395944229b9842c245aa8b97e,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L2,2000,3000,cross_modal_coincidence,committed,d1406f6784f6492f99e3c560f7733edb,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,3000,4000,scene_changed,refined,4b6b4fe3f67d4b3996f8ee20e3908dcc,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,3000,4015,cross_modal_coincidence,committed,81750b1c1eff477f9a6f02796c99ffd2,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,3000,4015,cross_modal_coincidence,committed,81750b1c1eff477f9a6f02796c99ffd2,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,4000,5000,cross_modal_coincidence,committed,69448e4ca66d43f7a269cd0928ed9478,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,4000,5000,cross_modal_coincidence,committed,69448e4ca66d43f7a269cd0928ed9478,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,4000,5000,scene_changed,refined,94b1cecfc8aa44c590fcba8139e3a848,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L2,5000,6000,scene_changed,refined,1c2e742d0fba42b48d1cab265de68a1a,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,5000,6025,cross_modal_coincidence,committed,78aa868789684a8c899f7dae9d13a45d,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,5000,6025,cross_modal_coincidence,committed,78aa868789684a8c899f7dae9d13a45d,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,6000,7000,scene_changed,refined,ca21df9049a74c83bc0873f8de4bf241,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,6000,7015,cross_modal_coincidence,committed,aaa9eab8b2734662afa9131d9754c045,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,6000,7015,cross_modal_coincidence,committed,aaa9eab8b2734662afa9131d9754c045,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,7000,8000,cross_modal_coincidence,committed,5ad7802e583f42579fb417549e7c7fc8,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,7000,8000,scene_changed,refined,19001d7b5e2e44a6a6fc6e44deaa72e0,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L2,7000,8000,cross_modal_coincidence,committed,5ad7802e583f42579fb417549e7c7fc8,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,10000,20000,unknown,committed,423552ebcbf44222ba02131487d89743,speech_present,uncertain,0.7427092790603638,0.009654760360717773,2,В аудио слышна речь человека.
+L2,10000,20000,unknown,committed,423552ebcbf44222ba02131487d89743,speech_present,uncertain,0.7427092790603638,0.009654760360717773,2,В аудио слышна речь человека.
+L2,14000,15000,scene_changed,refined,ed608a136b56430d8b0b941ea0e092fd,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,14000,15055,cross_modal_coincidence,committed,694588001393437e8f11a8e934691381,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,14000,15055,cross_modal_coincidence,committed,694588001393437e8f11a8e934691381,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,15000,30000,unknown,committed,436d3a2ba444458aae1869685099f0a7,music_absent,uncertain,0.7326739430427551,0.0044792890548706055,3,В аудио не слышно музыки.
+L2,15000,30000,unknown,committed,436d3a2ba444458aae1869685099f0a7,music_absent,uncertain,0.7326739430427551,0.0044792890548706055,3,В аудио не слышно музыки.
+L1,17208,32208,unknown,committed,42dd870478f74773b9aaae4637b0dac6,screen_text_visible,uncertain,0.6091806292533875,0.0041168928146362305,2,На изображении виден читаемый текст.
+L2,17208,32208,unknown,committed,42dd870478f74773b9aaae4637b0dac6,screen_text_visible,uncertain,0.6091806292533875,0.0041168928146362305,2,На изображении виден читаемый текст.
+L1,17208,52208,unknown,committed,2cf6f95b84cd4187884dafbcaa0a1427,indoor_setting,uncertain,0.6320963948965073,0.009582877159118652,4,На изображении показано помещение.
+L1,17208,52208,unknown,committed,53b9966e27fd46068dfd8fbf174476fb,person_visible,uncertain,0.6300712823867798,0.01938873529434204,4,На изображении виден человек.
+L2,17208,52208,unknown,committed,2cf6f95b84cd4187884dafbcaa0a1427,indoor_setting,uncertain,0.6320963948965073,0.009582877159118652,4,На изображении показано помещение.
+L2,17208,52208,unknown,committed,53b9966e27fd46068dfd8fbf174476fb,person_visible,uncertain,0.6300712823867798,0.01938873529434204,4,На изображении виден человек.
+L2,19000,20000,scene_changed,refined,c5c92c487dfe4aa388ff675de54c67ef,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,19000,20105,cross_modal_coincidence,committed,cf623cf6dec941759722f058a054e236,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,19000,20105,cross_modal_coincidence,committed,cf623cf6dec941759722f058a054e236,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,20000,30000,unknown,committed,1f2a160602b14dbcb3830705c8167b49,speech_absent,uncertain,0.7289638519287109,0.007394671440124512,2,В аудио не слышно речи человека.
+L2,20000,30000,unknown,committed,1f2a160602b14dbcb3830705c8167b49,speech_absent,uncertain,0.7289638519287109,0.007394671440124512,2,В аудио не слышно речи человека.
+L2,23000,24000,scene_changed,refined,679b0739c92d47ce976d3c6e9b7df0b4,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,23000,24045,cross_modal_coincidence,committed,7f2be1cbc19b4a43b8596a120632c15c,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,23000,24045,cross_modal_coincidence,committed,7f2be1cbc19b4a43b8596a120632c15c,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,25000,26000,scene_changed,refined,0ff82f7c26164918b21b6bdaa340aa0c,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,25000,26025,cross_modal_coincidence,committed,14d1ac4c865e44cf9a1a847c954b521e,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,25000,26025,cross_modal_coincidence,committed,14d1ac4c865e44cf9a1a847c954b521e,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,27208,42208,unknown,committed,ace2bee5c2cf4e518c68775b7ce550e3,unknown,uncertain,0.5964937806129456,0.0,2,
+L2,27208,42208,unknown,committed,ace2bee5c2cf4e518c68775b7ce550e3,unknown,uncertain,0.5964937806129456,0.0,2,
+L1,30000,40000,unknown,committed,ab3d6c5605354ddfb1f97469bc579e55,music_present,uncertain,0.7544890642166138,0.005800485610961914,2,В аудио слышна музыка.
+L2,30000,40000,unknown,committed,ab3d6c5605354ddfb1f97469bc579e55,music_present,uncertain,0.7544890642166138,0.005800485610961914,2,В аудио слышна музыка.
+L2,32000,33000,scene_changed,refined,b052b077792e41d39e1d73d9c17f7c57,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,32000,33055,cross_modal_coincidence,committed,dbf6a36077bc4216862854e98fc77b2f,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,32000,33055,cross_modal_coincidence,committed,dbf6a36077bc4216862854e98fc77b2f,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,35000,55000,unknown,committed,503cf53b7a9d4d66a2749d2f82cab5d7,speech_absent,uncertain,0.7321118414402008,0.0016105175018310547,4,В аудио не слышно речи человека.
+L2,35000,55000,unknown,committed,503cf53b7a9d4d66a2749d2f82cab5d7,speech_absent,uncertain,0.7321118414402008,0.0016105175018310547,4,В аудио не слышно речи человека.
+L2,38000,39000,scene_changed,refined,8dc940fb23564b6f8ef52860d772dbc0,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,38000,39055,cross_modal_coincidence,committed,03b43c9d4927470183977f1beb5988c3,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,38000,39055,cross_modal_coincidence,committed,03b43c9d4927470183977f1beb5988c3,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,39000,40000,scene_changed,refined,722638ad36ee4e9692671813ef2b5975,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,39000,40075,cross_modal_coincidence,committed,e8fdd3da2c134617bc433000be6054e5,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,39000,40075,cross_modal_coincidence,committed,e8fdd3da2c134617bc433000be6054e5,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,40000,41000,cross_modal_coincidence,committed,3122d223a5e44677841b519f681b207d,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,40000,41000,cross_modal_coincidence,committed,3122d223a5e44677841b519f681b207d,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,40000,41000,scene_changed,refined,ab713d2f2a77498e9e9a1742f1b8cb16,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,40000,60000,unknown,committed,dfe6646102ef4adc803e634d209fb8af,music_absent,uncertain,0.7667208164930344,0.005856573581695557,4,В аудио не слышно музыки.
+L2,40000,60000,unknown,committed,dfe6646102ef4adc803e634d209fb8af,music_absent,uncertain,0.7667208164930344,0.005856573581695557,4,В аудио не слышно музыки.
+L1,41000,42000,cross_modal_coincidence,committed,7b017df0e60e4d55a21fba6ea413da12,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,41000,42000,scene_changed,refined,158c6b240be8464691dd37c326c7ab93,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L2,41000,42000,cross_modal_coincidence,committed,7b017df0e60e4d55a21fba6ea413da12,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,42000,43000,cross_modal_coincidence,committed,d3c2def98eee414092f5389a285067d3,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,42000,43000,scene_changed,refined,8b053ea4a7a241c395a63691a6b69840,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L2,42000,43000,cross_modal_coincidence,committed,d3c2def98eee414092f5389a285067d3,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,43000,44000,cross_modal_coincidence,committed,b7361b4331124253ae57ff12b26520b0,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,43000,44000,scene_changed,refined,1e7be0fb004f4f08abc3582ad1984112,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L2,43000,44000,cross_modal_coincidence,committed,b7361b4331124253ae57ff12b26520b0,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,44000,45000,cross_modal_coincidence,committed,e43362097a6648759cec49c1f0590032,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,44000,45000,scene_changed,refined,17bb74b154b14256abc626a32625277b,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L2,44000,45000,cross_modal_coincidence,committed,e43362097a6648759cec49c1f0590032,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,45000,46000,cross_modal_coincidence,committed,474443b1574e485ca36ed0ee32c56dd6,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,45000,46000,cross_modal_coincidence,committed,474443b1574e485ca36ed0ee32c56dd6,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,45000,46000,scene_changed,refined,febfd95f70a447fd9fb98e22e26df218,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,46000,47000,cross_modal_coincidence,committed,73af3f663f254a9887882f0e7edd27db,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,46000,47000,scene_changed,refined,5bbd66d2d43c475388f11d77aaec6e02,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L2,46000,47000,cross_modal_coincidence,committed,73af3f663f254a9887882f0e7edd27db,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,47000,48000,scene_changed,refined,f809ad7265624fabb884fc24c2dd93ee,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,47000,48095,cross_modal_coincidence,committed,e46ab8957d664581a93f41e6a1db6f7f,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,47000,48095,cross_modal_coincidence,committed,e46ab8957d664581a93f41e6a1db6f7f,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,48000,49000,scene_changed,refined,26e1244d93524dcf9bec981a606a739f,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L1,48000,49015,cross_modal_coincidence,committed,8440dc1a7ad94d43b3d1bda4943ea2d5,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,48000,49015,cross_modal_coincidence,committed,8440dc1a7ad94d43b3d1bda4943ea2d5,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,51000,52000,cross_modal_coincidence,committed,c5d706060fad4d5f83c8100c60d3da5a,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L2,51000,52000,scene_changed,refined,b46f491b0d56472c94a0156dce6800d4,scene_cut,accepted,,,1,Обнаружено заметное изменение изображения.
+L2,51000,52000,cross_modal_coincidence,committed,c5d706060fad4d5f83c8100c60d3da5a,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,52000,53005,cross_modal_coincidence,committed,b407dedf94ab464bab1f20e168b9ec11,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,54000,55000,cross_modal_coincidence,committed,e974c58844fe4beb8a166d8def151ea9,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,55000,56005,cross_modal_coincidence,committed,0544631049ed41c188ac3253a9669a31,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,55000,65000,unknown,committed,0ba89202d24040f3a6f3ce4b57634c51,speech_present,uncertain,0.7634482979774475,0.0017728805541992188,2,В аудио слышна речь человека.
+L1,56000,57085,cross_modal_coincidence,committed,be30a8baf6c14ed5ac91eefa8eee219f,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,57000,58000,cross_modal_coincidence,committed,855f370b02df4158a2e353afa9f733d8,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,60000,61085,cross_modal_coincidence,committed,d59a5eef07504efab4938f1d777358e3,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,61000,62055,cross_modal_coincidence,committed,d7cf087d563c43f2a4b9081adf5ab4c6,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,63000,64000,cross_modal_coincidence,committed,cbc515a3e78342bd92bd59ddf3d867ac,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,64458,79458,unknown,committed,1e31a5f6cc074efcaa43433de43ec526,unknown,uncertain,0.596244752407074,0.0003380775451660156,2,
+L1,69000,70000,cross_modal_coincidence,committed,9b6c5aeb45334d7b83608bfcd11d6e06,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,70000,90000,unknown,committed,d97ccb09a9a845a4ae941aa48008e8d4,music_present,uncertain,0.6891975849866867,0.00901651382446289,4,В аудио слышна музыка.
+L1,72000,73055,cross_modal_coincidence,committed,ff2c91a7cd484e5da3b8fd3809845bd2,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,73000,74000,cross_modal_coincidence,committed,46e3163c129a45459d01fdb966ca46d1,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,75000,90000,unknown,committed,19251944e9b44c289be7cb63f8702808,speech_present,uncertain,0.7265415986378988,0.012035965919494629,3,В аудио слышна речь человека.
+L1,76000,77000,cross_modal_coincidence,committed,e0f75bd34ee54d07a921d4326f846d3d,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,77000,78015,cross_modal_coincidence,committed,23ea73074dd246009269e0c0f21a286b,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,78000,79045,cross_modal_coincidence,committed,eec528ee72a945369681b2d0c08a2ced,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,80000,81000,cross_modal_coincidence,committed,ebd1da47832740b0904b3d58fa1e21dc,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,81000,82015,cross_modal_coincidence,committed,0aa6a42eb2654c3598f6950bbeb611f5,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,83000,84065,cross_modal_coincidence,committed,4b445d1e523440d4964bdf33c5e1fba2,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,84000,85000,cross_modal_coincidence,committed,ca58a173a2174c5b981bcde56da151b8,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,85000,86000,cross_modal_coincidence,committed,ce3c2e8d90734f69831212331746e01d,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,86000,87000,cross_modal_coincidence,committed,2cc8ba20ca1242b2871b3cefbeff4974,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,87000,88015,cross_modal_coincidence,committed,9802ceceeab54ccc869f27a664559236,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.
+L1,88000,89000,cross_modal_coincidence,committed,43131475df984c98bdadce753cf6628a,temporally_coincident,accepted,,,1,Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.

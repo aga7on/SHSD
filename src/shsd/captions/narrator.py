@@ -7,17 +7,145 @@ import math
 import re
 import subprocess
 import tempfile
+import threading
 import time
+from collections import OrderedDict
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from shsd.models.artifacts import verify_local_artifacts
 
-PROMPT_VERSION = "narrator-ru-v1"
+PROMPT_VERSION = "narrator-ru-v2"
 DEFAULT_MAX_TOKENS = 128
 DEFAULT_TIMEOUT_SECONDS = 45.0
 DEFAULT_MAX_INPUT_CHARS = 4_096
+_TOKEN_PATTERN = re.compile(r"[0-9A-Za-zА-Яа-яЁё]+")
+_RUSSIAN_SUFFIXES = tuple(
+    sorted(
+        {
+            "иями",
+            "ями",
+            "ами",
+            "ыми",
+            "ими",
+            "ого",
+            "его",
+            "ому",
+            "ему",
+            "ую",
+            "юю",
+            "ая",
+            "яя",
+            "ое",
+            "ее",
+            "ые",
+            "ие",
+            "ых",
+            "их",
+            "ым",
+            "им",
+            "ом",
+            "ем",
+            "ой",
+            "ей",
+            "ый",
+            "ий",
+            "ешь",
+            "ишь",
+            "ете",
+            "ите",
+            "ала",
+            "яла",
+            "ило",
+            "или",
+            "ают",
+            "яют",
+            "ует",
+            "уют",
+            "ает",
+            "яет",
+            "ит",
+            "ет",
+            "ат",
+            "ят",
+            "ут",
+            "ют",
+            "яли",
+            "ели",
+            "ить",
+            "еть",
+            "ать",
+            "ять",
+            "ены",
+            "ена",
+            "ено",
+            "ией",
+            "иям",
+            "иях",
+            "ия",
+            "ии",
+            "ью",
+            "ов",
+            "ев",
+            "ам",
+            "ям",
+            "ах",
+            "ях",
+            "а",
+            "я",
+            "е",
+            "и",
+            "о",
+            "у",
+            "ю",
+            "ы",
+            "ь",
+        },
+        key=len,
+        reverse=True,
+    )
+)
+_RUSSIAN_FUNCTION_WORDS = frozenset(
+    {
+        "а",
+        "и",
+        "но",
+        "в",
+        "во",
+        "на",
+        "с",
+        "со",
+        "из",
+        "к",
+        "ко",
+        "по",
+        "о",
+        "об",
+        "от",
+        "за",
+        "при",
+        "для",
+        "над",
+        "под",
+        "между",
+        "перед",
+        "после",
+        "у",
+        "без",
+        "это",
+        "же",
+        "ли",
+        "как",
+        "что",
+        "цитата",
+    }
+)
+_RUSSIAN_PROVENANCE_EQUIVALENTS = (
+    frozenset({"слышн", "слыш", "звуч"}),
+    frozenset({"изображен", "кадр"}),
+    frozenset({"изменен", "меня", "смен"}),
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -101,9 +229,9 @@ class NarrationRequest:
 
     @property
     def time_range(self) -> tuple[int, int]:
-        intervals = [
-            (claim.start_ms, claim.end_ms) for claim in self.claims
-        ] + [(quote.start_ms, quote.end_ms) for quote in self.asr_quotes]
+        intervals = [(claim.start_ms, claim.end_ms) for claim in self.claims] + [
+            (quote.start_ms, quote.end_ms) for quote in self.asr_quotes
+        ]
         return min(item[0] for item in intervals), max(item[1] for item in intervals)
 
     @property
@@ -114,11 +242,49 @@ class NarrationRequest:
         )
 
     def facts_payload(self) -> dict[str, object]:
+        # Repeated detector claims in adjacent windows do not add new facts.
+        # Keep one readable instance in the prompt while retaining every
+        # claim/event ID so the resulting caption remains fully traceable.
+        accepted_claims: list[dict[str, object]] = []
+        groups_by_signature: dict[str, dict[str, Any]] = {}
+        for claim in self.claims:
+            signature = CaptionDeduplicator.signature(claim.text_ru)
+            group = groups_by_signature.get(signature)
+            if group is not None:
+                start_ms = int(group["start_ms"])
+                end_ms = int(group["end_ms"])
+                adjacent = claim.start_ms <= end_ms + 5_000 and claim.end_ms >= start_ms - 5_000
+                if adjacent:
+                    group["start_ms"] = min(start_ms, claim.start_ms)
+                    group["end_ms"] = max(end_ms, claim.end_ms)
+                    group["source_claim_ids"] = [
+                        *cast(list[str], group["source_claim_ids"]),
+                        claim.claim_id,
+                    ]
+                    group["evidence_refs"] = list(
+                        dict.fromkeys(
+                            [*cast(list[str], group["evidence_refs"]), *claim.evidence_refs]
+                        )
+                    )[:24]
+                    group["source_event_revisions"] = list(
+                        dict.fromkeys(
+                            [
+                                *cast(list[tuple[str, int]], group["source_event_revisions"]),
+                                (claim.event_id, claim.revision),
+                            ]
+                        )
+                    )
+                    continue
+            item = asdict(claim)
+            item["source_claim_ids"] = [claim.claim_id]
+            item["source_event_revisions"] = [(claim.event_id, claim.revision)]
+            groups_by_signature[signature] = item
+            accepted_claims.append(item)
         return {
             "stream_id": self.stream_id,
             "epoch": self.epoch,
             "event_revisions": [asdict(item) for item in self.event_refs],
-            "accepted_claims": [asdict(item) for item in self.claims],
+            "accepted_claims": accepted_claims,
             "asr_quotes": [asdict(item) for item in self.asr_quotes],
             "state": self.state,
             "delta": self.delta,
@@ -190,9 +356,9 @@ class NarrationResult:
             raise ValueError("unsupported narration status")
         if self.backend not in {"qwen", "template"}:
             raise ValueError("unsupported narration backend")
-        if not self.event_revisions or len(
-            {item.event_id for item in self.event_revisions}
-        ) != len(self.event_revisions):
+        if not self.event_revisions or len({item.event_id for item in self.event_revisions}) != len(
+            self.event_revisions
+        ):
             raise ValueError("event revisions must be present and unique")
         if (
             isinstance(self.latency_ms, bool)
@@ -243,6 +409,181 @@ class NarrationResult:
         }
 
 
+@dataclass(slots=True)
+class _CaptionGroup:
+    start_ms: int
+    end_ms: int
+    used_claim_ids: tuple[str, ...]
+    event_revisions: tuple[NarrationEventRef, ...]
+    caption_ru: str | None = None
+
+
+class CaptionDeduplicator:
+    """Collapse identical nearby captions while retaining their source revisions."""
+
+    def __init__(self, *, max_gap_ms: int = 5_000, capacity: int = 256) -> None:
+        if max_gap_ms < 0 or capacity < 1:
+            raise ValueError("caption deduplication bounds must be non-negative and positive")
+        self.max_gap_ms = max_gap_ms
+        self.capacity = capacity
+        self._groups: OrderedDict[str, _CaptionGroup] = OrderedDict()
+        self._lock = threading.RLock()
+
+    @staticmethod
+    def signature(caption: str) -> str:
+        return " ".join(
+            token.casefold().replace("ё", "е") for token in _TOKEN_PATTERN.findall(caption)
+        )
+
+    def process(self, result: NarrationResult) -> dict[str, object]:
+        """Return a caption row or a visible duplicate row for adjacent repeated text."""
+        record = result.to_dict()
+        response = result.response
+        signature = self.signature(response.caption_ru)
+        with self._lock:
+            previous = self._groups.get(signature)
+            if previous is not None:
+                previous_range = {"start_ms": previous.start_ms, "end_ms": previous.end_ms}
+                adjacent = (
+                    response.start_ms <= previous.end_ms + self.max_gap_ms
+                    and response.end_ms >= previous.start_ms - self.max_gap_ms
+                )
+                if adjacent:
+                    revisions = {item.event_id: item for item in previous.event_revisions}
+                    for item in result.event_revisions:
+                        existing = revisions.get(item.event_id)
+                        if existing is None or item.revision > existing.revision:
+                            revisions[item.event_id] = item
+                    previous.start_ms = min(previous.start_ms, response.start_ms)
+                    previous.end_ms = max(previous.end_ms, response.end_ms)
+                    previous.used_claim_ids = tuple(
+                        dict.fromkeys((*previous.used_claim_ids, *response.used_claim_ids))
+                    )
+                    previous.event_revisions = tuple(revisions.values())
+                    self._groups.move_to_end(signature)
+                    record["record_type"] = "caption_deduplicated"
+                    record["deduplication"] = {
+                        "reason": "same_caption_in_adjacent_time_range",
+                        "previous_time_range": previous_range,
+                        "covered_time_range": {
+                            "start_ms": previous.start_ms,
+                            "end_ms": previous.end_ms,
+                        },
+                        "covered_used_claim_ids": list(previous.used_claim_ids),
+                        "covered_event_revisions": [
+                            asdict(item) for item in previous.event_revisions
+                        ],
+                    }
+                    return record
+            self._groups[signature] = _CaptionGroup(
+                start_ms=response.start_ms,
+                end_ms=response.end_ms,
+                used_claim_ids=response.used_claim_ids,
+                event_revisions=result.event_revisions,
+            )
+            while len(self._groups) > self.capacity:
+                self._groups.popitem(last=False)
+        return record
+
+
+class NarrationRequestDeduplicator:
+    """Skip nearby Qwen calls when their complete factual inputs are identical."""
+
+    def __init__(self, *, max_gap_ms: int = 5_000, capacity: int = 256) -> None:
+        if max_gap_ms < 0 or capacity < 1:
+            raise ValueError("narration deduplication bounds must be non-negative and positive")
+        self.max_gap_ms = max_gap_ms
+        self.capacity = capacity
+        self._groups: OrderedDict[str, _CaptionGroup] = OrderedDict()
+        self._lock = threading.RLock()
+
+    @staticmethod
+    def signature(request: NarrationRequest) -> str:
+        payload = {
+            "claims": sorted(
+                {CaptionDeduplicator.signature(item.text_ru) for item in request.claims}
+            ),
+            "asr_quotes": sorted(
+                {CaptionDeduplicator.signature(item.text) for item in request.asr_quotes}
+            ),
+            "state": request.state,
+            "delta": request.delta,
+        }
+        return json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+    def should_skip(self, request: NarrationRequest) -> dict[str, object] | None:
+        signature = self.signature(request)
+        start_ms, end_ms = request.time_range
+        with self._lock:
+            previous = self._groups.get(signature)
+            if previous is None:
+                return None
+            previous_range = {"start_ms": previous.start_ms, "end_ms": previous.end_ms}
+            if not (
+                start_ms <= previous.end_ms + self.max_gap_ms
+                and end_ms >= previous.start_ms - self.max_gap_ms
+            ):
+                return None
+            revisions = {item.event_id: item for item in previous.event_revisions}
+            for item in request.event_refs:
+                existing = revisions.get(item.event_id)
+                if existing is None or item.revision > existing.revision:
+                    revisions[item.event_id] = item
+            previous.start_ms = min(previous.start_ms, start_ms)
+            previous.end_ms = max(previous.end_ms, end_ms)
+            previous.used_claim_ids = tuple(
+                dict.fromkeys((*previous.used_claim_ids, *request.source_ids))
+            )
+            previous.event_revisions = tuple(revisions.values())
+            self._groups.move_to_end(signature)
+            return {
+                "schema_version": 1,
+                "record_type": "narration_deduplicated",
+                "level": "L3",
+                "reason": "identical_accepted_sources_in_adjacent_time_range",
+                "caption_ru": previous.caption_ru,
+                "time_range": {"start_ms": start_ms, "end_ms": end_ms},
+                "previous_time_range": previous_range,
+                "covered_time_range": {
+                    "start_ms": previous.start_ms,
+                    "end_ms": previous.end_ms,
+                },
+                "covered_claim_ids": list(previous.used_claim_ids),
+                "covered_event_revisions": [asdict(item) for item in previous.event_revisions],
+            }
+
+    def remember(self, request: NarrationRequest, *, caption_ru: str | None = None) -> None:
+        signature = self.signature(request)
+        start_ms, end_ms = request.time_range
+        with self._lock:
+            previous = self._groups.get(signature)
+            if previous is not None and (
+                start_ms <= previous.end_ms + self.max_gap_ms
+                and end_ms >= previous.start_ms - self.max_gap_ms
+            ):
+                previous.start_ms = min(previous.start_ms, start_ms)
+                previous.end_ms = max(previous.end_ms, end_ms)
+                previous.used_claim_ids = tuple(
+                    dict.fromkeys((*previous.used_claim_ids, *request.source_ids))
+                )
+                revisions = {item.event_id: item for item in previous.event_revisions}
+                revisions.update({item.event_id: item for item in request.event_refs})
+                previous.event_revisions = tuple(revisions.values())
+                if previous.caption_ru is None:
+                    previous.caption_ru = caption_ru
+                self._groups.move_to_end(signature)
+            else:
+                self._groups[signature] = _CaptionGroup(
+                    start_ms=start_ms,
+                    end_ms=end_ms,
+                    used_claim_ids=tuple(request.source_ids),
+                    event_revisions=request.event_refs,
+                    caption_ru=caption_ru,
+                )
+            while len(self._groups) > self.capacity:
+                self._groups.popitem(last=False)
+
+
 class QwenNarrator:
     """Run one bounded, non-thinking Qwen turn through the pinned llama.cpp CLI."""
 
@@ -264,22 +605,18 @@ class QwenNarrator:
         if not 1.0 <= timeout_seconds <= 120.0:
             raise ValueError("timeout_seconds must be between 1 and 120")
         if not 256 <= max_input_chars <= DEFAULT_MAX_INPUT_CHARS:
-            raise ValueError(
-                f"max_input_chars must be between 256 and {DEFAULT_MAX_INPUT_CHARS}"
-            )
+            raise ValueError(f"max_input_chars must be between 256 and {DEFAULT_MAX_INPUT_CHARS}")
         self.model = model
         self.model_revision = str(model["revision"])
         verified_files = verify_local_artifacts("qwen3_0_6b", model, models_dir)
         self.model_path = models_dir / "qwen3_0_6b" / str(model["file"])
-        self.llama_cli = (
-            models_dir / "runtimes" / "llama_cpp" / "b11886" / "bin" / "llama-cli.exe"
-        )
+        self.llama_cli = models_dir / "runtimes" / "llama_cpp" / "b11886" / "bin" / "llama-cli.exe"
         if str(self.llama_cli) not in verified_files and not self.llama_cli.is_file():
             raise FileNotFoundError(
                 f"llama.cpp executable is missing: {self.llama_cli}; "
                 "fetch it with scripts/download_models.py --runtime llama_cpp"
             )
-        self.prompt_path = repo_root / "configs" / "prompts" / "narrator_ru_v1.jinja"
+        self.prompt_path = repo_root / "configs" / "prompts" / "narrator_ru_v2.jinja"
         self.schema_path = repo_root / "configs" / "schemas" / "narration_v1.schema.json"
         self.template_path = repo_root / "configs" / "qwen3_nonthinking.jinja"
         for path in (self.prompt_path, self.schema_path, self.template_path):
@@ -371,9 +708,7 @@ class QwenNarrator:
             return (
                 generated_tokens,
                 generation_ms,
-                round(generated_tokens / (generation_ms / 1000), 3)
-                if generation_ms > 0
-                else None,
+                round(generated_tokens / (generation_ms / 1000), 3) if generation_ms > 0 else None,
             )
         rate_match = re.search(
             r"Generation:\s*([0-9]+(?:\.[0-9]+)?)\s*t/s",
@@ -383,42 +718,87 @@ class QwenNarrator:
         return None, None, float(rate_match.group(1)) if rate_match is not None else None
 
     @staticmethod
-    def _has_supported_vocabulary(caption: str, request: NarrationRequest) -> bool:
-        """Reject generated content words that do not occur in approved source text."""
-        source_text = [claim.text_ru for claim in request.claims]
+    def _unsupported_provenance_terms(caption: str, request: NarrationRequest) -> tuple[str, ...]:
+        """List generated words and polarity changes not traceable to accepted sources."""
+        accepted_sources = cast(list[dict[str, object]], request.facts_payload()["accepted_claims"])
+        source_text = [str(claim["text_ru"]) for claim in accepted_sources]
         source_text.extend(quote.text for quote in request.asr_quotes)
 
-        def normalize(value: str) -> str:
-            return value.casefold().replace("ё", "е")
+        def normalize(token: str) -> str:
+            return token.casefold().replace("ё", "е")
 
-        supported = {
-            normalize(token)
-            for text in source_text
-            for token in re.findall(r"[0-9A-Za-zА-Яа-яЁё]+", text)
+        def stem(token: str) -> str:
+            normalized = normalize(token)
+            if not any("а" <= char <= "я" for char in normalized):
+                return normalized
+            for suffix in _RUSSIAN_SUFFIXES:
+                if normalized.endswith(suffix) and len(normalized) - len(suffix) >= 3:
+                    return normalized[: -len(suffix)]
+            return normalized
+
+        supported_stems = {
+            stem(token) for text in source_text for token in _TOKEN_PATTERN.findall(text)
         }
-        generated = {
-            normalize(token)
-            for token in re.findall(r"[0-9A-Za-zА-Яа-яЁё]+", caption)
-        }
+        for equivalents in _RUSSIAN_PROVENANCE_EQUIVALENTS:
+            if supported_stems.intersection(equivalents):
+                supported_stems.update(equivalents)
         negation = {"не", "нет", "без", "ни", "никогда", "никто", "ничто"}
+        unsupported: set[str] = set()
+        generated_tokens = _TOKEN_PATTERN.findall(caption)
+        for token in generated_tokens:
+            normalized = normalize(token)
+            if normalized in negation or normalized in _RUSSIAN_FUNCTION_WORDS:
+                continue
+            if stem(token) not in supported_stems:
+                unsupported.add(normalized)
         source_negations = sum(
             normalize(token) in negation
             for text in source_text
-            for token in re.findall(r"[0-9A-Za-zА-Яа-яЁё]+", text)
+            for token in _TOKEN_PATTERN.findall(text)
         )
-        generated_negations = sum(
-            normalize(token) in negation
-            for token in re.findall(r"[0-9A-Za-zА-Яа-яЁё]+", caption)
-        )
-        return (
-            bool(generated)
-            and generated.issubset(supported)
-            and generated_negations == source_negations
-        )
+        generated_negations = sum(normalize(token) in negation for token in generated_tokens)
+        if generated_negations > source_negations:
+            unsupported.add("<negation_mismatch>")
+        generated_segments = re.split(r"[.!?;:,]+", caption)
+        for text in source_text:
+            for source_segment in re.split(r"[.!?;:,]+", text):
+                source_tokens = _TOKEN_PATTERN.findall(source_segment)
+                if not any(normalize(token) in negation for token in source_tokens):
+                    continue
+                negated_stems = {
+                    stem(token)
+                    for token in source_tokens
+                    if normalize(token) not in negation
+                    and normalize(token) not in _RUSSIAN_FUNCTION_WORDS
+                }
+                if not negated_stems:
+                    continue
+                for generated_segment in generated_segments:
+                    generated_segment_tokens = _TOKEN_PATTERN.findall(generated_segment)
+                    generated_stems = {stem(token) for token in generated_segment_tokens}
+                    if not negated_stems.intersection(generated_stems):
+                        continue
+                    if not any(normalize(token) in negation for token in generated_segment_tokens):
+                        unsupported.add("<negation_mismatch>")
+                        break
+        if not generated_tokens:
+            unsupported.add("<empty_caption>")
+        return tuple(sorted(unsupported))
 
     @staticmethod
-    def _fallback(request: NarrationRequest, warning: str) -> NarrationResponse:
-        texts = [claim.text_ru.strip() for claim in request.claims]
+    def _has_supported_vocabulary(caption: str, request: NarrationRequest) -> bool:
+        """Compatibility wrapper for the stricter source-provenance check."""
+        return not QwenNarrator._unsupported_provenance_terms(caption, request)
+
+    @staticmethod
+    def _fallback(
+        request: NarrationRequest,
+        warning: str,
+        *,
+        unsupported_terms: tuple[str, ...] = (),
+    ) -> NarrationResponse:
+        accepted_sources = cast(list[dict[str, object]], request.facts_payload()["accepted_claims"])
+        texts = [str(claim["text_ru"]).strip() for claim in accepted_sources]
         texts.extend(f"Цитата: «{quote.text.strip()}»" for quote in request.asr_quotes)
         return NarrationResponse(
             caption_ru=" ".join(texts),
@@ -426,6 +806,7 @@ class QwenNarrator:
             start_ms=request.time_range[0],
             end_ms=request.time_range[1],
             warnings=(warning,),
+            new_unsupported_claims=unsupported_terms,
         )
 
     def narrate(self, request: NarrationRequest) -> NarrationResult:
@@ -460,8 +841,13 @@ class QwenNarrator:
                 generation_tokens_per_second,
             ) = self._parse_generation_metrics("\n".join(output_chunks))
             caption = self._extract_caption(output_path.read_text(encoding="utf-8"))
-            if not self._has_supported_vocabulary(caption, request):
-                response = self._fallback(request, "unsupported_terms")
+            unsupported_terms = self._unsupported_provenance_terms(caption, request)
+            if unsupported_terms:
+                response = self._fallback(
+                    request,
+                    "unsupported_terms",
+                    unsupported_terms=unsupported_terms,
+                )
                 status = "fallback"
             else:
                 response = NarrationResponse(

@@ -157,6 +157,8 @@ def _runtime_metrics_summary(metrics: dict[str, Any] | None) -> dict[str, Any] |
     ingest = metrics.get("media_ingest", {})
     prefetch = metrics.get("prefetch", {})
     embedding = metrics.get("embedding_worker", {})
+    scheduler = metrics.get("semantic_scheduler", {})
+    l2 = scheduler.get("l2", {})
     resources = metrics.get("process_resources", {})
     return {
         "end_to_end_elapsed_s": metrics.get("end_to_end_elapsed"),
@@ -175,6 +177,7 @@ def _runtime_metrics_summary(metrics: dict[str, Any] | None) -> dict[str, Any] |
         "narration_backend_counts": metrics.get("narration_backend_counts"),
         "narration_fallback_count": metrics.get("narration_fallback_count"),
         "narration_latency_ms_samples": metrics.get("narration_latency_ms_samples", []),
+        "l2_semantic_refinement": l2.get("semantic_refinement"),
     }
 
 

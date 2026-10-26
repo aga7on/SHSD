@@ -8,6 +8,7 @@ from shsd.semantic.hypotheses import (
     load_profiles,
 )
 from shsd.semantic.matcher import MatchPolicy, SemanticClaim, SemanticMatcher
+from shsd.semantic.temporal import BoundedAudioEmbeddingHistory, TemporalAudioRefiner
 
 __all__ = [
     "HypothesisAxis",
@@ -16,6 +17,8 @@ __all__ = [
     "MatchPolicy",
     "SemanticClaim",
     "SemanticMatcher",
+    "BoundedAudioEmbeddingHistory",
+    "TemporalAudioRefiner",
     "encode_profile_candidates",
     "load_profiles",
 ]

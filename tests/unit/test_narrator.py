@@ -7,10 +7,14 @@ from pathlib import Path
 import pytest
 
 from shsd.captions.narrator import (
+    CaptionDeduplicator,
     NarrationASRQuote,
     NarrationClaim,
     NarrationEventRef,
     NarrationRequest,
+    NarrationRequestDeduplicator,
+    NarrationResponse,
+    NarrationResult,
     QwenNarrator,
 )
 
@@ -67,7 +71,13 @@ def _narrator(tmp_path: Path, *, max_input_chars: int = 16_384) -> QwenNarrator:
 def test_request_rejects_unaccepted_or_unreferenced_claims() -> None:
     with pytest.raises(ValueError, match="only accepted"):
         NarrationClaim(
-            "claim-x", "event-1", 1, 0, 1000, "Может быть музыка.", "uncertain"  # type: ignore[arg-type]
+            "claim-x",
+            "event-1",
+            1,
+            0,
+            1000,
+            "Может быть музыка.",
+            "uncertain",  # type: ignore[arg-type]
         )
     with pytest.raises(ValueError, match="supplied event revision"):
         NarrationRequest(
@@ -123,6 +133,7 @@ def test_generated_caption_uses_known_sources_and_matching_interval(
 ) -> None:
     narrator = _narrator(tmp_path)
     request = _request()
+
     def run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[bytes]:
         command = args[0]
         output_path = Path(command[command.index("--output-file") + 1])  # type: ignore[union-attr]
@@ -137,7 +148,7 @@ def test_generated_caption_uses_known_sources_and_matching_interval(
     assert result.response.start_ms == 1000
     assert result.response.end_ms == 3000
     payload = result.to_dict()
-    assert payload["prompt_version"] == "narrator-ru-v1"
+    assert payload["prompt_version"] == "narrator-ru-v2"
     assert set(payload) == {
         "schema_version",
         "record_type",
@@ -214,6 +225,172 @@ def test_unsupported_instrument_claim_is_replaced_with_source_only_fallback(
     assert result.response.caption_ru == "Слышна музыка. Цитата: «Привет.»"
     assert "гитара" not in result.response.caption_ru.casefold()
     assert result.response.warnings == ("unsupported_terms",)
+    assert "\u0433\u0438\u0442\u0430\u0440\u0430" in result.response.new_unsupported_claims
+
+
+def test_provenance_accepts_safe_russian_inflection_and_sound_equivalent() -> None:
+    request = _request()
+
+    assert (
+        QwenNarrator._unsupported_provenance_terms(
+            "\u0417\u0432\u0443\u0447\u0438\u0442 \u043c\u0443\u0437\u044b\u043a\u0430.", request
+        )
+        == ()
+    )
+    assert QwenNarrator._unsupported_provenance_terms(
+        (
+            "\u0417\u0432\u0443\u0447\u0438\u0442 \u043c\u0443\u0437\u044b\u043a\u0430 "
+            "\u0438 \u0441\u043b\u044b\u0448\u043d\u043e \u0433\u0438\u0442\u0430\u0440\u0443."
+        ),
+        request,
+    ) == ("\u0433\u0438\u0442\u0430\u0440\u0443",)
+
+
+def test_facts_payload_collapses_repeated_adjacent_claims_but_keeps_provenance() -> None:
+    first = _request()
+    second_claim = NarrationClaim(
+        claim_id="claim-2",
+        event_id="event-2",
+        revision=1,
+        start_ms=4_000,
+        end_ms=5_000,
+        text_ru=first.claims[0].text_ru,
+        evidence_refs=("audio:4000-5000",),
+    )
+    request = NarrationRequest(
+        stream_id=first.stream_id,
+        epoch=first.epoch,
+        event_refs=(*first.event_refs, NarrationEventRef("event-2", 1)),
+        claims=(first.claims[0], second_claim),
+    )
+
+    accepted = request.facts_payload()["accepted_claims"]
+    assert len(accepted) == 1
+    assert accepted[0]["source_claim_ids"] == ["claim-1", "claim-2"]
+    assert accepted[0]["start_ms"] == 1_000
+    assert accepted[0]["end_ms"] == 5_000
+    assert accepted[0]["evidence_refs"] == ["audio:1000-3000", "audio:4000-5000"]
+
+
+def test_duplicate_claims_do_not_multiply_negation_or_fallback_text() -> None:
+    text = (
+        "\u041f\u0440\u0438\u0447\u0438\u043d\u043d\u0430\u044f \u0441\u0432\u044f\u0437\u044c "
+        "\u043d\u0435 \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u0430."
+    )
+    request = NarrationRequest(
+        stream_id="stream-1",
+        epoch=0,
+        event_refs=(NarrationEventRef("event-1", 1), NarrationEventRef("event-2", 1)),
+        claims=(
+            NarrationClaim("claim-1", "event-1", 1, 1_000, 3_000, text, evidence_refs=("a",)),
+            NarrationClaim("claim-2", "event-2", 1, 4_000, 5_000, text, evidence_refs=("b",)),
+        ),
+    )
+
+    assert QwenNarrator._unsupported_provenance_terms(text, request) == ()
+    assert QwenNarrator._fallback(request, "test").caption_ru == text
+
+
+def test_provenance_rejects_removed_negation_when_caption_reuses_the_fact() -> None:
+    request = NarrationRequest(
+        stream_id="stream-1",
+        epoch=0,
+        event_refs=(NarrationEventRef("event-1", 1),),
+        claims=(
+            NarrationClaim(
+                "claim-1",
+                "event-1",
+                1,
+                1_000,
+                2_000,
+                (
+                    "\u041c\u0443\u0437\u044b\u043a\u0438 \u043d\u0435 "
+                    "\u0441\u043b\u044b\u0448\u043d\u043e."
+                ),
+                evidence_refs=("audio:1000-2000",),
+            ),
+        ),
+    )
+
+    assert QwenNarrator._unsupported_provenance_terms(
+        "\u041c\u0443\u0437\u044b\u043a\u0430 \u0441\u043b\u044b\u0448\u043d\u0430.", request
+    ) == ("<negation_mismatch>",)
+
+
+def test_request_deduplicator_skips_identical_neighbor_and_keeps_later_occurrence() -> None:
+    deduplicator = NarrationRequestDeduplicator()
+    caption_text = "\u0421\u043b\u044b\u0448\u043d\u0430 \u043c\u0443\u0437\u044b\u043a\u0430."
+
+    def request(event_id: str, claim_id: str, start_ms: int, end_ms: int) -> NarrationRequest:
+        return NarrationRequest(
+            stream_id="stream-1",
+            epoch=0,
+            event_refs=(NarrationEventRef(event_id, 1),),
+            claims=(
+                NarrationClaim(
+                    claim_id,
+                    event_id,
+                    1,
+                    start_ms,
+                    end_ms,
+                    caption_text,
+                    evidence_refs=(f"audio:{start_ms}-{end_ms}",),
+                ),
+            ),
+        )
+
+    first = request("event-1", "claim-1", 1_000, 3_000)
+    adjacent = request("event-2", "claim-2", 4_000, 6_000)
+    later = request("event-3", "claim-3", 15_000, 17_000)
+
+    assert deduplicator.should_skip(first) is None
+    deduplicator.remember(
+        first,
+        caption_ru="\u0421\u043b\u044b\u0448\u043d\u0430 \u043c\u0443\u0437\u044b\u043a\u0430.",
+    )
+    duplicate = deduplicator.should_skip(adjacent)
+    assert duplicate is not None
+    assert (
+        duplicate["caption_ru"]
+        == "\u0421\u043b\u044b\u0448\u043d\u0430 \u043c\u0443\u0437\u044b\u043a\u0430."
+    )
+    assert duplicate["covered_claim_ids"] == ["claim-1", "claim-2"]
+    assert [item["event_id"] for item in duplicate["covered_event_revisions"]] == [
+        "event-1",
+        "event-2",
+    ]
+    assert deduplicator.should_skip(later) is None
+
+
+def test_caption_deduplicator_merges_adjacent_revisions_only() -> None:
+    deduplicator = CaptionDeduplicator()
+    caption_text = "\u0417\u0432\u0443\u0447\u0438\u0442 \u043c\u0443\u0437\u044b\u043a\u0430."
+
+    def result(event_id: str, start_ms: int, end_ms: int, claim_id: str) -> NarrationResult:
+        return NarrationResult(
+            response=NarrationResponse(
+                caption_ru=caption_text,
+                used_claim_ids=(claim_id,),
+                start_ms=start_ms,
+                end_ms=end_ms,
+            ),
+            status="generated",
+            model_revision="qwen-test",
+            prompt_version="narrator-ru-v2",
+            event_revisions=(NarrationEventRef(event_id, 1),),
+            latency_ms=1.0,
+        )
+
+    assert (
+        deduplicator.process(result("event-1", 1_000, 3_000, "claim-1"))["record_type"] == "caption"
+    )
+    duplicate = deduplicator.process(result("event-2", 4_000, 6_000, "claim-2"))
+    assert duplicate["record_type"] == "caption_deduplicated"
+    assert duplicate["deduplication"]["covered_used_claim_ids"] == ["claim-1", "claim-2"]
+    assert (
+        deduplicator.process(result("event-3", 15_000, 17_000, "claim-3"))["record_type"]
+        == "caption"
+    )
 
 
 def test_contradictory_negation_is_replaced_with_source_only_fallback(

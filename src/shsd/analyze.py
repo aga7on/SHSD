@@ -77,6 +77,7 @@ from shsd.semantic.hypotheses import (
 from shsd.semantic.iterative import IterativeHypothesisRefiner
 from shsd.semantic.matcher import MatchPolicy, SemanticMatcher
 from shsd.semantic.relations import CrossModalRelationValidator
+from shsd.semantic.temporal import BoundedAudioEmbeddingHistory, TemporalAudioRefiner
 from shsd.workers.asr_worker import (
     ASR_WINDOW_MS,
     BoundedSpeechWorker,
@@ -368,7 +369,7 @@ def _narration_batches(
     from shsd.captions.narrator import NarrationClaim, NarrationEventRef, NarrationRequest
 
     sources: list[tuple[TimelineEvent, Any]] = []
-    for event in events:
+    for event in sorted(events, key=lambda item: (item.start_ms, item.end_ms, item.event_id)):
         for claim in event.claims:
             if claim.decision == "accepted" and claim.text_ru:
                 sources.append((event, claim))
@@ -503,11 +504,7 @@ class _VideoWorkSelector:
             else LoadMode.NORMAL
         )
         stride_multiplier = (
-            4
-            if load_mode is LoadMode.CRITICAL
-            else 2
-            if load_mode is LoadMode.DEGRADED
-            else 1
+            4 if load_mode is LoadMode.CRITICAL else 2 if load_mode is LoadMode.DEGRADED else 1
         )
         if self.load_controller is not None:
             active_sources = self.load_controller.active_source_count
@@ -516,15 +513,12 @@ class _VideoWorkSelector:
             elif active_sources >= 2:
                 stride_multiplier = max(stride_multiplier, 2)
         minimum_stride_ms = self.window_ms * stride_multiplier
-        runtime_throttled = (
-            standard_embedding_due
-            and (
-                self.last_embedding_ms is None
-                and stride_multiplier > 1
-                and frame_ms < minimum_stride_ms
-                or self.last_embedding_ms is not None
-                and frame_ms - self.last_embedding_ms < minimum_stride_ms
-            )
+        runtime_throttled = standard_embedding_due and (
+            self.last_embedding_ms is None
+            and stride_multiplier > 1
+            and frame_ms < minimum_stride_ms
+            or self.last_embedding_ms is not None
+            and frame_ms - self.last_embedding_ms < minimum_stride_ms
         )
         embedding_skip_reason: str | None = None
         sampling_activity_score: float | None = None
@@ -569,6 +563,7 @@ class _VideoWorkSelector:
             return []
         on_embedding_drop: Callable[[], None] | None = None
         if embedding_selected:
+
             def rollback_selected_video() -> None:
                 self.embedding_dropped(frame_ms)
 
@@ -653,9 +648,7 @@ def _timed_shared_media_work(
             transformed = audio_builder.push(item)
             for audio_work in transformed:
                 ready_ms = (
-                    audio_work.end_ms
-                    if isinstance(audio_work, CaptureSpan)
-                    else audio_work[1]
+                    audio_work.end_ms if isinstance(audio_work, CaptureSpan) else audio_work[1]
                 )
                 last_ready_ms = max(last_ready_ms, ready_ms)
                 yield last_ready_ms, "audio", audio_work
@@ -783,10 +776,7 @@ class _AudioWindowBuilder:
         ready: list[tuple[int, int, np.ndarray]] = []
         for frame in self.resampler.resample(None):
             ready.extend(self._consume(frame))
-        if (
-            self.buffered >= self.min_partial_samples
-            and self.window_start_ms is not None
-        ):
+        if self.buffered >= self.min_partial_samples and self.window_start_ms is not None:
             duration_ms = round(self.buffered * 1000 / SAMPLE_RATE)
             end_ms = max(self.window_start_ms + 1, self.window_start_ms + duration_ms)
             ready.append((self.window_start_ms, end_ms, np.concatenate(self.parts)))
@@ -1079,7 +1069,7 @@ def _match_window(
                 raw_cosine=cast(float, candidate["raw_cosine"]),
                 margin=cast(float, candidate["margin"]),
                 modality=modality,
-                evidence_refs=axis_evidence,
+                evidence_refs=(*axis_evidence, f"axis:{claim.axis_id}"),
                 window_id=record.window_id,
                 model_revision=claim.model_revision,
                 candidate_independent=not active_axis.mutually_exclusive,
@@ -1137,9 +1127,7 @@ def analyze_media(
         raise ValueError("sampling_profile must be standard or adaptive")
     if vision_profile not in {"standard", "compact"}:
         raise ValueError("vision_profile must be standard or compact")
-    live_source = (
-        isinstance(source, str) and urlsplit(source).scheme.lower() in {"rtsp", "rtsps"}
-    )
+    live_source = isinstance(source, str) and urlsplit(source).scheme.lower() in {"rtsp", "rtsps"}
     if prefetch_overflow_policy is None:
         prefetch_overflow_policy = "drop_oldest" if live_source else "block"
     if prefetch_overflow_policy not in {"block", "drop_newest", "drop_oldest"}:
@@ -1235,6 +1223,14 @@ def analyze_media(
 
     reducer = TemporalEventReducer(min_repeats=2, max_gap_ms=window_ms)
     matcher = SemanticMatcher()
+    audio_embedding_history = BoundedAudioEmbeddingHistory(capacity=256)
+    temporal_audio_refiner = TemporalAudioRefiner(
+        history=audio_embedding_history,
+        axes=axes_by_modality["audio"],
+        matcher=matcher,
+        policy=policy,
+        context_padding_ms=window_ms,
+    )
     sampling_controller = AdaptiveSamplingController(
         profile=sampling_profile,
         window_ms=window_ms,
@@ -1331,9 +1327,7 @@ def analyze_media(
             for telemetry in prefetch_telemetry.values()
         ]
         if embedding_worker is not None:
-            queue_candidates.append(
-                (embedding_worker.outstanding, embedding_worker.queue_capacity)
-            )
+            queue_candidates.append((embedding_worker.outstanding, embedding_worker.queue_capacity))
         if l1_worker is not None:
             queue_candidates.append((l1_worker.outstanding, l1_worker.queue_capacity))
         if speech_worker is not None and remote_source:
@@ -1453,8 +1447,7 @@ def analyze_media(
                 progress_end_ms = max(progress_end_ms, through_ms)
             if source_duration_ms is None and progress_end_ms > 0:
                 unavailable_modalities: list[tuple[CoverageModality, str]] = [
-                    (modality, "track_unavailable")
-                    for modality in media.unavailable_modalities
+                    (modality, "track_unavailable") for modality in media.unavailable_modalities
                 ]
                 if speech_enabled and not speech_available:
                     unavailable_modalities.append(("speech", "audio_unavailable"))
@@ -1538,9 +1531,8 @@ def analyze_media(
         initial_gap_ms = 0
         with processed_intervals_lock:
             semantic_first_window_starts.setdefault(modality, start_ms)
-            if (
-                not semantic_origin_gap_marked
-                and semantic_modalities.issubset(semantic_first_window_starts)
+            if not semantic_origin_gap_marked and semantic_modalities.issubset(
+                semantic_first_window_starts
             ):
                 initial_gap_ms = min(
                     semantic_first_window_starts[item] for item in semantic_modalities
@@ -1639,14 +1631,13 @@ def analyze_media(
         if progressive_workers is None or "L2" not in active_levels:
             return
         with l1_frontier_lock:
-            l1_processed_frontiers[modality] = max(
-                l1_processed_frontiers.get(modality, 0), end_ms
-            )
+            l1_processed_frontiers[modality] = max(l1_processed_frontiers.get(modality, 0), end_ms)
             if not semantic_modalities.issubset(l1_processed_frontiers):
                 return
-            stable_horizon = min(
-                l1_processed_frontiers[item] for item in semantic_modalities
-            ) - reducer.max_gap_ms
+            stable_horizon = (
+                min(l1_processed_frontiers[item] for item in semantic_modalities)
+                - reducer.max_gap_ms
+            )
         if stable_horizon <= 0:
             return
 
@@ -1673,9 +1664,7 @@ def analyze_media(
             publish({"record_type": "event", **committed.to_dict()})
 
         with live_coverage_lock:
-            eligible = tuple(
-                item for item in live_pending_coverage if item[1] <= stable_horizon
-            )
+            eligible = tuple(item for item in live_pending_coverage if item[1] <= stable_horizon)
             if eligible and progressive_workers.submit_coverage(eligible):
                 eligible_set = set(eligible)
                 live_pending_coverage[:] = [
@@ -1809,6 +1798,13 @@ def analyze_media(
         audio_deltas: list[SignalObservation],
         signal_delta_score: float | None,
     ) -> None:
+        audio_embedding_history.add(
+            start_ms=start_ms,
+            end_ms=end_ms,
+            window_id=record.window_id,
+            model_revision=record.model_revision,
+            embedding=record.embedding,
+        )
         watermark.mark("E", start_ms, end_ms, "done", modality="audio")
         if "L0" in levels:
             publish(_record_embedding(record, start_ms=start_ms, end_ms=end_ms, source=source))
@@ -2009,9 +2005,7 @@ def analyze_media(
                     deferred_speech_tasks.append(task)
                     return
             speech_admission_drop_count += 1
-            publish_speech_result(
-                SpeechResult(task.start_ms, task.end_ms, None, "dropped", reason)
-            )
+            publish_speech_result(SpeechResult(task.start_ms, task.end_ms, None, "dropped", reason))
 
         def flush_deferred_speech() -> None:
             nonlocal speech_admission_drop_count
@@ -2154,6 +2148,7 @@ def analyze_media(
                     load_controller=load_controller,
                 )
         if remote_source and "L2" in active_levels:
+
             def create_live_narrator() -> Any:
                 from shsd.captions.narrator import QwenNarrator, TemplateNarrator
 
@@ -2181,6 +2176,7 @@ def analyze_media(
                 ),
                 narrator_factory=create_live_narrator,
                 l3_enabled="L3" in active_levels,
+                refine_l2=temporal_audio_refiner.refine,
             )
         for timestamp_ms, work_modality, payload in iter_merge_by_key(
             timed_sources,
@@ -2345,8 +2341,7 @@ def analyze_media(
                                     epoch,
                                     observation,
                                     window_id=(
-                                        f"scene-cut:{observation.start_ms}:"
-                                        f"{observation.end_ms}"
+                                        f"scene-cut:{observation.start_ms}:{observation.end_ms}"
                                     ),
                                 )
                                 if event is not None:
@@ -2630,9 +2625,7 @@ def analyze_media(
             or ingest_telemetry.host_metrics_available
         )
         pending_prefetch = [
-            telemetry
-            for telemetry in prefetch_telemetry.values()
-            if telemetry.current_depth > 0
+            telemetry for telemetry in prefetch_telemetry.values() if telemetry.current_depth > 0
         ]
         pressure_sample = host_sample
         if pending_prefetch:
@@ -2658,6 +2651,13 @@ def analyze_media(
             "failed_count": 0,
         }
         l2_skipped_events: list[TimelineEvent] = []
+        l2_semantic_refinement_counts = {
+            "total": 0,
+            "confirmed": 0,
+            "abstained": 0,
+            "skipped": 0,
+        }
+        l2_semantic_refinement_summary: dict[str, int] = dict(l2_semantic_refinement_counts)
         live_level_report: dict[str, object] | None = None
         if progressive_workers is not None:
             with live_coverage_lock:
@@ -2673,6 +2673,17 @@ def analyze_media(
             live_current_events = store.current_events(stream_id, epoch)
             refined_events = [event for event in live_current_events if event.level == "L2"]
             l2_report = cast(dict[str, Any], live_level_report.get("l2", {}))
+            live_semantic_refinement = l2_report.get("semantic_refinement", {})
+            if isinstance(live_semantic_refinement, dict):
+                l2_semantic_refinement_summary = {
+                    key: int(value)
+                    for key, value in live_semantic_refinement.items()
+                    if key in l2_semantic_refinement_counts and isinstance(value, int)
+                }
+                l2_semantic_refinement_summary.setdefault("total", 0)
+                l2_semantic_refinement_summary.setdefault("confirmed", 0)
+                l2_semantic_refinement_summary.setdefault("abstained", 0)
+                l2_semantic_refinement_summary.setdefault("skipped", 0)
             emitted_events += int(l2_report.get("completed", 0))
             per_stage_ms["l2_state_refinement"] = sum(
                 cast(list[float], l2_report.get("latency_ms_samples", []))
@@ -2689,11 +2700,18 @@ def analyze_media(
                 source_event = job.payload
                 if not isinstance(source_event, TimelineEvent):
                     raise TypeError("L2 scheduler payload must be a TimelineEvent")
-                delta = state_reducer.ingest(source_event)
+                refined_source, semantic_report = temporal_audio_refiner.refine(source_event)
+                publish(semantic_report)
+                semantic_status = str(semantic_report.get("status", "skipped"))
+                if semantic_status not in l2_semantic_refinement_counts:
+                    semantic_status = "skipped"
+                l2_semantic_refinement_counts["total"] += 1
+                l2_semantic_refinement_counts[semantic_status] += 1
+                delta = state_reducer.ingest(refined_source)
                 if delta is not None:
-                    state_deltas[source_event.event_id] = delta.to_dict()
+                    state_deltas[refined_source.event_id] = delta.to_dict()
                 return replace(
-                    source_event,
+                    refined_source,
                     revision=source_event.revision + 1,
                     level="L2",
                     state=("refined" if delta is not None and delta.published else "committed"),
@@ -2771,6 +2789,7 @@ def analyze_media(
 
             asyncio.run(schedule_refinements())
             scheduler_report = scheduler.snapshot()
+            l2_semantic_refinement_summary = dict(l2_semantic_refinement_counts)
             current_events = {
                 event.event_id: event for event in store.current_events(stream_id, epoch)
             }
@@ -2895,6 +2914,8 @@ def analyze_media(
         narration_latency_ms_samples: list[float] = []
         narration_generation_rate_samples: list[float] = []
         narration_backend_counts = {"qwen": 0, "template": 0}
+        narration_caption_count = 0
+        narration_deduplicated_count = 0
         narration_fallback_count = 0
         narration_unsupported_claim_count = 0
         narration_generated_tokens = 0
@@ -2902,12 +2923,12 @@ def analyze_media(
         narration_measured_generations = 0
         if live_level_report is not None:
             narration_report = cast(dict[str, Any], live_level_report.get("narration", {}))
-            narration_errors = cast(
-                list[tuple[int, int, str]], narration_report.get("errors", [])
+            narration_errors = cast(list[tuple[int, int, str]], narration_report.get("errors", []))
+            narration_ranges = cast(list[tuple[int, int]], narration_report.get("ranges", []))
+            narration_caption_count = int(
+                narration_report.get("caption_count", len(narration_ranges))
             )
-            narration_ranges = cast(
-                list[tuple[int, int]], narration_report.get("ranges", [])
-            )
+            narration_deduplicated_count = int(narration_report.get("deduplicated_count", 0))
             narration_latency_ms_samples = cast(
                 list[float], narration_report.get("latency_ms_samples", [])
             )
@@ -2945,7 +2966,12 @@ def analyze_media(
                 )
             else:
                 try:
-                    from shsd.captions.narrator import QwenNarrator, TemplateNarrator
+                    from shsd.captions.narrator import (
+                        CaptionDeduplicator,
+                        NarrationRequestDeduplicator,
+                        QwenNarrator,
+                        TemplateNarrator,
+                    )
 
                     narrator: QwenNarrator | TemplateNarrator
                     if narrator_mode == "template":
@@ -2981,7 +3007,15 @@ def analyze_media(
                             }
                         )
                 else:
+                    caption_deduplicator = CaptionDeduplicator()
+                    narration_request_deduplicator = NarrationRequestDeduplicator()
                     for request in requests:
+                        duplicate_record = narration_request_deduplicator.should_skip(request)
+                        if duplicate_record is not None:
+                            publish(duplicate_record)
+                            narration_deduplicated_count += 1
+                            narration_ranges.append(request.time_range)
+                            continue
                         try:
                             result = narrator.narrate(request)
                         except Exception as error:
@@ -3002,7 +3036,11 @@ def analyze_media(
                                 }
                             )
                             continue
-                        publish(result.to_dict())
+                        narration_request_deduplicator.remember(
+                            request, caption_ru=result.response.caption_ru
+                        )
+                        publish(caption_deduplicator.process(result))
+                        narration_caption_count += 1
                         narration_latency_ms_samples.append(float(result.latency_ms))
                         narration_backend_counts[result.backend] += 1
                         narration_fallback_count += result.status == "fallback"
@@ -3126,16 +3164,15 @@ def analyze_media(
         "window_match_count": emitted_matches,
         "skipped_match_count": skipped_matches,
         "event_revision_count": emitted_events,
-        "caption_count": len(narration_ranges),
+        "caption_count": narration_caption_count,
+        "narration_deduplicated_count": narration_deduplicated_count,
         "narration_error_count": len(narration_errors),
         "narration_backend_counts": narration_backend_counts,
         "narration_fallback_count": narration_fallback_count,
         "narration_unsupported_claim_count": narration_unsupported_claim_count,
         "narration_latency_ms_samples": narration_latency_ms_samples,
         "narration_token_throughput": {
-            "generated_tokens": narration_generated_tokens
-            if narration_generation_ms > 0
-            else None,
+            "generated_tokens": narration_generated_tokens if narration_generation_ms > 0 else None,
             "generation_ms": round(narration_generation_ms, 3)
             if narration_generation_ms > 0
             else None,
@@ -3144,15 +3181,15 @@ def analyze_media(
             )
             if narration_generation_ms > 0
             else round(
-                sum(narration_generation_rate_samples)
-                / len(narration_generation_rate_samples),
+                sum(narration_generation_rate_samples) / len(narration_generation_rate_samples),
                 3,
             )
             if narration_generation_rate_samples
             else None,
             "measured_generations": len(narration_generation_rate_samples)
             or narration_measured_generations,
-            "caption_count": len(narration_ranges),
+            "caption_count": narration_caption_count,
+            "deduplicated_count": narration_deduplicated_count,
             "fallback_count": narration_fallback_count,
         },
         "speech_segment_count": speech_result_count,
@@ -3181,15 +3218,14 @@ def analyze_media(
             "metadata_inspection": 1,
             "duration_inspection": 0 if remote_source else 1,
             "decoder_demux": ingest_telemetry.decoder_sessions,
-            "total": 1
-            + (0 if remote_source else 1)
-            + ingest_telemetry.decoder_sessions,
+            "total": 1 + (0 if remote_source else 1) + ingest_telemetry.decoder_sessions,
         },
         "prefetch": {
             modality: telemetry.to_dict() for modality, telemetry in prefetch_telemetry.items()
         },
         "media_admission": media_admission_telemetry.to_dict(),
         "semantic_scheduler": scheduler_report,
+        "l2_semantic_refinement": l2_semantic_refinement_summary,
         "embedding_worker": embedding_worker_report,
         "l1_worker": l1_worker_report,
         "sampling": sampling_controller.snapshot(),

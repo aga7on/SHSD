@@ -488,7 +488,7 @@ def test_speech_opt_in_emits_revisions_without_changing_audio_observations(
 
 def test_narration_batches_keep_exact_revisions_and_unique_source_claim_ids() -> None:
     batches = _narration_batches(
-        [_accepted_event("event-a", 0), _accepted_event("event-b", 1000)],
+        [_accepted_event("event-b", 1000), _accepted_event("event-a", 0)],
         stream_id="stream-test",
         epoch=0,
     )
@@ -501,6 +501,12 @@ def test_narration_batches_keep_exact_revisions_and_unique_source_claim_ids() ->
     ]
     assert len({item.claim_id for item in request.claims}) == 2
     assert {item.claim_id for item in request.claims} == {
+        "event-a:claim-music-present",
+        "event-b:claim-music-present",
+    }
+    accepted_sources = request.facts_payload()["accepted_claims"]
+    assert len(accepted_sources) == 1
+    assert set(accepted_sources[0]["source_claim_ids"]) == {
         "event-a:claim-music-present",
         "event-b:claim-music-present",
     }

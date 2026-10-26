@@ -106,9 +106,7 @@ def _metadata_int(metadata: dict[str, object], name: str, default: int) -> int:
 def _metadata_float(metadata: dict[str, object], name: str, default: float) -> float:
     value = metadata.get(name)
     return (
-        float(value)
-        if isinstance(value, (int, float)) and not isinstance(value, bool)
-        else default
+        float(value) if isinstance(value, (int, float)) and not isinstance(value, bool) else default
     )
 
 
@@ -198,9 +196,7 @@ class StreamManager:
         self.models_dir = (models_dir or self.root / "models").resolve()
         self.cache_dir = cache_dir
         self.data_dir = data_dir.resolve()
-        self.models_lock = json.loads(
-            (self.root / "models.lock.json").read_text(encoding="utf-8")
-        )
+        self.models_lock = json.loads((self.root / "models.lock.json").read_text(encoding="utf-8"))
         self.analysis_runner = analysis_runner or analyze_media
         self.load_controller = load_controller or RuntimeLoadController()
         self.embedding_provider_pool = embedding_provider_pool or EmbeddingProviderPool(
@@ -297,15 +293,11 @@ class StreamManager:
             try:
                 self._persist_session(session)
             except Exception:
-                _LOGGER.exception(
-                    "Failed to persist SHSD session metadata for %s", stream_id
-                )
+                _LOGGER.exception("Failed to persist SHSD session metadata for %s", stream_id)
             finally:
                 with self._metadata_persistence_guard:
                     if stream_id not in self._metadata_persistence_pending:
-                        self._metadata_persistence_idle.setdefault(
-                            stream_id, Event()
-                        ).set()
+                        self._metadata_persistence_idle.setdefault(stream_id, Event()).set()
 
     def _restore_sessions(self) -> None:
         """Restore local event journals without starting another media analysis."""
@@ -330,11 +322,15 @@ class StreamManager:
             if not isinstance(source_value, str) or not source_value:
                 continue
             levels_value = metadata.get("levels")
-            levels = tuple(
-                cast(StreamLevel, level)
-                for level in levels_value
-                if isinstance(level, str) and level in valid_levels
-            ) if isinstance(levels_value, list) else ()
+            levels = (
+                tuple(
+                    cast(StreamLevel, level)
+                    for level in levels_value
+                    if isinstance(level, str) and level in valid_levels
+                )
+                if isinstance(levels_value, list)
+                else ()
+            )
             if not levels:
                 levels = ("L0", "L1")
             raw_status = metadata.get("status")
@@ -622,12 +618,8 @@ class StreamManager:
                     },
                 }
             )
-        backlog.extend(
-            message for message in session.journal if message["sequence"] > after_seq
-        )
-        queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue(
-            maxsize=self.subscriber_queue_size
-        )
+        backlog.extend(message for message in session.journal if message["sequence"] > after_seq)
+        queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue(maxsize=self.subscriber_queue_size)
         session.subscribers.add(queue)
         return queue, backlog
 
@@ -730,9 +722,7 @@ class StreamManager:
                 queue.put_nowait(overflow_notice)
         return message
 
-    def _handle_analysis_record(
-        self, session: StreamSession, record: dict[str, Any]
-    ) -> None:
+    def _handle_analysis_record(self, session: StreamSession, record: dict[str, Any]) -> None:
         record_type = record.get("record_type")
         record_epoch = record.get("epoch")
         if record_type == "watermark":
@@ -762,12 +752,18 @@ class StreamManager:
             issues = watermarks.get("issues", []) if isinstance(watermarks, dict) else []
             for issue in issues:
                 if not isinstance(issue, dict) or issue.get("status") not in {
-                    "gap", "dropped", "failed"
+                    "gap",
+                    "dropped",
+                    "failed",
                 }:
                     continue
                 signature = (
-                    issue.get("stage"), issue.get("modality"), issue.get("level"),
-                    issue.get("start_ms"), issue.get("end_ms"), issue.get("status"),
+                    issue.get("stage"),
+                    issue.get("modality"),
+                    issue.get("level"),
+                    issue.get("start_ms"),
+                    issue.get("end_ms"),
+                    issue.get("status"),
                 )
                 if signature not in session.gap_signatures:
                     session.gap_signatures.add(signature)
@@ -913,9 +909,7 @@ class StreamManager:
                         session.status = "stopped"
                         session.error = None
                         await asyncio.to_thread(self._persist_session, session)
-                        self._append_message(
-                            session, "stream.stopped", {"status": session.status}
-                        )
+                        self._append_message(session, "stream.stopped", {"status": session.status})
                         return
                     if (
                         not _is_live_source(session.source)
@@ -926,8 +920,7 @@ class StreamManager:
                     reconnect_attempts += 1
                     retry_delay = min(
                         _LIVE_RECONNECT_MAX_DELAY_SECONDS,
-                        _LIVE_RECONNECT_INITIAL_DELAY_SECONDS
-                        * (2 ** (reconnect_attempts - 1)),
+                        _LIVE_RECONNECT_INITIAL_DELAY_SECONDS * (2 ** (reconnect_attempts - 1)),
                     )
                     if analysis_started:
                         session.epoch = current_attempt_epoch + 1
@@ -954,9 +947,7 @@ class StreamManager:
                     if stopped:
                         session.status = "stopped"
                         await asyncio.to_thread(self._persist_session, session)
-                        self._append_message(
-                            session, "stream.stopped", {"status": session.status}
-                        )
+                        self._append_message(session, "stream.stopped", {"status": session.status})
                         return
         except Exception as error:
             if session.stop_event.is_set():
@@ -1043,11 +1034,21 @@ class StreamManager:
                 end_ms = work.end_ms
                 level = work.level
                 tracker.mark(
-                    "D", start_ms, end_ms, "failed", level=level, revision=2,
+                    "D",
+                    start_ms,
+                    end_ms,
+                    "failed",
+                    level=level,
+                    revision=2,
                     reason="refine_failed",
                 )
                 tracker.mark(
-                    "R", start_ms, end_ms, "failed", level=level, revision=2,
+                    "R",
+                    start_ms,
+                    end_ms,
+                    "failed",
+                    level=level,
+                    revision=2,
                     reason="refine_failed",
                 )
                 horizon = session.source_duration_ms or end_ms
@@ -1067,9 +1068,9 @@ class StreamManager:
                 )
             except Exception as watermark_error:
                 for job in jobs:
-                    job["watermark_error"] = (
-                        f"{type(watermark_error).__name__}: {watermark_error}"[:250]
-                    )
+                    job["watermark_error"] = f"{type(watermark_error).__name__}: {watermark_error}"[
+                        :250
+                    ]
             self._append_message(
                 session,
                 "stream.error",
@@ -1146,7 +1147,11 @@ class StreamManager:
                         }
                     )
                 else:
-                    from shsd.captions.narrator import QwenNarrator
+                    from shsd.captions.narrator import (
+                        CaptionDeduplicator,
+                        NarrationRequestDeduplicator,
+                        QwenNarrator,
+                    )
 
                     narrator = QwenNarrator(
                         self.models_lock["models"]["qwen3_0_6b"],
@@ -1155,8 +1160,18 @@ class StreamManager:
                         threads=session.threads,
                         max_tokens=96,
                     )
+                    caption_deduplicator = CaptionDeduplicator()
+                    narration_request_deduplicator = NarrationRequestDeduplicator()
                     for request in requests:
-                        emit(narrator.narrate(request).to_dict())
+                        duplicate_record = narration_request_deduplicator.should_skip(request)
+                        if duplicate_record is not None:
+                            emit(duplicate_record)
+                            continue
+                        result = narrator.narrate(request)
+                        narration_request_deduplicator.remember(
+                            request, caption_ru=result.response.caption_ru
+                        )
+                        emit(caption_deduplicator.process(result))
 
         tracker = self._restore_watermark_tracker(session)
         tracker.mark("D", start_ms, end_ms, "done", level=level, revision=2)
@@ -1171,7 +1186,9 @@ class StreamManager:
                 )
             )
             tracker.mark(
-                "R", start_ms, end_ms,
+                "R",
+                start_ms,
+                end_ms,
                 "done" if matching_caption else "skipped",
                 level=level,
                 revision=2,
@@ -1195,9 +1212,7 @@ class StreamManager:
         record = session.watermarks or {}
         snapshot = record.get("watermarks", {})
         modalities_data = snapshot.get("modality_cursors", {})
-        modalities: set[Modality] = (
-            set(modalities_data) if modalities_data else {"audio", "video"}
-        )
+        modalities: set[Modality] = set(modalities_data) if modalities_data else {"audio", "video"}
         tracker = WatermarkTracker(
             session.stream_id,
             epoch=session.epoch,
@@ -1216,7 +1231,8 @@ class StreamManager:
             level: Level | None = None,
         ) -> None:
             relevant = [
-                issue for issue in issues
+                issue
+                for issue in issues
                 if issue.get("stage") == stage
                 and issue.get("modality") == modality
                 and issue.get("level") == level
@@ -1231,7 +1247,8 @@ class StreamManager:
                     continue
                 issue = next(
                     (
-                        item for item in relevant
+                        item
+                        for item in relevant
                         if int(item["start_ms"]) <= left and int(item["end_ms"]) >= right
                     ),
                     None,

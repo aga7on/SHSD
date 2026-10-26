@@ -1,0 +1,41 @@
+{
+  "source": "X:\\AI\\SHSD\\benchmarks\\fixtures\\real_poc\\tears_of_steel_120_210s.mp4",
+  "source_duration_ms": 90000,
+  "embedding_model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "levels": [
+    "L0",
+    "L1",
+    "L2"
+  ],
+  "thresholds": {
+    "minimum_similarity": 0.6,
+    "minimum_margin": 0.05
+  },
+  "end_to_end_elapsed_s": 53.385924,
+  "latest_event_counts": {
+    "L1": 64,
+    "L2": 62
+  },
+  "l2_refinement_status_counts": {
+    "abstained": 10,
+    "skipped": 52
+  },
+  "l2_candidate_status_counts": {
+    "abstained": 10,
+    "skipped": 24
+  },
+  "l2_axes_checked": {
+    "speech_presence": 4,
+    "music_presence": 4,
+    "ambient_sound": 1,
+    "impact_sound": 1
+  },
+  "l2_aggregate_cosine_range": [
+    0.733882486820221,
+    0.8307578563690186
+  ],
+  "l2_aggregate_margin_range": [
+    0.006858706474304199,
+    0.02096235752105713
+  ]
+}

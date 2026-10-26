@@ -1,0 +1,31 @@
+[
+  {
+    "backend": "qwen",
+    "caption_ru": "Обнаружено заметное изменение изображения.",
+    "epoch": 0,
+    "event_revisions": [
+      {
+        "event_id": "d5a608e3d94b4623b1ce66a29ab8e326",
+        "revision": 2
+      }
+    ],
+    "generated_token_count": null,
+    "generation_ms": null,
+    "latency_ms": 2300.899,
+    "model_revision": "13ac06624948e4d8589cb4b6f90100837342fcb8",
+    "new_unsupported_claims": [],
+    "prompt_version": "narrator-ru-v2",
+    "record_type": "caption",
+    "schema_version": 1,
+    "status": "generated",
+    "time_range": {
+      "end_ms": 5704,
+      "start_ms": 4704
+    },
+    "tokens_per_second": 56.9,
+    "used_claim_ids": [
+      "d5a608e3d94b4623b1ce66a29ab8e326:claim-scene-cut-scene-cut:4704:5704"
+    ],
+    "warnings": []
+  }
+]

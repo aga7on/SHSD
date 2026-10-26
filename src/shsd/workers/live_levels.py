@@ -10,6 +10,7 @@ from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from typing import Any
 
+from shsd.captions.narrator import CaptionDeduplicator, NarrationRequestDeduplicator
 from shsd.memory.models import TimelineEvent
 from shsd.memory.state import TemporalStateReducer
 from shsd.memory.store import EventStore
@@ -50,6 +51,7 @@ class LiveLevelWorkers:
         mark_coverage: Callable[[str, str, int, int, str, str | None], None],
         make_requests: Callable[[list[TimelineEvent]], list[Any]],
         narrator_factory: Callable[[], Any],
+        refine_l2: Callable[[TimelineEvent], tuple[TimelineEvent, dict[str, Any]]] | None = None,
         l3_enabled: bool,
         l2_capacity: int = 64,
         l3_capacity: int = 8,
@@ -62,6 +64,7 @@ class LiveLevelWorkers:
         self.mark_coverage = mark_coverage
         self.make_requests = make_requests
         self.narrator_factory = narrator_factory
+        self.refine_l2 = refine_l2
         self.l3_enabled = l3_enabled
         self.l2_capacity = l2_capacity
         self.l3_capacity = l3_capacity
@@ -80,12 +83,20 @@ class LiveLevelWorkers:
         self._l2_failed = 0
         self._l2_dropped = 0
         self._l3_completed = 0
+        self._l3_deduplicated = 0
         self._l3_failed = 0
         self._l3_dropped = 0
         self._l3_fallbacks = 0
         self._l3_unsupported_claims = 0
         self._narration_backend_counts = {"qwen": 0, "template": 0}
+        self._caption_deduplicator = CaptionDeduplicator()
+        self._narration_request_deduplicator = NarrationRequestDeduplicator()
         self._l2_latency_ms: list[float] = []
+        self._l2_semantic_refinement_counts = {
+            "confirmed": 0,
+            "abstained": 0,
+            "skipped": 0,
+        }
         self._l3_latency_ms: list[float] = []
         self._narration_latency_ms: list[float] = []
         self._narration_generation_ms = 0.0
@@ -96,9 +107,7 @@ class LiveLevelWorkers:
         self._l2_failed_ranges: list[tuple[int, int]] = []
         self._l3_skipped_ranges: list[tuple[int, int]] = []
         self._l3_failed_ranges: list[tuple[int, int]] = []
-        self._l2_thread = threading.Thread(
-            target=self._run_l2, name="shsd-live-l2", daemon=True
-        )
+        self._l2_thread = threading.Thread(target=self._run_l2, name="shsd-live-l2", daemon=True)
         self._l3_thread = (
             threading.Thread(target=self._run_l3, name="shsd-live-l3", daemon=True)
             if l3_enabled
@@ -144,11 +153,7 @@ class LiveLevelWorkers:
         """Place a coverage barrier after the events already submitted to L2."""
         clean = tuple(
             sorted(
-                {
-                    (int(start), int(end))
-                    for start, end in intervals
-                    if start >= 0 and end > start
-                }
+                {(int(start), int(end)) for start, end in intervals if start >= 0 and end > start}
             )
         )
         if not clean:
@@ -181,9 +186,11 @@ class LiveLevelWorkers:
             l2_failed = self._l2_failed
             l2_dropped = self._l2_dropped
             l3_completed = self._l3_completed
+            l3_deduplicated = self._l3_deduplicated
             l3_failed = self._l3_failed
             l3_dropped = self._l3_dropped
             narration_ranges = list(self._narration_ranges)
+            l3_caption_count = self._l3_completed
             narration_errors = list(self._narration_errors)
             l2_latency = list(self._l2_latency_ms)
             l3_latency = list(self._l3_latency_ms)
@@ -195,6 +202,7 @@ class LiveLevelWorkers:
             generation_ms = self._narration_generation_ms
             l2_skipped = list(self._l2_skipped_ranges)
             l2_failed_ranges = list(self._l2_failed_ranges)
+            l2_semantic_refinement_counts = dict(self._l2_semantic_refinement_counts)
             l3_skipped = list(self._l3_skipped_ranges)
             l3_failed_ranges = list(self._l3_failed_ranges)
             l2_running = int(self._l2_running)
@@ -209,11 +217,7 @@ class LiveLevelWorkers:
                 "L3": {
                     "depth": self._l3_queue.qsize() if self._l3_queue else 0,
                     "capacity": self.l3_capacity if self._l3_queue else 0,
-                    "outstanding": (
-                        self._l3_queue.qsize() + l3_running
-                        if self._l3_queue
-                        else 0
-                    ),
+                    "outstanding": (self._l3_queue.qsize() + l3_running if self._l3_queue else 0),
                 },
             },
             "completed_count": l2_completed + l3_completed,
@@ -228,9 +232,14 @@ class LiveLevelWorkers:
                 "latency_ms_samples": l2_latency,
                 "skipped_ranges": l2_skipped,
                 "failed_ranges": l2_failed_ranges,
+                "semantic_refinement": {
+                    "total": sum(l2_semantic_refinement_counts.values()),
+                    **l2_semantic_refinement_counts,
+                },
             },
             "l3": {
                 "completed": l3_completed,
+                "deduplicated": l3_deduplicated,
                 "failed": l3_failed,
                 "dropped": l3_dropped,
                 "latency_ms_samples": l3_latency,
@@ -238,7 +247,8 @@ class LiveLevelWorkers:
                 "failed_ranges": l3_failed_ranges,
             },
             "narration": {
-                "caption_count": len(narration_ranges),
+                "caption_count": l3_caption_count,
+                "deduplicated_count": l3_deduplicated,
                 "ranges": narration_ranges,
                 "errors": narration_errors,
                 "latency_ms_samples": narration_latency,
@@ -329,9 +339,26 @@ class LiveLevelWorkers:
     def _process_l2(self, work: _L2Work) -> None:
         event = work.event
         try:
-            delta = self._state_reducer.ingest(event)
+            refined_source = event
+            semantic_report: dict[str, Any] | None = None
+            if self.refine_l2 is not None:
+                refined_source, semantic_report = self.refine_l2(event)
+                if (
+                    refined_source.event_id != event.event_id
+                    or refined_source.epoch != event.epoch
+                    or refined_source.revision != event.revision
+                ):
+                    raise ValueError(
+                        "L2 semantic refinement must preserve event identity and revision"
+                    )
+                status = str(semantic_report.get("status", "skipped"))
+                if status not in self._l2_semantic_refinement_counts:
+                    status = "skipped"
+                with self._lock:
+                    self._l2_semantic_refinement_counts[status] += 1
+            delta = self._state_reducer.ingest(refined_source)
             refined = replace(
-                event,
+                refined_source,
                 revision=event.revision + 1,
                 level="L2",
                 state=("refined" if delta is not None and delta.published else "committed"),
@@ -352,6 +379,8 @@ class LiveLevelWorkers:
                     **delta.to_dict(),
                 }
             )
+        if semantic_report is not None:
+            self.emit(semantic_report)
         self.emit({"record_type": "event", **refined.to_dict()})
         elapsed_ms = (time.perf_counter() - work.queued_at) * 1000
         with self._lock:
@@ -368,9 +397,7 @@ class LiveLevelWorkers:
         with self._lock:
             self._l2_failed += 1
             self._l2_failed_ranges.append((event.start_ms, event.end_ms))
-        self.mark_coverage(
-            "L2", "R", event.start_ms, event.end_ms, "failed", "l2_worker_failed"
-        )
+        self.mark_coverage("L2", "R", event.start_ms, event.end_ms, "failed", "l2_worker_failed")
         self.emit(
             {
                 "record_type": "scheduler_degradation",
@@ -380,25 +407,17 @@ class LiveLevelWorkers:
             }
         )
 
-    def _record_l2_barrier_error(
-        self, barrier: _CoverageBarrier, error: Exception
-    ) -> None:
+    def _record_l2_barrier_error(self, barrier: _CoverageBarrier, error: Exception) -> None:
         message = f"{type(error).__name__}: {error}"[:500]
         for start_ms, end_ms in barrier.intervals:
             with self._lock:
                 self._l2_failed_ranges.append((start_ms, end_ms))
                 if self._l3_queue is not None:
                     self._l3_failed_ranges.append((start_ms, end_ms))
-            self.mark_coverage(
-                "L2", "R", start_ms, end_ms, "failed", "l2_barrier_failed"
-            )
+            self.mark_coverage("L2", "R", start_ms, end_ms, "failed", "l2_barrier_failed")
             if self._l3_queue is not None:
-                self.mark_coverage(
-                    "L3", "D", start_ms, end_ms, "failed", "l2_barrier_failed"
-                )
-                self.mark_coverage(
-                    "L3", "R", start_ms, end_ms, "failed", "l2_barrier_failed"
-                )
+                self.mark_coverage("L3", "D", start_ms, end_ms, "failed", "l2_barrier_failed")
+                self.mark_coverage("L3", "R", start_ms, end_ms, "failed", "l2_barrier_failed")
         self.emit(
             {
                 "record_type": "scheduler_degradation",
@@ -415,9 +434,7 @@ class LiveLevelWorkers:
                     "record_type": "narration_skipped",
                     "level": "L3",
                     "reason": "no_accepted_claims_with_display_text",
-                    "event_revisions": [
-                        {"event_id": event.event_id, "revision": event.revision}
-                    ],
+                    "event_revisions": [{"event_id": event.event_id, "revision": event.revision}],
                 }
             )
             return
@@ -451,9 +468,7 @@ class LiveLevelWorkers:
         for start_ms, end_ms in barrier.intervals:
             interval = (start_ms, end_ms)
             if self._intersects(interval, l3_skipped_ranges):
-                self.mark_coverage(
-                    "L3", "D", start_ms, end_ms, "skipped", "runtime_backpressure"
-                )
+                self.mark_coverage("L3", "D", start_ms, end_ms, "skipped", "runtime_backpressure")
             else:
                 self.mark_coverage("L3", "D", start_ms, end_ms, "done", None)
         self._l3_queue.put(barrier)
@@ -475,12 +490,22 @@ class LiveLevelWorkers:
                     if narrator is None:
                         narrator = self.narrator_factory()
                     for request in item.requests:
+                        duplicate_record = self._narration_request_deduplicator.should_skip(request)
+                        if duplicate_record is not None:
+                            self.emit(duplicate_record)
+                            with self._lock:
+                                self._l3_deduplicated += 1
+                                self._narration_ranges.append(request.time_range)
+                            continue
                         try:
                             result = narrator.narrate(request)
                         except Exception as error:
                             self._record_narration_error(item.event, error)
                             continue
-                        record = result.to_dict()
+                        self._narration_request_deduplicator.remember(
+                            request, caption_ru=result.response.caption_ru
+                        )
+                        record = self._caption_deduplicator.process(result)
                         self.emit(record)
                         response = result.response
                         with self._lock:
@@ -489,9 +514,7 @@ class LiveLevelWorkers:
                             self._narration_latency_ms.append(float(result.latency_ms))
                             self._narration_backend_counts[result.backend] += 1
                             self._l3_fallbacks += result.status == "fallback"
-                            self._l3_unsupported_claims += len(
-                                response.new_unsupported_claims
-                            )
+                            self._l3_unsupported_claims += len(response.new_unsupported_claims)
                             if result.generated_token_count is not None and result.generation_ms:
                                 self._narration_generated_tokens += result.generated_token_count
                                 self._narration_generation_ms += float(result.generation_ms)
@@ -509,16 +532,12 @@ class LiveLevelWorkers:
             finally:
                 self._l3_queue.task_done()
 
-    def _record_l3_barrier_error(
-        self, barrier: _CoverageBarrier, error: Exception
-    ) -> None:
+    def _record_l3_barrier_error(self, barrier: _CoverageBarrier, error: Exception) -> None:
         message = f"{type(error).__name__}: {error}"[:500]
         for start_ms, end_ms in barrier.intervals:
             with self._lock:
                 self._l3_failed_ranges.append((start_ms, end_ms))
-            self.mark_coverage(
-                "L3", "R", start_ms, end_ms, "failed", "l3_barrier_failed"
-            )
+            self.mark_coverage("L3", "R", start_ms, end_ms, "failed", "l3_barrier_failed")
         self.emit(
             {
                 "record_type": "scheduler_degradation",
@@ -533,18 +552,14 @@ class LiveLevelWorkers:
             self._l3_failed += 1
             self._l3_failed_ranges.append((event.start_ms, event.end_ms))
             self._narration_errors.append((event.start_ms, event.end_ms, message))
-        self.mark_coverage(
-            "L3", "R", event.start_ms, event.end_ms, "failed", "narration_failed"
-        )
+        self.mark_coverage("L3", "R", event.start_ms, event.end_ms, "failed", "narration_failed")
         self.emit(
             {
                 "record_type": "narration_error",
                 "level": "L3",
                 "time_range": {"start_ms": event.start_ms, "end_ms": event.end_ms},
                 "error": message,
-                "event_revisions": [
-                    {"event_id": event.event_id, "revision": event.revision}
-                ],
+                "event_revisions": [{"event_id": event.event_id, "revision": event.revision}],
             }
         )
 
