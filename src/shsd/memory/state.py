@@ -80,6 +80,7 @@ class TemporalStateReducer:
         "music_stopped": "active_music",
         "music_changed": "active_music",
         "instrument_change": "active_music",
+        "audio_scene_changed": "active_scene",
         "scene_changed": "active_scene",
         "visual_scene": "active_scene",
         "visual_change": "active_scene",

@@ -271,7 +271,7 @@ axes:
       text_ru: "В музыке не слышно ударных."
 ```
 
-Реализовать оси: `music_presence`, `instrument_family`, `percussion`, `bass`, `vocals`, `tempo_feel`, `energy`, `ambient_sound`, `speech`, `visual_scene`, `visual_action`, `camera`, `av_sync`. Каждая ось должна включать явные отрицательные/конкурирующие гипотезы и `unknown`.
+Реализовать оси: `music_presence`, `instrument_family`, `percussion`, `bass`, `vocals`, `tempo_feel`, `energy`, `ambient_sound`, `speech`, `visual_scene`, `visual_action`, `camera`, `av_sync`. Для обычных одиночных признаков использовать явные конкурирующие гипотезы и `unknown`. Широкая ось `music_presence` — положительная многоклассовая классификация: музыка на первом плане, разговор на первом плане, звуки среды на первом плане, музыка вместе с речью; `music_absent` не должен быть её единственным конкурентом.
 
 ### 8.2. Алгоритм поиска
 
@@ -279,7 +279,7 @@ axes:
 2. Для аудио/кадра посчитать медиа-вектор. Одновременно сначала фильтровать широкие оси `music/speech/environment`, `scene/action`.
 3. Сравнить cosine similarity только с релевантными кандидатами. Для mutually-exclusive axis выбрать `top-k` + конкурентов; для non-exclusive axis независимо проверить каждый кандидат.
 4. Для mutually-exclusive axis применить **margin** между конкурентами; для non-exclusive — отдельные similarity threshold и threshold margin. Требовать temporal persistence для каждого принятого кандидата; без валидации хранить `raw_score` и не присваивать фиктивные проценты.
-5. Более подробные проверки открывать только если broad axis устойчив и CPU budget позволяет.
+5. L2 уточняет список наиболее вероятных L1-концептов специализированными гипотезами, соседними окнами и дешёвыми сигналовыми признаками. Для музыки детализацию можно запустить, когда `music_present` или `music_and_speech` есть среди кандидатов с cosine не ниже общей `minimum_similarity`; `uncertain` не превращать в `accepted` и не менять порог без проверки false positives. CPU budget ограничивает число окон.
 6. Не объявлять второй инструмент только потому, что он попал в global top-k: несколько non-exclusive инструментальных кандидатов разрешены лишь при индивидуальном пороге и устойчивом evidence в нескольких окнах. Взаимоисключающие кандидаты («акустическая гитара» и «электрогитара» одного источника) не объединять без явного подтверждения двух источников.
 7. Вернуть `SemanticClaim[]` с текстом, источниками, score, margin и `decision=accepted|uncertain|rejected`.
 
@@ -295,7 +295,7 @@ CLI opt-in `--iterative-axis AXIS_ID` реализует один такой п�
 
 Допустимы дешёвые признаки `RMS`, `onset`, `spectral centroid`, `tempo estimate` (если включён независимый DSP). BPM выводить только с оценкой надёжности и длительности наблюдения, иначе «темп определить не удалось». Источник DSP должен быть явно указан, не выдавать LLM-оценку как измерение.
 
-Музыкальные гипотезы проверять поэтапно: сначала `music_presence`; детальные оси запускать только при `accepted` для `music_present`. При `unknown` или недостаточном margin детальные claims пропускать. Неясное различие тембров остаётся `uncertain`; соседние окна могут добавить только измеренные изменения RMS, loudness, onset count, activity и spectral centroid, без называния неподтверждённого инструмента.
+Музыкальные гипотезы проверять поэтапно: L1 определяет широкую звуковую сцену, L2 независимо оценивает вокал, ударные, бас, электронный тембр, энергию, темп и семейство инструментов. L2 использует принятие по прежней cosine/margin policy в агрегированном представлении и повторную поддержку в нескольких окнах; отсутствие такой поддержки оставляет деталь неопределённой, не меняя пороги. Проверяемые изменения между окнами (`acoustic_changes`, `candidate_changes`) записывать отдельно от устойчивых свойств (`static_details`). Не называть инструмент или музыкальный переход только по низкоотрывному top-ranked кандидату. Дешёвые изменения RMS, loudness, onset count, activity и spectral centroid сопровождаются своими evidence refs и не подменяют семантическое подтверждение.
 
 ### 8.5. Cross-modal temporal relations
 
@@ -339,7 +339,11 @@ CLI opt-in `--iterative-axis AXIS_ID` реализует один такой п�
       "decision": "uncertain",
       "similarity": 0.43,
       "margin": 0.07,
-      "evidence_refs": ["emb-a-42", "onset-43"]
+      "evidence_refs": ["emb-a-42", "onset-43"],
+      "candidate_hypotheses": [
+        {"candidate_id": "music_present", "raw_cosine": 0.69, "decision": "uncertain"},
+        {"candidate_id": "conversation_dominant", "raw_cosine": 0.72, "decision": "accepted"}
+      ]
     }
   ],
   "caption_ru": "Перкуссия, возможно, становится заметнее.",

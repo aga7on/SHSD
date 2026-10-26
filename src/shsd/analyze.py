@@ -813,11 +813,7 @@ def _record_embedding(
 def _audio_summary(
     observations: list[SignalObservation], start_ms: int, end_ms: int
 ) -> dict[str, Any]:
-    rms = [float(item.value) for item in observations if item.subtype == "rms"]
-    loudness = [float(item.value) for item in observations if item.subtype == "loudness_dbfs"]
-    active = [bool(item.value) for item in observations if item.subtype == "energy_vad"]
-    onsets = [item for item in observations if item.subtype == "onset"]
-    centroids = [float(item.value) for item in observations if item.subtype == "spectral_centroid"]
+    metrics = _audio_signal_values(observations)
     return {
         "record_type": "observation",
         "level": "L0",
@@ -827,13 +823,22 @@ def _audio_summary(
         "subtype": "audio_window_summary",
         "method_version": AUDIO_METHOD_VERSION,
         "quality": round(float(np.mean([item.quality for item in observations])), 4),
-        "value": {
-            "mean_rms_full_scale": round(float(np.mean(rms)), 6) if rms else 0.0,
-            "mean_loudness_dbfs": round(float(np.mean(loudness)), 3) if loudness else -160.0,
-            "energy_active_fraction": round(sum(active) / len(active), 4) if active else 0.0,
-            "onset_count": len(onsets),
-            "mean_spectral_centroid_hz": round(float(np.mean(centroids)), 2) if centroids else 0.0,
-        },
+        "value": metrics,
+    }
+
+
+def _audio_signal_values(observations: list[SignalObservation]) -> dict[str, float]:
+    rms = [float(item.value) for item in observations if item.subtype == "rms"]
+    loudness = [float(item.value) for item in observations if item.subtype == "loudness_dbfs"]
+    active = [bool(item.value) for item in observations if item.subtype == "energy_vad"]
+    onsets = [item for item in observations if item.subtype == "onset"]
+    centroids = [float(item.value) for item in observations if item.subtype == "spectral_centroid"]
+    return {
+        "mean_rms_full_scale": round(float(np.mean(rms)), 6) if rms else 0.0,
+        "mean_loudness_dbfs": round(float(np.mean(loudness)), 3) if loudness else -160.0,
+        "energy_active_fraction": round(sum(active) / len(active), 4) if active else 0.0,
+        "onset_count": float(len(onsets)),
+        "mean_spectral_centroid_hz": round(float(np.mean(centroids)), 2) if centroids else 0.0,
     }
 
 
@@ -1073,6 +1078,10 @@ def _match_window(
                 window_id=record.window_id,
                 model_revision=claim.model_revision,
                 candidate_independent=not active_axis.mutually_exclusive,
+                candidate_hypotheses=tuple(
+                    (item.candidate_id, item.raw_cosine, item.decision)
+                    for item in claim.top_candidates
+                ),
             )
             event = reducer.ingest(match)
             if event is not None:
@@ -1083,8 +1092,11 @@ def _match_window(
 
 
 def _music_detail_allowed(candidate_id: str | None, decision: str | None) -> bool:
-    """Only accepted positive music-presence claims open the detailed axes."""
-    return decision == "accepted" and candidate_id == "music_present"
+    """Identify L1 music concepts worth separately checking at L2."""
+    return decision in {"accepted", "uncertain"} and candidate_id in {
+        "music_present",
+        "music_and_speech",
+    }
 
 
 @_sample_process_rss
@@ -1167,36 +1179,43 @@ def analyze_media(
         profile.profile_id: encode_profile_candidates(profile, provider) for profile in profiles
     }
     profile_embedding_ms = (time.perf_counter() - provider_started) * 1000
-    music_profile = next(profile for profile in profiles if profile.profile_id == "music")
     music_presence_axis_id = "music_presence"
     music_detail_axis_ids = frozenset(
-        axis.axis_id for axis in music_profile.axes if axis.axis_id != music_presence_axis_id
+        axis.axis_id
+        for profile in profiles
+        if profile.profile_id == "music"
+        for axis in profile.axes
+        if axis.level == "L2"
     )
-
     axes_by_modality: dict[str, list[tuple[HypothesisAxis, dict[str, np.ndarray]]]] = {
+        "audio": [],
+        "image": [],
+    }
+    all_axes_by_modality: dict[str, list[tuple[HypothesisAxis, dict[str, np.ndarray]]]] = {
         "audio": [],
         "image": [],
     }
     for profile in profiles:
         for axis in profile.axes:
-            if axis.modality not in axes_by_modality:
+            if axis.modality not in all_axes_by_modality:
                 continue
             candidate_records = vectors_by_profile[profile.profile_id][axis.axis_id]
-            axes_by_modality[axis.modality].append(
-                (
-                    axis,
-                    {
-                        candidate_id: record.embedding
-                        for candidate_id, record in candidate_records.items()
-                    },
-                )
+            encoded_axis = (
+                axis,
+                {
+                    candidate_id: record.embedding
+                    for candidate_id, record in candidate_records.items()
+                },
             )
+            all_axes_by_modality[axis.modality].append(encoded_axis)
+            if axis.level == "L1":
+                axes_by_modality[axis.modality].append(encoded_axis)
 
     iterative_refiner: IterativeHypothesisRefiner | None = None
     if iterative_axis is not None:
         selected_axes = [
             axis
-            for axes in axes_by_modality.values()
+            for axes in all_axes_by_modality.values()
             for axis, _vectors in axes
             if axis.axis_id == iterative_axis
         ]
@@ -1226,10 +1245,13 @@ def analyze_media(
     audio_embedding_history = BoundedAudioEmbeddingHistory(capacity=256)
     temporal_audio_refiner = TemporalAudioRefiner(
         history=audio_embedding_history,
-        axes=axes_by_modality["audio"],
+        axes=all_axes_by_modality["audio"],
         matcher=matcher,
         policy=policy,
         context_padding_ms=window_ms,
+        detail_axes=[
+            item for item in all_axes_by_modality["audio"] if item[0].level == "L2"
+        ],
     )
     sampling_controller = AdaptiveSamplingController(
         profile=sampling_profile,
@@ -1796,6 +1818,7 @@ def analyze_media(
         start_ms: int,
         end_ms: int,
         audio_deltas: list[SignalObservation],
+        signal_summary: dict[str, float],
         signal_delta_score: float | None,
     ) -> None:
         audio_embedding_history.add(
@@ -1804,6 +1827,8 @@ def analyze_media(
             window_id=record.window_id,
             model_revision=record.model_revision,
             embedding=record.embedding,
+            signal_summary=signal_summary,
+            signal_deltas=audio_deltas,
         )
         watermark.mark("E", start_ms, end_ms, "done", modality="audio")
         if "L0" in levels:
@@ -1817,8 +1842,6 @@ def analyze_media(
                     modality="audio",
                     axes=axes_by_modality["audio"],
                     signal_delta_score=signal_delta_score,
-                    gated_axis_ids=music_detail_axis_ids,
-                    music_presence_axis_id=music_presence_axis_id,
                     additional_evidence=tuple(
                         f"observation:{item.subtype}:{item.start_ms}-{item.end_ms}"
                         for item in audio_deltas
@@ -1889,10 +1912,13 @@ def analyze_media(
                 "similarity_is_probability": False,
                 "calibration": "provisional; inspect raw cosine and abstentions",
             },
-            "music_detail_gate": {
-                "axis_id": music_presence_axis_id,
-                "required_candidate": "music_present",
-                "required_decision": "accepted",
+            "music_l2_refinement": {
+                "coarse_axis_id": music_presence_axis_id,
+                "coarse_candidates": ["music_present", "music_and_speech"],
+                "detail_axes": sorted(music_detail_axis_ids),
+                "coarse_routing": "accepted_or_uncertain_candidate_above_minimum_similarity",
+                "minimum_similarity": policy.minimum_similarity,
+                "strategy": "coarse_to_fine_temporal_audio_v2",
             },
             "iterative_hypothesis_axis": iterative_axis,
             "iterative_hypothesis_enabled": iterative_refiner is not None,
@@ -2216,6 +2242,7 @@ def analyze_media(
                     assert speech_worker is not None
                     speech_worker.drain(publish_speech_result)
                 audio_observations = analyze_audio(samples, SAMPLE_RATE, start_ms=start_ms)
+                audio_signal_values = _audio_signal_values(audio_observations)
                 for observation in audio_observations:
                     relation_validator.add_audio(observation)
                 audio_deltas = (
@@ -2251,6 +2278,7 @@ def analyze_media(
                             start_ms=start_ms,
                             end_ms=end_ms,
                             audio_deltas=audio_deltas,
+                            signal_summary=audio_signal_values,
                             signal_delta_score=(
                                 sampling_decision.activity_score
                                 if sampling_decision.reason == "activity"
@@ -2752,6 +2780,7 @@ def analyze_media(
 
             async def schedule_refinements() -> None:
                 scheduler.start()
+                pressure_recovery_deadline = time.perf_counter() + 15.0
                 try:
                     scheduler.observe_load(
                         source_lag_ms=pressure_sample.source_lag_ms,
@@ -2781,7 +2810,17 @@ def analyze_media(
                                 await scheduler.wait_idle()
                                 continue
                             if result is SubmitResult.PRESSURE:
-                                break
+                                if (
+                                    remote_source
+                                    or time.perf_counter() >= pressure_recovery_deadline
+                                ):
+                                    break
+                                # Finite-file L2 runs after capture has ended. Refresh the
+                                # drained source queues and retry instead of permanently
+                                # discarding events on a stale critical-load sample.
+                                await asyncio.sleep(0.25)
+                                observe_runtime_load(force=True)
+                                continue
                             break
                     await scheduler.wait_idle()
                 finally:

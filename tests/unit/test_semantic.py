@@ -44,6 +44,19 @@ def test_profiles_have_competing_candidates_and_non_embedded_unknown() -> None:
     )
     assert all(profile.unknown_id == "unknown" for profile in profiles)
     assert all(len(profile.candidate_fingerprint()) == 64 for profile in profiles)
+    music = next(profile for profile in profiles if profile.profile_id == "music")
+    scene = next(axis for axis in music.axes if axis.axis_id == "music_presence")
+    assert {candidate.candidate_id for candidate in scene.candidates} == {
+        "music_present",
+        "conversation_dominant",
+        "environment_dominant",
+        "music_and_speech",
+    }
+    assert all(
+        candidate.polarity == "positive" and not candidate.opposes
+        for candidate in scene.candidates
+    )
+    assert all(axis.level == "L2" for axis in music.axes if axis.axis_id != "music_presence")
     assert profiles[0].candidate_fingerprint() != replace(
         profiles[0], model_revision="different-model-revision"
     ).candidate_fingerprint()

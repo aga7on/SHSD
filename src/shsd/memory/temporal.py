@@ -32,6 +32,7 @@ class WindowMatch:
     window_id: str
     model_revision: str
     candidate_independent: bool = False
+    candidate_hypotheses: tuple[tuple[str, float, str], ...] = ()
 
     def __post_init__(self) -> None:
         if not self.stream_id or not self.axis_id or not self.window_id:
@@ -213,9 +214,13 @@ class TemporalEventReducer:
         if candidate_id == "unknown" or decision != "accepted":
             return "unknown"
         if axis_id == "music_presence":
-            return {"music_present": "music_started", "music_absent": "music_stopped"}.get(
-                candidate_id, "music_changed"
-            )
+            if candidate_id == "music_absent":
+                return "music_stopped"
+            if candidate_id in {"music_present", "music_and_speech"}:
+                if previous_candidate in {"music_present", "music_absent", None}:
+                    return "music_started"
+                return "music_changed"
+            return "audio_scene_changed"
         if axis_id == "speech_presence" and candidate_id == "speech_present":
             return "speech_detected"
         if axis_id == "impact_sound" and candidate_id == "impact_present":
@@ -254,7 +259,30 @@ class TemporalEventReducer:
             window_ids=windows,
             model_revision=latest.model_revision,
             sample_count=len(matches),
+            candidate_hypotheses=TemporalEventReducer._aggregate_candidate_hypotheses(matches),
         )
+
+    @staticmethod
+    def _aggregate_candidate_hypotheses(
+        matches: list[WindowMatch],
+    ) -> tuple[tuple[str, float, str], ...]:
+        samples: dict[str, list[tuple[float, str]]] = {}
+        for match in matches:
+            for candidate_id, raw_cosine, decision in match.candidate_hypotheses:
+                samples.setdefault(candidate_id, []).append((raw_cosine, decision))
+        aggregate = [
+            (
+                candidate_id,
+                sum(score for score, _decision in entries) / len(entries),
+                (
+                    "accepted"
+                    if all(decision == "accepted" for _score, decision in entries)
+                    else "uncertain"
+                ),
+            )
+            for candidate_id, entries in samples.items()
+        ]
+        return tuple(sorted(aggregate, key=lambda item: item[1], reverse=True))
 
     def _new_event(
         self,
@@ -321,6 +349,32 @@ class TemporalEventReducer:
                 dict.fromkeys([*prior_claim.window_ids, *(item.window_id for item in additions)])
             )[-MAX_EVENT_WINDOWS:],
             sample_count=combined_count,
+            candidate_hypotheses=TemporalEventReducer._aggregate_candidate_hypotheses(
+                [
+                    WindowMatch(
+                        stream_id=active.stream_id,
+                        epoch=active.epoch,
+                        start_ms=active.start_ms,
+                        end_ms=active.end_ms,
+                        axis_id="aggregate",
+                        candidate_id=prior_claim.label,
+                        text_ru=prior_claim.text_ru,
+                        decision=prior_claim.decision,
+                        raw_cosine=prior_claim.raw_cosine or 0.0,
+                        margin=prior_claim.margin or 0.0,
+                        modality="audio",
+                        evidence_refs=prior_claim.evidence_refs,
+                        window_id=f"aggregate:{active.event_id}:{prior_claim.sample_count}",
+                        model_revision=prior_claim.model_revision,
+                        candidate_hypotheses=tuple(
+                            (candidate_id, score, decision)
+                            for candidate_id, score, decision in prior_claim.candidate_hypotheses
+                            for _ in range(prior_claim.sample_count)
+                        ),
+                    ),
+                    *additions,
+                ]
+            ),
         )
         mask = dict(active.modality_mask)
         for item in additions:

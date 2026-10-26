@@ -516,12 +516,13 @@ def test_narration_batches_keep_exact_revisions_and_unique_source_claim_ids() ->
     ("candidate_id", "decision", "expected"),
     [
         ("music_present", "accepted", True),
-        ("music_absent", "accepted", False),
-        ("music_present", "uncertain", False),
+        ("music_and_speech", "accepted", True),
+        ("music_present", "uncertain", True),
+        ("conversation_dominant", "accepted", False),
         ("unknown", "uncertain", False),
     ],
 )
-def test_music_detail_axes_require_accepted_music_presence(
+def test_music_detail_axes_route_from_accepted_music_scene(
     candidate_id: str, decision: str, expected: bool
 ) -> None:
     assert _music_detail_allowed(candidate_id, decision) is expected

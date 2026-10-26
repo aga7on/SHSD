@@ -51,6 +51,7 @@ def _axes(profile: Any) -> tuple[HypothesisAxis, ...]:
             "vocal_presence",
             "percussion_presence",
             "bass_presence",
+            "electronic_timbre",
             "energy",
             "tempo_feel",
             "instrument_family",
@@ -276,7 +277,10 @@ def main() -> int:
         "diagnostic_type": "label_free_music_detail_axis_probe",
         "accuracy_claim": False,
         "similarity_is_probability": False,
-        "production_music_gate_bypassed_for_probe": True,
+        "diagnostic_only": True,
+        "temporal_l2_support_policy": (
+            "aggregate candidate acceptance and repeated in-event window support"
+        ),
         "source": str(source),
         "model_revision": model["revision"],
         "hypothesis_profile": profile.profile_id,

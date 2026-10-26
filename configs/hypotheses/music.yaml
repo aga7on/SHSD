@@ -1,6 +1,6 @@
 schema_version: 1
 profile_id: music
-profile_version: 1
+profile_version: 3
 model_revision: 914f7f89142e33e77833254d9c9b90c3cef7303b
 embedding_language: en
 display_language: ru
@@ -15,59 +15,88 @@ axes:
     mutually_exclusive: true
     candidates:
       - id: music_present
-        text_en: Music is audible in the audio.
-        text_ru: В аудио слышна музыка.
+        text_en: Music is the foreground sound and dominates the audio.
+        text_ru: Музыка звучит на первом плане и преобладает в аудио.
         polarity: positive
-        opposes: [music_absent]
-      - id: music_absent
-        text_en: No music is audible in the audio.
-        text_ru: В аудио не слышно музыки.
-        polarity: negative
-        opposes: [music_present]
+        opposes: []
+      - id: conversation_dominant
+        text_en: People are speaking and their conversation is the foreground sound.
+        text_ru: На первом плане слышен разговор людей.
+        polarity: positive
+        opposes: []
+      - id: environment_dominant
+        text_en: Environmental ambience and everyday sounds dominate the audio.
+        text_ru: В аудио преобладают звуки окружающей среды и повседневные шумы.
+        polarity: positive
+        opposes: []
+      - id: music_and_speech
+        text_en: Music and human speech are both prominent in the audio.
+        text_ru: В аудио одновременно заметны музыка и человеческая речь.
+        polarity: positive
+        opposes: []
   vocal_presence:
     modality: audio
+    level: L2
     mutually_exclusive: true
     candidates:
       - id: vocals_present
-        text_en: Singing or vocal sounds are audible in the music.
-        text_ru: В музыке слышны вокал или голосовые звуки.
+        text_en: Singing vocals are clearly audible in the music.
+        text_ru: В музыке отчётливо слышен вокал.
         polarity: positive
         opposes: [vocals_absent]
       - id: vocals_absent
-        text_en: The music contains no audible singing or vocal sounds.
-        text_ru: В музыке не слышно вокала или голосовых звуков.
+        text_en: The music is instrumental, with no clear singing vocals.
+        text_ru: Музыка инструментальная, отчётливого вокала не слышно.
         polarity: negative
         opposes: [vocals_present]
   percussion_presence:
     modality: audio
+    level: L2
     mutually_exclusive: true
     candidates:
       - id: percussion_present
-        text_en: Percussive rhythmic sounds are audible in the music.
-        text_ru: В музыке слышны ритмичные ударные звуки.
+        text_en: A clear drum or percussion rhythm is audible in the music.
+        text_ru: В музыке отчётливо слышен ритм ударных.
         polarity: positive
         opposes: [percussion_absent]
       - id: percussion_absent
-        text_en: No clear percussive rhythmic sounds are audible in the music.
-        text_ru: В музыке не слышно отчётливых ритмичных ударных звуков.
+        text_en: The music has a sustained or melodic texture without a clear drum rhythm.
+        text_ru: В музыке преобладает протяжённая или мелодическая фактура без отчётливого ритма ударных.
         polarity: negative
         opposes: [percussion_present]
   bass_presence:
     modality: audio
+    level: L2
     mutually_exclusive: true
     candidates:
       - id: bass_present
-        text_en: A distinct low-frequency bass part is audible in the music.
-        text_ru: В музыке слышна отчётливая низкочастотная басовая партия.
+        text_en: A distinct low-frequency bass line is audible in the music.
+        text_ru: В музыке слышна отчётливая низкочастотная басовая линия.
         polarity: positive
-        opposes: [bass_not_distinct]
-      - id: bass_not_distinct
-        text_en: No distinct low-frequency bass part is audible in the music.
-        text_ru: В музыке не слышно отчётливой низкочастотной басовой партии.
+        opposes: [bass_absent]
+      - id: bass_absent
+        text_en: The music has no distinct low-frequency bass line.
+        text_ru: В музыке не слышно отчётливой низкочастотной басовой линии.
         polarity: negative
         opposes: [bass_present]
+  electronic_timbre:
+    modality: audio
+    level: L2
+    mutually_exclusive: true
+    candidates:
+      - id: electronic_timbre_present
+        text_en: A prominent synthesized or electronic timbre is audible in the music.
+        text_ru: В музыке заметен синтезированный или электронный тембр.
+        polarity: positive
+        opposes: [electronic_timbre_absent]
+      - id: electronic_timbre_absent
+        text_en: The music has a predominantly acoustic timbre.
+        text_ru: В музыке преобладает акустический тембр.
+        polarity: negative
+        opposes: [electronic_timbre_present]
   energy:
     modality: audio
+    level: L2
     mutually_exclusive: true
     candidates:
       - id: high_energy
@@ -76,12 +105,13 @@ axes:
         polarity: positive
         opposes: [low_energy]
       - id: low_energy
-        text_en: The music sounds calm and low in energy.
-        text_ru: Музыка звучит спокойно и сдержанно.
-        polarity: negative
+        text_en: The music has a calm, gentle, restrained energy.
+        text_ru: Музыка звучит спокойно, мягко и сдержанно.
+        polarity: positive
         opposes: [high_energy]
   tempo_feel:
     modality: audio
+    level: L2
     mutually_exclusive: true
     candidates:
       - id: fast_feel
@@ -90,13 +120,14 @@ axes:
         polarity: positive
         opposes: [slow_feel]
       - id: slow_feel
-        text_en: The musical pulse feels slow.
-        text_ru: Музыкальный пульс воспринимается медленным.
-        polarity: negative
+        text_en: The musical pulse feels slow and unhurried.
+        text_ru: Музыкальный пульс воспринимается медленным и неторопливым.
+        polarity: positive
         opposes: [fast_feel]
   instrument_family:
     modality: audio
-    mutually_exclusive: false
+    level: L2
+    mutually_exclusive: true
     candidates:
       - id: electronic_timbre
         text_en: The music has a prominent electronic or synthesized timbre.
@@ -111,5 +142,10 @@ axes:
       - id: percussion_timbre
         text_en: The music has prominent acoustic or electronic percussion timbres.
         text_ru: В музыке заметны акустические или электронные ударные тембры.
+        polarity: positive
+        opposes: []
+      - id: piano_timbre
+        text_en: The music has a prominent piano timbre.
+        text_ru: В музыке заметен тембр фортепиано.
         polarity: positive
         opposes: []

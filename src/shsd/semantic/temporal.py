@@ -4,14 +4,16 @@ from __future__ import annotations
 
 import threading
 from collections import OrderedDict
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
 from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
 
+from shsd.detectors.types import SignalObservation
 from shsd.embeddings.cache import normalize_embedding
-from shsd.memory.models import TimelineEvent
+from shsd.memory.models import TimelineClaim, TimelineEvent
 from shsd.semantic.hypotheses import HypothesisAxis
 from shsd.semantic.matcher import MatchPolicy, SemanticClaim, SemanticMatcher
 
@@ -25,6 +27,8 @@ class AudioEmbeddingWindow:
     window_id: str
     model_revision: str
     embedding: NDArray[np.float32]
+    signal_summary: tuple[tuple[str, float], ...] = ()
+    signal_deltas: tuple[SignalObservation, ...] = ()
 
     def __post_init__(self) -> None:
         if self.start_ms < 0 or self.end_ms <= self.start_ms:
@@ -63,6 +67,8 @@ class BoundedAudioEmbeddingHistory:
         window_id: str,
         model_revision: str,
         embedding: np.ndarray,
+        signal_summary: Mapping[str, float | int] | None = None,
+        signal_deltas: Sequence[SignalObservation] = (),
     ) -> None:
         vector = normalize_embedding(np.asarray(embedding, dtype=np.float32).reshape(-1)).copy()
         vector.setflags(write=False)
@@ -72,6 +78,10 @@ class BoundedAudioEmbeddingHistory:
             window_id=window_id,
             model_revision=model_revision,
             embedding=vector,
+            signal_summary=tuple(
+                sorted((key, float(value)) for key, value in (signal_summary or {}).items())
+            ),
+            signal_deltas=tuple(signal_deltas),
         )
         with self._lock:
             self._windows.pop(window_id, None)
@@ -143,6 +153,7 @@ class TemporalAudioRefiner:
         context_padding_ms: int,
         max_context_windows: int = 8,
         minimum_support_windows: int = 2,
+        detail_axes: Sequence[tuple[HypothesisAxis, dict[str, np.ndarray]]] = (),
     ) -> None:
         if context_padding_ms < 0 or max_context_windows < 2 or minimum_support_windows < 2:
             raise ValueError("invalid temporal audio refinement settings")
@@ -153,6 +164,9 @@ class TemporalAudioRefiner:
         self.context_padding_ms = context_padding_ms
         self.max_context_windows = max_context_windows
         self.minimum_support_windows = minimum_support_windows
+        self.detail_axes = tuple(
+            (axis, vectors) for axis, vectors in detail_axes if axis.level == "L2"
+        )
 
     def refine(self, event: TimelineEvent) -> tuple[TimelineEvent, dict[str, Any]]:
         """Return an L2-ready event revision and a diagnostic semantic record."""
@@ -361,14 +375,50 @@ class TemporalAudioRefiner:
                 }
             )
 
+        scene_claim = next(
+            (
+                claim
+                for claim in refined_claims
+                if any(
+                    reference == "axis:music_presence" for reference in claim.evidence_refs
+                )
+            ),
+            None,
+        )
+        new_details: list[TimelineClaim] = []
+        detail_report: dict[str, Any] = {
+            "detail_status": "skipped",
+            "reason": "music_scene_not_confirmed",
+            "new_details": [],
+            "static_details": [],
+            "acoustic_changes": [],
+            "signal_context": [],
+            "neighbor_hypotheses": [],
+            "candidate_changes": [],
+        }
+        if (
+            scene_claim is not None
+            and _music_scene_supports_details(
+                scene_claim.label,
+                scene_claim.decision,
+                scene_claim.raw_cosine,
+                scene_claim.candidate_hypotheses,
+                minimum_similarity=self.policy.minimum_similarity,
+            )
+        ):
+            new_details, detail_report = self._discover_music_details(event, scene_claim)
+            refined_claims.extend(new_details)
+            any_refined = any_refined or bool(new_details)
+
         if not any_refined:
             return event, {
                 "record_type": "l2_refinement",
                 "event_id": event.event_id,
                 "source_revision": event.revision,
-                "strategy": "neighbor_embedding_consensus_v1",
+                "strategy": "coarse_to_fine_temporal_audio_v2",
                 "status": "skipped",
                 "claims": claim_reports,
+                **detail_report,
             }
         refined_event = replace(
             event,
@@ -380,9 +430,283 @@ class TemporalAudioRefiner:
             "record_type": "l2_refinement",
             "event_id": event.event_id,
             "source_revision": event.revision,
-            "strategy": "neighbor_embedding_consensus_v1",
+            "strategy": "coarse_to_fine_temporal_audio_v2",
             "status": "confirmed" if "confirmed" in statuses else "abstained",
             "claims": claim_reports,
+            **detail_report,
+        }
+
+    def _discover_music_details(
+        self, event: TimelineEvent, scene_claim: TimelineClaim
+    ) -> tuple[list[TimelineClaim], dict[str, Any]]:
+        """Probe L2 music axes only after L1 selects a music-containing scene."""
+        context = self.history.context(
+            start_ms=event.start_ms,
+            end_ms=event.end_ms,
+            model_revision=scene_claim.model_revision,
+            padding_ms=self.context_padding_ms,
+            max_windows=self.max_context_windows,
+        )
+        interior = [
+            item
+            for item in context
+            if item.start_ms < event.end_ms and item.end_ms > event.start_ms
+        ]
+        signal_context = [
+            {
+                "window_id": item.window_id,
+                "relation": (
+                    "inside_event"
+                    if item.start_ms < event.end_ms and item.end_ms > event.start_ms
+                    else "adjacent"
+                ),
+                "metrics": dict(item.signal_summary),
+            }
+            for item in context
+        ]
+        acoustic_changes = [
+            {
+                "window_id": item.window_id,
+                **observation.to_dict(),
+            }
+            for item in context
+            for observation in item.signal_deltas
+        ]
+        if len(interior) < self.minimum_support_windows:
+            return [], {
+                "detail_status": "skipped",
+                "reason": "insufficient_in_event_audio_windows",
+                "new_details": [],
+                "static_details": [],
+                "acoustic_changes": acoustic_changes,
+                "signal_context": signal_context,
+                "neighbor_hypotheses": [],
+                "candidate_changes": [],
+                "context_window_ids": [item.window_id for item in context],
+            }
+
+        try:
+            aggregate_vector = normalize_embedding(
+                np.mean(np.stack([item.embedding for item in interior]), axis=0)
+            )
+        except ValueError:
+            return [], {
+                "detail_status": "skipped",
+                "reason": "aggregate_embedding_not_comparable",
+                "new_details": [],
+                "static_details": [],
+                "acoustic_changes": acoustic_changes,
+                "signal_context": signal_context,
+                "neighbor_hypotheses": [],
+                "candidate_changes": [],
+                "context_window_ids": [item.window_id for item in context],
+            }
+
+        existing_axis_ids = {
+            reference.removeprefix("axis:")
+            for claim in event.claims
+            for reference in claim.evidence_refs
+            if reference.startswith("axis:")
+        }
+        added: list[TimelineClaim] = []
+        reports: list[dict[str, Any]] = []
+        neighbor_hypotheses: list[dict[str, Any]] = []
+        candidate_changes: list[dict[str, Any]] = []
+        interior_ids = {item.window_id for item in interior}
+        for axis, vectors in self.detail_axes:
+            if axis.axis_id in existing_axis_ids:
+                continue
+            aggregate = self.matcher.match_axis(
+                axis,
+                aggregate_vector,
+                vectors,
+                policy=self.policy,
+                model_revision=scene_claim.model_revision,
+                evidence_refs=tuple(f"embedding:{item.window_id}" for item in interior),
+            )
+            aggregate_supported = (
+                {item.candidate_id: item for item in aggregate.supported_candidates}
+                if not axis.mutually_exclusive
+                else (
+                    {aggregate.candidate_id: aggregate.top_candidates[0]}
+                    if aggregate.decision == "accepted" and aggregate.top_candidates
+                    else {}
+                )
+            )
+            per_window: list[tuple[str, set[str], SemanticClaim]] = []
+            for window in interior:
+                matched = self.matcher.match_axis(
+                    axis,
+                    window.embedding,
+                    vectors,
+                    policy=self.policy,
+                    model_revision=window.model_revision,
+                    evidence_refs=(f"audio:{window.start_ms}-{window.end_ms}",),
+                )
+                supported = (
+                    {item.candidate_id for item in matched.supported_candidates}
+                    if not axis.mutually_exclusive
+                    else (
+                        {matched.candidate_id}
+                        if matched.decision == "accepted"
+                        else set()
+                    )
+                )
+                per_window.append((window.window_id, supported, matched))
+            axis_neighbors: list[dict[str, Any]] = []
+            for window in context:
+                if window.window_id in interior_ids:
+                    continue
+                matched = self.matcher.match_axis(
+                    axis,
+                    window.embedding,
+                    vectors,
+                    policy=self.policy,
+                    model_revision=window.model_revision,
+                    evidence_refs=(f"audio:{window.start_ms}-{window.end_ms}",),
+                )
+                row = {
+                    "axis_id": axis.axis_id,
+                    "window_id": window.window_id,
+                    "relation": "before_event"
+                    if window.end_ms <= event.start_ms
+                    else "after_event",
+                    "candidate_id": matched.candidate_id,
+                    "decision": matched.decision,
+                    "raw_cosine": matched.raw_cosine,
+                    "margin": matched.margin,
+                }
+                axis_neighbors.append(row)
+                neighbor_hypotheses.append(row)
+            aggregate_candidates = {
+                candidate_id: candidate_score
+                for candidate_id, candidate_score in aggregate_supported.items()
+            }
+            aggregate_candidates.update(
+                {
+                    candidate.candidate_id: candidate
+                    for candidate in aggregate.top_candidates
+                    if candidate.candidate_id not in aggregate_candidates
+                }
+            )
+            for candidate_id, candidate_score in aggregate_candidates.items():
+                support_ids = [
+                    window_id
+                    for window_id, supported, _matched in per_window
+                    if candidate_id in supported
+                ]
+                aggregate_accepted = candidate_id in aggregate_supported
+                confirmed = (
+                    aggregate_accepted
+                    and len(support_ids) >= self.minimum_support_windows
+                )
+                candidate = next(
+                    item for item in axis.candidates if item.candidate_id == candidate_id
+                )
+                report = {
+                    "axis_id": axis.axis_id,
+                    "candidate_id": candidate_id,
+                    "text_ru": candidate.text_ru,
+                    "decision": "accepted" if confirmed else "uncertain",
+                    "status": "confirmed" if confirmed else "abstained",
+                    "aggregate_raw_cosine": candidate_score.raw_cosine,
+                    "aggregate_decision": aggregate.decision,
+                    "aggregate_supported": aggregate_accepted,
+                    "in_event_window_count": len(interior),
+                    "per_window_accepted_count": len(support_ids),
+                    "support_window_ids": support_ids,
+                    "required_support_windows": self.minimum_support_windows,
+                    "window_scores": [
+                        {
+                            "window_id": window_id,
+                            "decision": next(
+                                (
+                                    item.decision
+                                    for item in matched.top_candidates
+                                    if item.candidate_id == candidate_id
+                                ),
+                                "not_in_top_k",
+                            ),
+                            "raw_cosine": next(
+                                (
+                                    item.raw_cosine
+                                    for item in matched.top_candidates
+                                    if item.candidate_id == candidate_id
+                                ),
+                                None,
+                            ),
+                        }
+                        for window_id, _supported, matched in per_window
+                    ],
+                }
+                reports.append(report)
+                if not confirmed:
+                    continue
+                candidate_changes.extend(
+                    {
+                        "axis_id": axis.axis_id,
+                        "from_candidate_id": candidate_id,
+                        "to_candidate_id": neighbor["candidate_id"],
+                        "neighbor_window_id": neighbor["window_id"],
+                        "neighbor_decision": neighbor["decision"],
+                        "change_type": "semantic_candidate_change",
+                    }
+                    for neighbor in axis_neighbors
+                    if neighbor["decision"] == "accepted"
+                    and neighbor["candidate_id"] != candidate_id
+                )
+                window_by_id = {item.window_id: item for item in interior}
+                refs = [
+                    f"audio:{window_by_id[window_id].start_ms}-{window_by_id[window_id].end_ms}"
+                    for window_id in support_ids
+                ]
+                refs.extend(f"embedding:{window_id}" for window_id in support_ids)
+                refs.extend(
+                    f"signal-summary:{window_id}"
+                    for window_id in support_ids
+                    if window_by_id[window_id].signal_summary
+                )
+                refs.extend((f"axis:{axis.axis_id}", f"l2:coarse-to-fine:{event.event_id}"))
+                added.append(
+                    TimelineClaim(
+                        claim_id=f"claim-l2-{axis.axis_id}-{candidate_id}-{event.event_id}",
+                        label=candidate_id,
+                        text_ru=candidate.text_ru,
+                        decision="accepted",
+                        raw_cosine=candidate_score.raw_cosine,
+                        margin=max(
+                            0.0,
+                            candidate_score.raw_cosine - self.policy.minimum_similarity,
+                        ),
+                        evidence_refs=tuple(dict.fromkeys(refs)),
+                        window_ids=tuple(support_ids),
+                        model_revision=scene_claim.model_revision,
+                        sample_count=len(support_ids),
+                    )
+                )
+        return added, {
+            "detail_status": "confirmed" if added else "abstained",
+            "reason": None if added else "no_detail_met_temporal_support",
+            "coarse_concept": {
+                "axis_id": "music_presence",
+                "candidate_id": scene_claim.label,
+                "decision": scene_claim.decision,
+            },
+            "coarse_candidates": [
+                {
+                    "candidate_id": candidate_id,
+                    "raw_cosine": raw_cosine,
+                    "decision": decision,
+                }
+                for candidate_id, raw_cosine, decision in scene_claim.candidate_hypotheses
+            ],
+            "new_details": [claim.to_dict() for claim in added],
+            "static_details": reports,
+            "acoustic_changes": acoustic_changes,
+            "signal_context": signal_context,
+            "neighbor_hypotheses": neighbor_hypotheses,
+            "candidate_changes": candidate_changes,
+            "context_window_ids": [item.window_id for item in context],
         }
 
     def _match_window(
@@ -486,3 +810,25 @@ class TemporalAudioRefiner:
             "reason": reason,
             "claims": [],
         }
+
+
+def _music_scene_supports_details(
+    candidate_id: str | None,
+    decision: str | None,
+    raw_cosine: float | None = None,
+    candidate_hypotheses: tuple[tuple[str, float, str], ...] = (),
+    *,
+    minimum_similarity: float = 0.6,
+) -> bool:
+    music_candidates = {"music_present", "music_and_speech"}
+    if (
+        decision in {"accepted", "uncertain"}
+        and candidate_id in music_candidates
+        and raw_cosine is not None
+        and raw_cosine >= minimum_similarity
+    ):
+        return True
+    return any(
+        hypothesis_id in music_candidates and score >= minimum_similarity
+        for hypothesis_id, score, _hypothesis_decision in candidate_hypotheses
+    )

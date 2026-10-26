@@ -29,6 +29,7 @@ class HypothesisAxis:
     modality: str
     mutually_exclusive: bool
     candidates: tuple[HypothesisCandidate, ...]
+    level: str = "L1"
 
 
 @dataclass(frozen=True, slots=True)
@@ -59,6 +60,7 @@ class HypothesisProfile:
                     "axis_id": axis.axis_id,
                     "modality": axis.modality,
                     "mutually_exclusive": axis.mutually_exclusive,
+                    "level": axis.level,
                     "candidate_id": candidate.candidate_id,
                     "text_en": candidate.text_en,
                     "text_ru": candidate.text_ru,
@@ -135,6 +137,9 @@ def _load_profile(path: Path, *, expected_model_revision: str | None) -> Hypothe
         mutually_exclusive = axis_raw.get("mutually_exclusive")
         if not isinstance(mutually_exclusive, bool):
             raise ValueError(f"{path}:{axis_id}: mutually_exclusive must be boolean")
+        level = axis_raw.get("level", "L1")
+        if level not in {"L1", "L2"}:
+            raise ValueError(f"{path}:{axis_id}: level must be L1 or L2")
         raw_candidates = axis_raw.get("candidates")
         if not isinstance(raw_candidates, list) or len(raw_candidates) < 2:
             raise ValueError(f"{path}:{axis_id}: at least two candidates are required")
@@ -177,6 +182,7 @@ def _load_profile(path: Path, *, expected_model_revision: str | None) -> Hypothe
                 modality=modality,
                 mutually_exclusive=mutually_exclusive,
                 candidates=tuple(candidates),
+                level=level,
             )
         )
     return HypothesisProfile(

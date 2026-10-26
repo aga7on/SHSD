@@ -20,12 +20,20 @@ class TimelineClaim:
     window_ids: tuple[str, ...]
     model_revision: str
     sample_count: int
+    candidate_hypotheses: tuple[tuple[str, float, str], ...] = ()
 
     def __post_init__(self) -> None:
         if not self.claim_id or not self.label or not self.model_revision:
             raise ValueError("claim_id, label, and model_revision must be non-empty")
         if self.sample_count < 1:
             raise ValueError("sample_count must be positive")
+        for candidate_id, raw_cosine, decision in self.candidate_hypotheses:
+            if not candidate_id:
+                raise ValueError("candidate hypothesis ids must be non-empty")
+            if not math.isfinite(raw_cosine) or not -1.0 <= raw_cosine <= 1.0:
+                raise ValueError("candidate hypothesis cosine must be finite and between -1 and 1")
+            if decision not in {"accepted", "uncertain", "rejected"}:
+                raise ValueError("candidate hypothesis decision is unsupported")
         if self.decision not in {"accepted", "uncertain", "rejected", "unverified", "unknown"}:
             raise ValueError("unsupported claim decision")
         if not self.evidence_refs and self.decision != "unverified":
@@ -43,6 +51,14 @@ class TimelineClaim:
         result = asdict(self)
         result["evidence_refs"] = list(self.evidence_refs)
         result["window_ids"] = list(self.window_ids)
+        result["candidate_hypotheses"] = [
+            {
+                "candidate_id": candidate_id,
+                "raw_cosine": raw_cosine,
+                "decision": decision,
+            }
+            for candidate_id, raw_cosine, decision in self.candidate_hypotheses
+        ]
         return result
 
     @classmethod
@@ -58,6 +74,14 @@ class TimelineClaim:
             window_ids=tuple(cast(list[str], value.get("window_ids", []))),
             model_revision=str(value["model_revision"]),
             sample_count=int(value.get("sample_count", 1)),
+            candidate_hypotheses=tuple(
+                (
+                    str(item["candidate_id"]),
+                    float(item["raw_cosine"]),
+                    str(item["decision"]),
+                )
+                for item in cast(list[dict[str, Any]], value.get("candidate_hypotheses", []))
+            ),
         )
 
 

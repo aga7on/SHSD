@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "diagnostic_type": "label_free_positive_only_music_scene_probe",
+  "accuracy_claim": false,
+  "similarity_is_probability": false,
+  "source": "X:\\AI\\SHSD\\benchmarks\\fixtures\\real_poc\\tears_of_steel_120_210s.mp4",
+  "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "profile_version": 3,
+  "window_ms": 5000,
+  "window_count": 18,
+  "minimum_similarity": 0.6,
+  "minimum_margin": 0.05,
+  "classes": {
+    "music_present": {
+      "text_en": "Music is the foreground sound and dominates the audio.",
+      "text_ru": "Музыка звучит на первом плане и преобладает в аудио.",
+      "polarity": "positive"
+    },
+    "conversation_dominant": {
+      "text_en": "People are speaking and their conversation is the foreground sound.",
+      "text_ru": "На первом плане слышен разговор людей.",
+      "polarity": "positive"
+    },
+    "environment_dominant": {
+      "text_en": "Environmental ambience and everyday sounds dominate the audio.",
+      "text_ru": "В аудио преобладают звуки окружающей среды и повседневные шумы.",
+      "polarity": "positive"
+    },
+    "music_and_speech": {
+      "text_en": "Music and human speech are both prominent in the audio.",
+      "text_ru": "В аудио одновременно заметны музыка и человеческая речь.",
+      "polarity": "positive"
+    }
+  },
+  "accepted_count": 4,
+  "uncertain_count": 14,
+  "top_candidate_counts": {
+    "environment_dominant": 3,
+    "conversation_dominant": 6,
+    "music_present": 9
+  },
+  "baseline_binary_accepted_count": 0,
+  "baseline_binary_comparable_windows": 18,
+  "scores_csv": "music_multiclass_scores.csv"
+}
