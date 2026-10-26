@@ -1,0 +1,5238 @@
+[
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "1408414bd3084c5db66d3c7711c2b533",
+    "revision": 1,
+    "start_ms": 93,
+    "end_ms": 10093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-speech_presence-speech_absent",
+        "label": "speech_absent",
+        "text_ru": "В аудио не слышно речи человека.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7297168374061584,
+        "margin": 0.002211928367614746,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:44.022304+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "1408414bd3084c5db66d3c7711c2b533",
+    "revision": 2,
+    "start_ms": 93,
+    "end_ms": 10093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-speech_presence-speech_absent",
+        "label": "speech_absent",
+        "text_ru": "В аудио не слышно речи человека.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7297168374061584,
+        "margin": 0.002211928367614746,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:55.535726+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "46492a729f5d4a5f9d2a313272312a1e",
+    "revision": 1,
+    "start_ms": 93,
+    "end_ms": 10093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-ambient_sound-ambient_sound_present",
+        "label": "ambient_sound_present",
+        "text_ru": "Слышен непрерывный фоновый звук окружающей среды.",
+        "decision": "uncertain",
+        "raw_cosine": 0.784410297870636,
+        "margin": 0.006780803203582764,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:44.023791+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "87761209a33c4d2ea3ac93668dde2dea",
+    "revision": 1,
+    "start_ms": 93,
+    "end_ms": 10093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-impact_sound-impact_present",
+        "label": "impact_present",
+        "text_ru": "Слышен один или несколько коротких ударных звуков.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7728912830352783,
+        "margin": 0.006724119186401367,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:44.024896+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "46492a729f5d4a5f9d2a313272312a1e",
+    "revision": 2,
+    "start_ms": 93,
+    "end_ms": 15093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-ambient_sound-ambient_sound_present",
+        "label": "ambient_sound_present",
+        "text_ru": "Слышен непрерывный фоновый звук окружающей среды.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7833579381306967,
+        "margin": 0.006780803203582764,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 3
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:49.073806+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "87761209a33c4d2ea3ac93668dde2dea",
+    "revision": 2,
+    "start_ms": 93,
+    "end_ms": 15093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-impact_sound-impact_present",
+        "label": "impact_present",
+        "text_ru": "Слышен один или несколько коротких ударных звуков.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7691932121912638,
+        "margin": 0.006724119186401367,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 3
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:49.074870+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "46492a729f5d4a5f9d2a313272312a1e",
+    "revision": 3,
+    "start_ms": 93,
+    "end_ms": 20093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-ambient_sound-ambient_sound_present",
+        "label": "ambient_sound_present",
+        "text_ru": "Слышен непрерывный фоновый звук окружающей среды.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7747730761766434,
+        "margin": 0.006780803203582764,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 4
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 2,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:55.811319+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "87761209a33c4d2ea3ac93668dde2dea",
+    "revision": 3,
+    "start_ms": 93,
+    "end_ms": 20093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-impact_sound-impact_present",
+        "label": "impact_present",
+        "text_ru": "Слышен один или несколько коротких ударных звуков.",
+        "decision": "uncertain",
+        "raw_cosine": 0.758658841252327,
+        "margin": 0.006724119186401367,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 4
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 2,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:55.812280+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "46492a729f5d4a5f9d2a313272312a1e",
+    "revision": 4,
+    "start_ms": 93,
+    "end_ms": 25093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-ambient_sound-ambient_sound_present",
+        "label": "ambient_sound_present",
+        "text_ru": "Слышен непрерывный фоновый звук окружающей среды.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7752681612968445,
+        "margin": 0.006780803203582764,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 5
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 3,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:59.160035+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "87761209a33c4d2ea3ac93668dde2dea",
+    "revision": 4,
+    "start_ms": 93,
+    "end_ms": 25093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-impact_sound-impact_present",
+        "label": "impact_present",
+        "text_ru": "Слышен один или несколько коротких ударных звуков.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7599148154258728,
+        "margin": 0.006724119186401367,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 5
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 3,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:59.161112+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "46492a729f5d4a5f9d2a313272312a1e",
+    "revision": 5,
+    "start_ms": 93,
+    "end_ms": 30093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-ambient_sound-ambient_sound_present",
+        "label": "ambient_sound_present",
+        "text_ru": "Слышен непрерывный фоновый звук окружающей среды.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7786849737167358,
+        "margin": 0.006780803203582764,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 6
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 4,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:05.856379+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "87761209a33c4d2ea3ac93668dde2dea",
+    "revision": 5,
+    "start_ms": 93,
+    "end_ms": 30093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-impact_sound-impact_present",
+        "label": "impact_present",
+        "text_ru": "Слышен один или несколько коротких ударных звуков.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7605328559875488,
+        "margin": 0.006724119186401367,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 6
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 4,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:05.857356+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "46492a729f5d4a5f9d2a313272312a1e",
+    "revision": 6,
+    "start_ms": 93,
+    "end_ms": 35093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-ambient_sound-ambient_sound_present",
+        "label": "ambient_sound_present",
+        "text_ru": "Слышен непрерывный фоновый звук окружающей среды.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7801650507109505,
+        "margin": 0.006780803203582764,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 7
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 5,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:09.139519+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "87761209a33c4d2ea3ac93668dde2dea",
+    "revision": 6,
+    "start_ms": 93,
+    "end_ms": 35093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-impact_sound-impact_present",
+        "label": "impact_present",
+        "text_ru": "Слышен один или несколько коротких ударных звуков.",
+        "decision": "uncertain",
+        "raw_cosine": 0.760872849396297,
+        "margin": 0.006724119186401367,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 7
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 5,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:09.140344+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "46492a729f5d4a5f9d2a313272312a1e",
+    "revision": 7,
+    "start_ms": 93,
+    "end_ms": 40093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-ambient_sound-ambient_sound_present",
+        "label": "ambient_sound_present",
+        "text_ru": "Слышен непрерывный фоновый звук окружающей среды.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7826970890164375,
+        "margin": 0.006780803203582764,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0",
+          "audio:35093-40093",
+          "embedding:audio:914f7f89142e:9713d17dabadae7125b2"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0",
+          "audio:914f7f89142e:9713d17dabadae7125b2"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 8
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 6,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:15.954767+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "46492a729f5d4a5f9d2a313272312a1e",
+    "revision": 8,
+    "start_ms": 93,
+    "end_ms": 40093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-ambient_sound-ambient_sound_present",
+        "label": "ambient_sound_present",
+        "text_ru": "Слышен непрерывный фоновый звук окружающей среды.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7826970890164375,
+        "margin": 0.006780803203582764,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0",
+          "audio:35093-40093",
+          "embedding:audio:914f7f89142e:9713d17dabadae7125b2"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0",
+          "audio:914f7f89142e:9713d17dabadae7125b2"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 8
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 7,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.144341+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "46492a729f5d4a5f9d2a313272312a1e",
+    "revision": 9,
+    "start_ms": 93,
+    "end_ms": 40093,
+    "kind": "unknown",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-ambient_sound-ambient_sound_present",
+        "label": "ambient_sound_present",
+        "text_ru": "Слышен непрерывный фоновый звук окружающей среды.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7826970890164375,
+        "margin": 0.006780803203582764,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0",
+          "audio:35093-40093",
+          "embedding:audio:914f7f89142e:9713d17dabadae7125b2"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0",
+          "audio:914f7f89142e:9713d17dabadae7125b2"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 8
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 8,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.146587+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "87761209a33c4d2ea3ac93668dde2dea",
+    "revision": 7,
+    "start_ms": 93,
+    "end_ms": 40093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-impact_sound-impact_present",
+        "label": "impact_present",
+        "text_ru": "Слышен один или несколько коротких ударных звуков.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7626946493983269,
+        "margin": 0.006724119186401367,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0",
+          "audio:35093-40093",
+          "embedding:audio:914f7f89142e:9713d17dabadae7125b2"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0",
+          "audio:914f7f89142e:9713d17dabadae7125b2"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 8
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 6,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:15.957305+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "87761209a33c4d2ea3ac93668dde2dea",
+    "revision": 8,
+    "start_ms": 93,
+    "end_ms": 40093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-impact_sound-impact_present",
+        "label": "impact_present",
+        "text_ru": "Слышен один или несколько коротких ударных звуков.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7626946493983269,
+        "margin": 0.006724119186401367,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0",
+          "audio:35093-40093",
+          "embedding:audio:914f7f89142e:9713d17dabadae7125b2"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0",
+          "audio:914f7f89142e:9713d17dabadae7125b2"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 8
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 7,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.145813+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "87761209a33c4d2ea3ac93668dde2dea",
+    "revision": 9,
+    "start_ms": 93,
+    "end_ms": 40093,
+    "kind": "unknown",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-impact_sound-impact_present",
+        "label": "impact_present",
+        "text_ru": "Слышен один или несколько коротких ударных звуков.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7626946493983269,
+        "margin": 0.006724119186401367,
+        "evidence_refs": [
+          "audio:93-5093",
+          "embedding:audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0",
+          "audio:35093-40093",
+          "embedding:audio:914f7f89142e:9713d17dabadae7125b2"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:8f40bfdd4b6298542d01",
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0",
+          "audio:914f7f89142e:9713d17dabadae7125b2"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 8
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 8,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.148059+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "6f6b67bf639f45b88597c44a3995b4e5",
+    "revision": 1,
+    "start_ms": 4814,
+    "end_ms": 5814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:4814:5814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:4814-5814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:4814:5814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:39.524741+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "6f6b67bf639f45b88597c44a3995b4e5",
+    "revision": 2,
+    "start_ms": 4814,
+    "end_ms": 5814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:4814:5814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:4814-5814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:4814:5814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:39.526559+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "38f0ef6e98624d58aded43b4beb869ab",
+    "revision": 1,
+    "start_ms": 4814,
+    "end_ms": 5818,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-38f0ef6e98624d58aded43b4beb869ab",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:5793-5818:audio-signal-v2",
+          "video:scene_cut:4814-5814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:5793-5818",
+          "video-cut:4814-5814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.111387+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "38f0ef6e98624d58aded43b4beb869ab",
+    "revision": 2,
+    "start_ms": 4814,
+    "end_ms": 5818,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-38f0ef6e98624d58aded43b4beb869ab",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:5793-5818:audio-signal-v2",
+          "video:scene_cut:4814-5814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:5793-5818",
+          "video-cut:4814-5814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.113022+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "b9cbbcea511047b1962ae60223d29a50",
+    "revision": 1,
+    "start_ms": 5093,
+    "end_ms": 15093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-music_presence-music_present",
+        "label": "music_present",
+        "text_ru": "В аудио слышна музыка.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7448317110538483,
+        "margin": 0.001180112361907959,
+        "evidence_refs": [
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:49.071906+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "b9cbbcea511047b1962ae60223d29a50",
+    "revision": 2,
+    "start_ms": 5093,
+    "end_ms": 20093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-music_presence-music_present",
+        "label": "music_present",
+        "text_ru": "В аудио слышна музыка.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7435742219289144,
+        "margin": 0.001180112361907959,
+        "evidence_refs": [
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 3
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:55.809118+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "b9cbbcea511047b1962ae60223d29a50",
+    "revision": 3,
+    "start_ms": 5093,
+    "end_ms": 25093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-music_presence-music_present",
+        "label": "music_present",
+        "text_ru": "В аудио слышна музыка.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7453492879867554,
+        "margin": 0.001180112361907959,
+        "evidence_refs": [
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 4
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 2,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:59.158420+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "b9cbbcea511047b1962ae60223d29a50",
+    "revision": 4,
+    "start_ms": 5093,
+    "end_ms": 25093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-music_presence-music_present",
+        "label": "music_present",
+        "text_ru": "В аудио слышна музыка.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7453492879867554,
+        "margin": 0.001180112361907959,
+        "evidence_refs": [
+          "audio:5093-10093",
+          "embedding:audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:c4ee65c32cb53023a7f4",
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa",
+          "audio:914f7f89142e:90670c92373140ea07d8"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 4
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 3,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:05.858174+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "fa8ba0f7a93243aab2061804b76742b2",
+    "revision": 1,
+    "start_ms": 6814,
+    "end_ms": 7814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:6814:7814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:6814-7814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:6814:7814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:41.520830+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "fa8ba0f7a93243aab2061804b76742b2",
+    "revision": 2,
+    "start_ms": 6814,
+    "end_ms": 7814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:6814:7814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:6814-7814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:6814:7814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:41.522426+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "d47c598f1bc64e51992cca39c637a75d",
+    "revision": 1,
+    "start_ms": 6814,
+    "end_ms": 7858,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-d47c598f1bc64e51992cca39c637a75d",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:7833-7858:audio-signal-v2",
+          "video:scene_cut:6814-7814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:7833-7858",
+          "video-cut:6814-7814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.112923+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "d47c598f1bc64e51992cca39c637a75d",
+    "revision": 2,
+    "start_ms": 6814,
+    "end_ms": 7858,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-d47c598f1bc64e51992cca39c637a75d",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:7833-7858:audio-signal-v2",
+          "video:scene_cut:6814-7814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:7833-7858",
+          "video-cut:6814-7814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.114856+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "4449d6c341dc4d37b23f16f53a3ffaec",
+    "revision": 1,
+    "start_ms": 10022,
+    "end_ms": 25022,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene_setting-indoor_setting",
+        "label": "indoor_setting",
+        "text_ru": "На изображении показано помещение.",
+        "decision": "uncertain",
+        "raw_cosine": 0.6164331138134003,
+        "margin": 0.017650485038757324,
+        "evidence_refs": [
+          "image:10022-15022",
+          "embedding:image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:20022-25022",
+          "embedding:image:914f7f89142e:ef6b66151859bda2dcc6"
+        ],
+        "window_ids": [
+          "image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:914f7f89142e:ef6b66151859bda2dcc6"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:55.530382+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "4d06cef581be46229871853feb6eac71",
+    "revision": 1,
+    "start_ms": 10022,
+    "end_ms": 25022,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene_style-unknown",
+        "label": "unknown",
+        "text_ru": null,
+        "decision": "uncertain",
+        "raw_cosine": 0.5931936800479889,
+        "margin": 0.0,
+        "evidence_refs": [
+          "image:10022-15022",
+          "embedding:image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:20022-25022",
+          "embedding:image:914f7f89142e:ef6b66151859bda2dcc6"
+        ],
+        "window_ids": [
+          "image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:914f7f89142e:ef6b66151859bda2dcc6"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:55.534224+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "4d06cef581be46229871853feb6eac71",
+    "revision": 2,
+    "start_ms": 10022,
+    "end_ms": 25022,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene_style-unknown",
+        "label": "unknown",
+        "text_ru": null,
+        "decision": "uncertain",
+        "raw_cosine": 0.5931936800479889,
+        "margin": 0.0,
+        "evidence_refs": [
+          "image:10022-15022",
+          "embedding:image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:20022-25022",
+          "embedding:image:914f7f89142e:ef6b66151859bda2dcc6"
+        ],
+        "window_ids": [
+          "image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:914f7f89142e:ef6b66151859bda2dcc6"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:05.877703+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "d9aa07d125a8405b8f9ffaad09046b4f",
+    "revision": 1,
+    "start_ms": 10022,
+    "end_ms": 25022,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-person_presence-person_visible",
+        "label": "person_visible",
+        "text_ru": "На изображении виден человек.",
+        "decision": "uncertain",
+        "raw_cosine": 0.6315152645111084,
+        "margin": 0.020739972591400146,
+        "evidence_refs": [
+          "image:10022-15022",
+          "embedding:image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:20022-25022",
+          "embedding:image:914f7f89142e:ef6b66151859bda2dcc6"
+        ],
+        "window_ids": [
+          "image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:914f7f89142e:ef6b66151859bda2dcc6"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:55.532661+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "4449d6c341dc4d37b23f16f53a3ffaec",
+    "revision": 2,
+    "start_ms": 10022,
+    "end_ms": 35022,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene_setting-indoor_setting",
+        "label": "indoor_setting",
+        "text_ru": "На изображении показано помещение.",
+        "decision": "uncertain",
+        "raw_cosine": 0.6247167189915975,
+        "margin": 0.010306954383850098,
+        "evidence_refs": [
+          "image:10022-15022",
+          "embedding:image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:20022-25022",
+          "embedding:image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:30022-35022",
+          "embedding:image:914f7f89142e:c809e026b6b96487933a"
+        ],
+        "window_ids": [
+          "image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:914f7f89142e:c809e026b6b96487933a"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 3
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:05.538527+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "d9aa07d125a8405b8f9ffaad09046b4f",
+    "revision": 2,
+    "start_ms": 10022,
+    "end_ms": 35022,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-person_presence-person_visible",
+        "label": "person_visible",
+        "text_ru": "На изображении виден человек.",
+        "decision": "uncertain",
+        "raw_cosine": 0.6307267745335897,
+        "margin": 0.01989811658859253,
+        "evidence_refs": [
+          "image:10022-15022",
+          "embedding:image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:20022-25022",
+          "embedding:image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:30022-35022",
+          "embedding:image:914f7f89142e:c809e026b6b96487933a"
+        ],
+        "window_ids": [
+          "image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:914f7f89142e:c809e026b6b96487933a"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 3
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:05.571343+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "4449d6c341dc4d37b23f16f53a3ffaec",
+    "revision": 3,
+    "start_ms": 10022,
+    "end_ms": 45022,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene_setting-indoor_setting",
+        "label": "indoor_setting",
+        "text_ru": "На изображении показано помещение.",
+        "decision": "uncertain",
+        "raw_cosine": 0.6243718564510345,
+        "margin": 0.010306954383850098,
+        "evidence_refs": [
+          "image:10022-15022",
+          "embedding:image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:20022-25022",
+          "embedding:image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:30022-35022",
+          "embedding:image:914f7f89142e:c809e026b6b96487933a",
+          "image:40022-45022",
+          "embedding:image:914f7f89142e:2c0cfdb744bc3bd93b8a"
+        ],
+        "window_ids": [
+          "image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:914f7f89142e:c809e026b6b96487933a",
+          "image:914f7f89142e:2c0cfdb744bc3bd93b8a"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 4
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 2,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:15.606034+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "4449d6c341dc4d37b23f16f53a3ffaec",
+    "revision": 4,
+    "start_ms": 10022,
+    "end_ms": 45022,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene_setting-indoor_setting",
+        "label": "indoor_setting",
+        "text_ru": "На изображении показано помещение.",
+        "decision": "uncertain",
+        "raw_cosine": 0.6243718564510345,
+        "margin": 0.010306954383850098,
+        "evidence_refs": [
+          "image:10022-15022",
+          "embedding:image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:20022-25022",
+          "embedding:image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:30022-35022",
+          "embedding:image:914f7f89142e:c809e026b6b96487933a",
+          "image:40022-45022",
+          "embedding:image:914f7f89142e:2c0cfdb744bc3bd93b8a"
+        ],
+        "window_ids": [
+          "image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:914f7f89142e:c809e026b6b96487933a",
+          "image:914f7f89142e:2c0cfdb744bc3bd93b8a"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 4
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 3,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.147333+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "4449d6c341dc4d37b23f16f53a3ffaec",
+    "revision": 5,
+    "start_ms": 10022,
+    "end_ms": 45022,
+    "kind": "unknown",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene_setting-indoor_setting",
+        "label": "indoor_setting",
+        "text_ru": "На изображении показано помещение.",
+        "decision": "uncertain",
+        "raw_cosine": 0.6243718564510345,
+        "margin": 0.010306954383850098,
+        "evidence_refs": [
+          "image:10022-15022",
+          "embedding:image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:20022-25022",
+          "embedding:image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:30022-35022",
+          "embedding:image:914f7f89142e:c809e026b6b96487933a",
+          "image:40022-45022",
+          "embedding:image:914f7f89142e:2c0cfdb744bc3bd93b8a"
+        ],
+        "window_ids": [
+          "image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:914f7f89142e:c809e026b6b96487933a",
+          "image:914f7f89142e:2c0cfdb744bc3bd93b8a"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 4
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 4,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.149523+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "d9aa07d125a8405b8f9ffaad09046b4f",
+    "revision": 3,
+    "start_ms": 10022,
+    "end_ms": 45022,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-person_presence-person_visible",
+        "label": "person_visible",
+        "text_ru": "На изображении виден человек.",
+        "decision": "uncertain",
+        "raw_cosine": 0.6264401227235794,
+        "margin": 0.012482166290283203,
+        "evidence_refs": [
+          "image:10022-15022",
+          "embedding:image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:20022-25022",
+          "embedding:image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:30022-35022",
+          "embedding:image:914f7f89142e:c809e026b6b96487933a",
+          "image:40022-45022",
+          "embedding:image:914f7f89142e:2c0cfdb744bc3bd93b8a"
+        ],
+        "window_ids": [
+          "image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:914f7f89142e:c809e026b6b96487933a",
+          "image:914f7f89142e:2c0cfdb744bc3bd93b8a"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 4
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 2,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:15.608973+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "d9aa07d125a8405b8f9ffaad09046b4f",
+    "revision": 4,
+    "start_ms": 10022,
+    "end_ms": 45022,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-person_presence-person_visible",
+        "label": "person_visible",
+        "text_ru": "На изображении виден человек.",
+        "decision": "uncertain",
+        "raw_cosine": 0.6264401227235794,
+        "margin": 0.012482166290283203,
+        "evidence_refs": [
+          "image:10022-15022",
+          "embedding:image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:20022-25022",
+          "embedding:image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:30022-35022",
+          "embedding:image:914f7f89142e:c809e026b6b96487933a",
+          "image:40022-45022",
+          "embedding:image:914f7f89142e:2c0cfdb744bc3bd93b8a"
+        ],
+        "window_ids": [
+          "image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:914f7f89142e:c809e026b6b96487933a",
+          "image:914f7f89142e:2c0cfdb744bc3bd93b8a"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 4
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 3,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.148593+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "d9aa07d125a8405b8f9ffaad09046b4f",
+    "revision": 5,
+    "start_ms": 10022,
+    "end_ms": 45022,
+    "kind": "unknown",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-person_presence-person_visible",
+        "label": "person_visible",
+        "text_ru": "На изображении виден человек.",
+        "decision": "uncertain",
+        "raw_cosine": 0.6264401227235794,
+        "margin": 0.012482166290283203,
+        "evidence_refs": [
+          "image:10022-15022",
+          "embedding:image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:20022-25022",
+          "embedding:image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:30022-35022",
+          "embedding:image:914f7f89142e:c809e026b6b96487933a",
+          "image:40022-45022",
+          "embedding:image:914f7f89142e:2c0cfdb744bc3bd93b8a"
+        ],
+        "window_ids": [
+          "image:914f7f89142e:5ba9982d73863b43ec39",
+          "image:914f7f89142e:ef6b66151859bda2dcc6",
+          "image:914f7f89142e:c809e026b6b96487933a",
+          "image:914f7f89142e:2c0cfdb744bc3bd93b8a"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 4
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 4,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.151653+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "e5bad0acb9e843d4878b3112f802c9f2",
+    "revision": 1,
+    "start_ms": 10093,
+    "end_ms": 20093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-speech_presence-speech_present",
+        "label": "speech_present",
+        "text_ru": "В аудио слышна речь человека.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7188946306705475,
+        "margin": 0.0022209882736206055,
+        "evidence_refs": [
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:55.810352+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "e5bad0acb9e843d4878b3112f802c9f2",
+    "revision": 2,
+    "start_ms": 10093,
+    "end_ms": 20093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-speech_presence-speech_present",
+        "label": "speech_present",
+        "text_ru": "В аудио слышна речь человека.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7188946306705475,
+        "margin": 0.0022209882736206055,
+        "evidence_refs": [
+          "audio:10093-15093",
+          "embedding:audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:15093-20093",
+          "embedding:audio:914f7f89142e:9f06e3c0d7d629e489aa"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:bcfd6ab5f5f8774a486a",
+          "audio:914f7f89142e:9f06e3c0d7d629e489aa"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:05.574746+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "c67d719011d340778e2e754c5f2e39a6",
+    "revision": 1,
+    "start_ms": 14814,
+    "end_ms": 15814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:14814:15814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:14814-15814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:14814:15814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:49.506937+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "c67d719011d340778e2e754c5f2e39a6",
+    "revision": 2,
+    "start_ms": 14814,
+    "end_ms": 15814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:14814:15814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:14814-15814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:14814:15814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:49.508202+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "e457cd1d4437486bbae5fa7684d6d723",
+    "revision": 1,
+    "start_ms": 14814,
+    "end_ms": 15814,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-e457cd1d4437486bbae5fa7684d6d723",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:15763-15788:audio-signal-v2",
+          "video:scene_cut:14814-15814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:15763-15788",
+          "video-cut:14814-15814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.113873+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "e457cd1d4437486bbae5fa7684d6d723",
+    "revision": 2,
+    "start_ms": 14814,
+    "end_ms": 15814,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-e457cd1d4437486bbae5fa7684d6d723",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:15763-15788:audio-signal-v2",
+          "video:scene_cut:14814-15814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:15763-15788",
+          "video-cut:14814-15814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.116683+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "a9f72c764a3542dca90aaff5913f0323",
+    "revision": 1,
+    "start_ms": 19814,
+    "end_ms": 20814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:19814:20814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:19814-20814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:19814:20814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:55.813332+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "33911a21cc0c42f194d43b09eaee4f89",
+    "revision": 1,
+    "start_ms": 19814,
+    "end_ms": 20878,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-33911a21cc0c42f194d43b09eaee4f89",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:20853-20878:audio-signal-v2",
+          "video:scene_cut:19814-20814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:20853-20878",
+          "video-cut:19814-20814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.116088+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "33911a21cc0c42f194d43b09eaee4f89",
+    "revision": 2,
+    "start_ms": 19814,
+    "end_ms": 20878,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-33911a21cc0c42f194d43b09eaee4f89",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:20853-20878:audio-signal-v2",
+          "video:scene_cut:19814-20814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:20853-20878",
+          "video-cut:19814-20814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.120054+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "63603a8197084742980b447f7d098750",
+    "revision": 1,
+    "start_ms": 20093,
+    "end_ms": 30093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-speech_presence-speech_absent",
+        "label": "speech_absent",
+        "text_ru": "В аудио не слышно речи человека.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7376578748226166,
+        "margin": 0.007298469543457031,
+        "evidence_refs": [
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:05.855014+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "63603a8197084742980b447f7d098750",
+    "revision": 2,
+    "start_ms": 20093,
+    "end_ms": 35093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-speech_presence-speech_absent",
+        "label": "speech_absent",
+        "text_ru": "В аудио не слышно речи человека.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7356355388959249,
+        "margin": 0.007298469543457031,
+        "evidence_refs": [
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 3
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:09.138676+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "63603a8197084742980b447f7d098750",
+    "revision": 3,
+    "start_ms": 20093,
+    "end_ms": 35093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-speech_presence-speech_absent",
+        "label": "speech_absent",
+        "text_ru": "В аудио не слышно речи человека.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7356355388959249,
+        "margin": 0.007298469543457031,
+        "evidence_refs": [
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 3
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 2,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:15.958291+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "63603a8197084742980b447f7d098750",
+    "revision": 4,
+    "start_ms": 20093,
+    "end_ms": 35093,
+    "kind": "unknown",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-speech_presence-speech_absent",
+        "label": "speech_absent",
+        "text_ru": "В аудио не слышно речи человека.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7356355388959249,
+        "margin": 0.007298469543457031,
+        "evidence_refs": [
+          "audio:20093-25093",
+          "embedding:audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:90670c92373140ea07d8",
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 3
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 3,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:15.959134+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "97f99bdd6b91483a9aecdd901a1266fb",
+    "revision": 1,
+    "start_ms": 20814,
+    "end_ms": 22814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:20814:22814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:20814-22814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:20814:22814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:56.531782+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "97f99bdd6b91483a9aecdd901a1266fb",
+    "revision": 2,
+    "start_ms": 20814,
+    "end_ms": 22814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:20814:22814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:20814-22814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:20814:22814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:56.533125+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "d383a9602ea34a78831d8984971c7c1e",
+    "revision": 1,
+    "start_ms": 20814,
+    "end_ms": 22848,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-d383a9602ea34a78831d8984971c7c1e",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:22823-22848:audio-signal-v2",
+          "video:scene_cut:20814-22814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:22823-22848",
+          "video-cut:20814-22814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.119085+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "d383a9602ea34a78831d8984971c7c1e",
+    "revision": 2,
+    "start_ms": 20814,
+    "end_ms": 22848,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-d383a9602ea34a78831d8984971c7c1e",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:22823-22848:audio-signal-v2",
+          "video:scene_cut:20814-22814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:22823-22848",
+          "video-cut:20814-22814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.121444+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "d24e7c70936e4ca69a4a9c842a3f7ba2",
+    "revision": 1,
+    "start_ms": 22814,
+    "end_ms": 23814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:22814:23814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:22814-23814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:22814:23814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:57.527302+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "d24e7c70936e4ca69a4a9c842a3f7ba2",
+    "revision": 2,
+    "start_ms": 22814,
+    "end_ms": 23814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:22814:23814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:22814-23814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:22814:23814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:57.528550+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "04f39dad84c74d848e65511d5d1feb91",
+    "revision": 1,
+    "start_ms": 22814,
+    "end_ms": 23868,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-04f39dad84c74d848e65511d5d1feb91",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:23843-23868:audio-signal-v2",
+          "video:scene_cut:22814-23814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:23843-23868",
+          "video-cut:22814-23814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.120740+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "04f39dad84c74d848e65511d5d1feb91",
+    "revision": 2,
+    "start_ms": 22814,
+    "end_ms": 23868,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-04f39dad84c74d848e65511d5d1feb91",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:23843-23868:audio-signal-v2",
+          "video:scene_cut:22814-23814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:23843-23868",
+          "video-cut:22814-23814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.122765+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "0b97ee0cc35f4a3687447be7041ab656",
+    "revision": 1,
+    "start_ms": 23814,
+    "end_ms": 24814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:23814:24814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:23814-24814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:23814:24814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:58.526348+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "0b97ee0cc35f4a3687447be7041ab656",
+    "revision": 2,
+    "start_ms": 23814,
+    "end_ms": 24814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:23814:24814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:23814-24814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:23814:24814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:58.527583+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "f5744642a95c44b4a5f333c39d9dd115",
+    "revision": 1,
+    "start_ms": 23814,
+    "end_ms": 24868,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-f5744642a95c44b4a5f333c39d9dd115",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:24843-24868:audio-signal-v2",
+          "video:scene_cut:23814-24814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:24843-24868",
+          "video-cut:23814-24814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.122030+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "f5744642a95c44b4a5f333c39d9dd115",
+    "revision": 2,
+    "start_ms": 23814,
+    "end_ms": 24868,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-f5744642a95c44b4a5f333c39d9dd115",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:24843-24868:audio-signal-v2",
+          "video:scene_cut:23814-24814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:24843-24868",
+          "video-cut:23814-24814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.124235+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "35fcdf465d964a51a5bd4a13efb2f128",
+    "revision": 1,
+    "start_ms": 24814,
+    "end_ms": 25814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:24814:25814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:24814-25814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:24814:25814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:59.517929+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "35fcdf465d964a51a5bd4a13efb2f128",
+    "revision": 2,
+    "start_ms": 24814,
+    "end_ms": 25814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:24814:25814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:24814-25814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:24814:25814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:20:59.519378+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "cb082db157094b05a8ed187d6f775899",
+    "revision": 1,
+    "start_ms": 24814,
+    "end_ms": 25858,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-cb082db157094b05a8ed187d6f775899",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:25833-25858:audio-signal-v2",
+          "video:scene_cut:24814-25814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:25833-25858",
+          "video-cut:24814-25814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.123453+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "cb082db157094b05a8ed187d6f775899",
+    "revision": 2,
+    "start_ms": 24814,
+    "end_ms": 25858,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-cb082db157094b05a8ed187d6f775899",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:25833-25858:audio-signal-v2",
+          "video:scene_cut:24814-25814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:25833-25858",
+          "video-cut:24814-25814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.126073+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "a028d208ee074b3a8000b1f534b2326f",
+    "revision": 1,
+    "start_ms": 25093,
+    "end_ms": 35093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "draft",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-music_presence-music_absent",
+        "label": "music_absent",
+        "text_ru": "В аудио не слышно музыки.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7627012431621552,
+        "margin": 0.003121793270111084,
+        "evidence_refs": [
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:09.136312+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "a028d208ee074b3a8000b1f534b2326f",
+    "revision": 2,
+    "start_ms": 25093,
+    "end_ms": 35093,
+    "kind": "unknown",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-music_presence-music_absent",
+        "label": "music_absent",
+        "text_ru": "В аудио не слышно музыки.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7627012431621552,
+        "margin": 0.003121793270111084,
+        "evidence_refs": [
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:15.959027+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "a028d208ee074b3a8000b1f534b2326f",
+    "revision": 3,
+    "start_ms": 25093,
+    "end_ms": 35093,
+    "kind": "unknown",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": false
+    },
+    "claims": [
+      {
+        "claim_id": "claim-music_presence-music_absent",
+        "label": "music_absent",
+        "text_ru": "В аудио не слышно музыки.",
+        "decision": "uncertain",
+        "raw_cosine": 0.7627012431621552,
+        "margin": 0.003121793270111084,
+        "evidence_refs": [
+          "audio:25093-30093",
+          "embedding:audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:30093-35093",
+          "embedding:audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "window_ids": [
+          "audio:914f7f89142e:af4e6a12b2a49531a681",
+          "audio:914f7f89142e:0db179805f68bd224be0"
+        ],
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "sample_count": 2
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 2,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:15.961064+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "22d815c343594f52bcc0c1df166afb97",
+    "revision": 1,
+    "start_ms": 25814,
+    "end_ms": 26814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:25814:26814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:25814-26814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:25814:26814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:00.519465+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "22d815c343594f52bcc0c1df166afb97",
+    "revision": 2,
+    "start_ms": 25814,
+    "end_ms": 26814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:25814:26814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:25814-26814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:25814:26814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:00.520983+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "2a7c7808708044ce978b43236d9b9b4e",
+    "revision": 1,
+    "start_ms": 25814,
+    "end_ms": 26838,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-2a7c7808708044ce978b43236d9b9b4e",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:26813-26838:audio-signal-v2",
+          "video:scene_cut:25814-26814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:26813-26838",
+          "video-cut:25814-26814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.125180+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "2a7c7808708044ce978b43236d9b9b4e",
+    "revision": 2,
+    "start_ms": 25814,
+    "end_ms": 26838,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-2a7c7808708044ce978b43236d9b9b4e",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:26813-26838:audio-signal-v2",
+          "video:scene_cut:25814-26814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:26813-26838",
+          "video-cut:25814-26814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.127838+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "60f7bd0bb657464090a1f542dcb82095",
+    "revision": 1,
+    "start_ms": 26814,
+    "end_ms": 27814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:26814:27814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:26814-27814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:26814:27814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:01.518796+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "60f7bd0bb657464090a1f542dcb82095",
+    "revision": 2,
+    "start_ms": 26814,
+    "end_ms": 27814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:26814:27814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:26814-27814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:26814:27814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:01.520206+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "c87df31a106e4603951406845dddb503",
+    "revision": 1,
+    "start_ms": 26814,
+    "end_ms": 27814,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-c87df31a106e4603951406845dddb503",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:27753-27778:audio-signal-v2",
+          "video:scene_cut:26814-27814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:27753-27778",
+          "video-cut:26814-27814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.126916+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "c87df31a106e4603951406845dddb503",
+    "revision": 2,
+    "start_ms": 26814,
+    "end_ms": 27814,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-c87df31a106e4603951406845dddb503",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:27753-27778:audio-signal-v2",
+          "video:scene_cut:26814-27814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:27753-27778",
+          "video-cut:26814-27814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.129630+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "0bd49ecdf4e140db9122f7160ab77cef",
+    "revision": 1,
+    "start_ms": 27814,
+    "end_ms": 28814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:27814:28814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:27814-28814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:27814:28814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:02.529374+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "0bd49ecdf4e140db9122f7160ab77cef",
+    "revision": 2,
+    "start_ms": 27814,
+    "end_ms": 28814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:27814:28814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:27814-28814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:27814:28814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:02.530580+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "506b5c7e90bd45b6a78e4f4096e7126d",
+    "revision": 1,
+    "start_ms": 27814,
+    "end_ms": 28828,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-506b5c7e90bd45b6a78e4f4096e7126d",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:28803-28828:audio-signal-v2",
+          "video:scene_cut:27814-28814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:28803-28828",
+          "video-cut:27814-28814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.128500+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "506b5c7e90bd45b6a78e4f4096e7126d",
+    "revision": 2,
+    "start_ms": 27814,
+    "end_ms": 28828,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-506b5c7e90bd45b6a78e4f4096e7126d",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:28803-28828:audio-signal-v2",
+          "video:scene_cut:27814-28814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:28803-28828",
+          "video-cut:27814-28814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.131418+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "07fbc87a0d42416184ddb922eb9ed7e0",
+    "revision": 1,
+    "start_ms": 28814,
+    "end_ms": 29814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:28814:29814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:28814-29814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:28814:29814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:03.508782+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "07fbc87a0d42416184ddb922eb9ed7e0",
+    "revision": 2,
+    "start_ms": 28814,
+    "end_ms": 29814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:28814:29814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:28814-29814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:28814:29814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:03.510083+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "ab814808837d4060af2b18ace7d4dc09",
+    "revision": 1,
+    "start_ms": 28814,
+    "end_ms": 29814,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-ab814808837d4060af2b18ace7d4dc09",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:29783-29808:audio-signal-v2",
+          "video:scene_cut:28814-29814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:29783-29808",
+          "video-cut:28814-29814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.130647+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "ab814808837d4060af2b18ace7d4dc09",
+    "revision": 2,
+    "start_ms": 28814,
+    "end_ms": 29814,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-ab814808837d4060af2b18ace7d4dc09",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:29783-29808:audio-signal-v2",
+          "video:scene_cut:28814-29814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:29783-29808",
+          "video-cut:28814-29814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.132876+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "8f2434a1efbd4016939befb448067e42",
+    "revision": 1,
+    "start_ms": 29814,
+    "end_ms": 30814,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-8f2434a1efbd4016939befb448067e42",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:30783-30808:audio-signal-v2",
+          "video:scene_cut:29814-30814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:30783-30808",
+          "video-cut:29814-30814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.132007+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "8f2434a1efbd4016939befb448067e42",
+    "revision": 2,
+    "start_ms": 29814,
+    "end_ms": 30814,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-8f2434a1efbd4016939befb448067e42",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:30783-30808:audio-signal-v2",
+          "video:scene_cut:29814-30814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:30783-30808",
+          "video-cut:29814-30814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.134637+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "9219e47cf4db41cd9ab498ecc3c45124",
+    "revision": 1,
+    "start_ms": 29814,
+    "end_ms": 30814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:29814:30814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:29814-30814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:29814:30814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:05.879247+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "54af0e600a1448f99fd75bf134272a4f",
+    "revision": 1,
+    "start_ms": 30814,
+    "end_ms": 32814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:30814:32814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:30814-32814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:30814:32814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:06.549293+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "54af0e600a1448f99fd75bf134272a4f",
+    "revision": 2,
+    "start_ms": 30814,
+    "end_ms": 32814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:30814:32814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:30814-32814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:30814:32814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:06.550889+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "e044ff3897e443958006e0e7a3fd5421",
+    "revision": 1,
+    "start_ms": 30814,
+    "end_ms": 32814,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-e044ff3897e443958006e0e7a3fd5421",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:32753-32778:audio-signal-v2",
+          "video:scene_cut:30814-32814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:32753-32778",
+          "video-cut:30814-32814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.133734+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "e044ff3897e443958006e0e7a3fd5421",
+    "revision": 2,
+    "start_ms": 30814,
+    "end_ms": 32814,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-e044ff3897e443958006e0e7a3fd5421",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:32753-32778:audio-signal-v2",
+          "video:scene_cut:30814-32814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:32753-32778",
+          "video-cut:30814-32814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.136327+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "24912a02bb524ffbae918af2119df0d8",
+    "revision": 1,
+    "start_ms": 32814,
+    "end_ms": 33814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:32814:33814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:32814-33814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:32814:33814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:07.528543+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "24912a02bb524ffbae918af2119df0d8",
+    "revision": 2,
+    "start_ms": 32814,
+    "end_ms": 33814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:32814:33814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:32814-33814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:32814:33814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:07.529748+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "65166a2b2d5b4e9ab2e3d33539b4ae5f",
+    "revision": 1,
+    "start_ms": 32814,
+    "end_ms": 33848,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-65166a2b2d5b4e9ab2e3d33539b4ae5f",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:33823-33848:audio-signal-v2",
+          "video:scene_cut:32814-33814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:33823-33848",
+          "video-cut:32814-33814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.135469+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "65166a2b2d5b4e9ab2e3d33539b4ae5f",
+    "revision": 2,
+    "start_ms": 32814,
+    "end_ms": 33848,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-65166a2b2d5b4e9ab2e3d33539b4ae5f",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:33823-33848:audio-signal-v2",
+          "video:scene_cut:32814-33814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:33823-33848",
+          "video-cut:32814-33814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.137745+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "993814baa6f447f4b64fe80c282b55dd",
+    "revision": 1,
+    "start_ms": 33814,
+    "end_ms": 34814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:33814:34814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:33814-34814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:33814:34814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:08.526440+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "993814baa6f447f4b64fe80c282b55dd",
+    "revision": 2,
+    "start_ms": 33814,
+    "end_ms": 34814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:33814:34814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:33814-34814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:33814:34814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:08.527753+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "35b88d32a1514ce2b6aff6d060d5721c",
+    "revision": 1,
+    "start_ms": 33814,
+    "end_ms": 34868,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-35b88d32a1514ce2b6aff6d060d5721c",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:34843-34868:audio-signal-v2",
+          "video:scene_cut:33814-34814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:34843-34868",
+          "video-cut:33814-34814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.136978+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "35b88d32a1514ce2b6aff6d060d5721c",
+    "revision": 2,
+    "start_ms": 33814,
+    "end_ms": 34868,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-35b88d32a1514ce2b6aff6d060d5721c",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:34843-34868:audio-signal-v2",
+          "video:scene_cut:33814-34814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:34843-34868",
+          "video-cut:33814-34814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.139176+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "e915a05dcf764faebb75d0f0025e7d6a",
+    "revision": 1,
+    "start_ms": 35814,
+    "end_ms": 36814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:35814:36814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:35814-36814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:35814:36814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:10.526979+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "e915a05dcf764faebb75d0f0025e7d6a",
+    "revision": 2,
+    "start_ms": 35814,
+    "end_ms": 36814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:35814:36814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:35814-36814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:35814:36814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:10.528194+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "9b451b42d0dd41849a8d77173282c20f",
+    "revision": 1,
+    "start_ms": 35814,
+    "end_ms": 36848,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-9b451b42d0dd41849a8d77173282c20f",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:36823-36848:audio-signal-v2",
+          "video:scene_cut:35814-36814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:36823-36848",
+          "video-cut:35814-36814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.138471+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "9b451b42d0dd41849a8d77173282c20f",
+    "revision": 2,
+    "start_ms": 35814,
+    "end_ms": 36848,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-9b451b42d0dd41849a8d77173282c20f",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:36823-36848:audio-signal-v2",
+          "video:scene_cut:35814-36814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:36823-36848",
+          "video-cut:35814-36814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.140656+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "9112f08ba27e41f3a6dce0eea8870f84",
+    "revision": 1,
+    "start_ms": 36814,
+    "end_ms": 37814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:36814:37814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:36814-37814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:36814:37814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:11.530277+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "9112f08ba27e41f3a6dce0eea8870f84",
+    "revision": 2,
+    "start_ms": 36814,
+    "end_ms": 37814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:36814:37814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:36814-37814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:36814:37814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:11.531599+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "e36620a4c99b40889a5a0e47b8c71cd8",
+    "revision": 1,
+    "start_ms": 36814,
+    "end_ms": 37814,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-e36620a4c99b40889a5a0e47b8c71cd8",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:37743-37768:audio-signal-v2",
+          "video:scene_cut:36814-37814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:37743-37768",
+          "video-cut:36814-37814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.139906+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "e36620a4c99b40889a5a0e47b8c71cd8",
+    "revision": 2,
+    "start_ms": 36814,
+    "end_ms": 37814,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-e36620a4c99b40889a5a0e47b8c71cd8",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:37743-37768:audio-signal-v2",
+          "video:scene_cut:36814-37814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:37743-37768",
+          "video-cut:36814-37814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.142224+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "4ece3e11c0b34e128eeb94407983110a",
+    "revision": 1,
+    "start_ms": 37814,
+    "end_ms": 38814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:37814:38814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:37814-38814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:37814:38814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:12.539667+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "4ece3e11c0b34e128eeb94407983110a",
+    "revision": 2,
+    "start_ms": 37814,
+    "end_ms": 38814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:37814:38814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:37814-38814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:37814:38814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:12.540923+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "a9a9b20e4e8c488bb19a9021e9484d9e",
+    "revision": 1,
+    "start_ms": 37814,
+    "end_ms": 38868,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-a9a9b20e4e8c488bb19a9021e9484d9e",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:38843-38868:audio-signal-v2",
+          "video:scene_cut:37814-38814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:38843-38868",
+          "video-cut:37814-38814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.141376+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "a9a9b20e4e8c488bb19a9021e9484d9e",
+    "revision": 2,
+    "start_ms": 37814,
+    "end_ms": 38868,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-a9a9b20e4e8c488bb19a9021e9484d9e",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:38843-38868:audio-signal-v2",
+          "video:scene_cut:37814-38814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:38843-38868",
+          "video-cut:37814-38814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.143562+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "6e32a8f2076d4306a145509968f664f0",
+    "revision": 1,
+    "start_ms": 38814,
+    "end_ms": 39814,
+    "kind": "scene_changed",
+    "level": "L0",
+    "state": "committed",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:38814:39814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:38814-39814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:38814:39814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:13.520538+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "6e32a8f2076d4306a145509968f664f0",
+    "revision": 2,
+    "start_ms": 38814,
+    "end_ms": 39814,
+    "kind": "scene_changed",
+    "level": "L2",
+    "state": "refined",
+    "modality_mask": {
+      "audio": false,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-scene-cut-scene-cut:38814:39814",
+        "label": "scene_cut",
+        "text_ru": "Обнаружено заметное изменение изображения.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "video:38814-39814",
+          "method:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "scene-cut:38814:39814"
+        ],
+        "model_revision": "video-frame-diff-v3",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:13.521810+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "16255e70278240e9991bd939a220b965",
+    "revision": 1,
+    "start_ms": 38814,
+    "end_ms": 39838,
+    "kind": "cross_modal_coincidence",
+    "level": "L1",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-16255e70278240e9991bd939a220b965",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:39813-39838:audio-signal-v2",
+          "video:scene_cut:38814-39814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:39813-39838",
+          "video-cut:38814-39814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": null,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.142854+00:00"
+  },
+  {
+    "stream_id": "live-qwen-tears",
+    "epoch": 0,
+    "event_id": "16255e70278240e9991bd939a220b965",
+    "revision": 2,
+    "start_ms": 38814,
+    "end_ms": 39838,
+    "kind": "cross_modal_coincidence",
+    "level": "L2",
+    "state": "committed",
+    "modality_mask": {
+      "audio": true,
+      "speech": false,
+      "video": true
+    },
+    "claims": [
+      {
+        "claim_id": "claim-16255e70278240e9991bd939a220b965",
+        "label": "temporally_coincident",
+        "text_ru": "Смена кадра совпадает по времени с обнаруженным звуковым началом; причинная связь не установлена.",
+        "decision": "accepted",
+        "raw_cosine": null,
+        "margin": null,
+        "evidence_refs": [
+          "audio:onset:39813-39838:audio-signal-v2",
+          "video:scene_cut:38814-39814:video-frame-diff-v3"
+        ],
+        "window_ids": [
+          "audio-onset:39813-39838",
+          "video-cut:38814-39814"
+        ],
+        "model_revision": "cross-modal-pts-v1",
+        "sample_count": 1
+      }
+    ],
+    "caption_ru": null,
+    "supersedes_revision": 1,
+    "schema_version": 1,
+    "updated_at_utc": "2026-10-26T12:21:16.144985+00:00"
+  }
+]

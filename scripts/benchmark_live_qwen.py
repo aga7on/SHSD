@@ -1,4 +1,4 @@
-"""Measure L1/L2/L3 progress on a real RTSP stream with the Qwen narrator enabled.
+"""Measure L1/L2/L3 progress on a real RTSP stream, with an optional no-L3 control.
 
 The report separates work published while the RTSP publisher is still sending
 media from work completed after the publisher exits. This matters because file
@@ -151,6 +151,33 @@ def _latency_summary(values: list[int]) -> dict[str, int | float]:
     }
 
 
+def _runtime_metrics_summary(metrics: dict[str, Any] | None) -> dict[str, Any] | None:
+    if metrics is None:
+        return None
+    ingest = metrics.get("media_ingest", {})
+    prefetch = metrics.get("prefetch", {})
+    embedding = metrics.get("embedding_worker", {})
+    resources = metrics.get("process_resources", {})
+    return {
+        "end_to_end_elapsed_s": metrics.get("end_to_end_elapsed"),
+        "event_revision_count": metrics.get("event_revision_count"),
+        "peak_process_tree_rss_bytes": resources.get("peak_process_tree_rss_bytes"),
+        "media_ingest_packet_count": ingest.get("packets"),
+        "media_ingest_drop_count": ingest.get("dropped_count"),
+        "shared_prefetch_drop_count": prefetch.get("shared", {}).get("dropped_count"),
+        "embedding_by_modality": {
+            modality: {
+                key: stats.get(key)
+                for key in ("completed", "cache_hits", "inference_ms", "queue_wait_ms")
+            }
+            for modality, stats in embedding.get("by_modality", {}).items()
+        },
+        "narration_backend_counts": metrics.get("narration_backend_counts"),
+        "narration_fallback_count": metrics.get("narration_fallback_count"),
+        "narration_latency_ms_samples": metrics.get("narration_latency_ms_samples", []),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mediamtx", type=Path, required=True)
@@ -161,11 +188,17 @@ def main() -> int:
     parser.add_argument("--cache-dir", type=Path)
     parser.add_argument("--threads", type=int, default=4)
     parser.add_argument("--window-ms", type=int, default=5_000)
+    parser.add_argument(
+        "--disable-l3",
+        action="store_true",
+        help="disable L3/Qwen to measure upstream capture and L1/L2 without narration",
+    )
     parser.add_argument("--poll-seconds", type=float, default=1.0)
     parser.add_argument("--live-seconds", type=float, default=90.0)
     parser.add_argument("--loop-input", action="store_true")
     parser.add_argument("--post-stream-timeout-seconds", type=float, default=240)
     args = parser.parse_args()
+    levels = ["L0", "L1", "L2"] if args.disable_l3 else ["L0", "L1", "L2", "L3"]
 
     source = args.source.resolve()
     mediamtx_path = args.mediamtx.resolve()
@@ -299,7 +332,7 @@ def main() -> int:
             body={
                 "source": f"rtsp://127.0.0.1:{rtsp_port}/tears",
                 "stream_id": stream_id,
-                "levels": ["L0", "L1", "L2", "L3"],
+                "levels": levels,
                 "threads": args.threads,
                 "window_ms": args.window_ms,
                 "sampling_profile": "standard",
@@ -336,7 +369,11 @@ def main() -> int:
                 elapsed_s=sample["publisher_elapsed_s"],
                 first_seen=caption_first_seen,
             )
-            if pre_stop_refine_result is None and sample["capture_C_ms"] >= 10_000:
+            if (
+                not args.disable_l3
+                and pre_stop_refine_result is None
+                and sample["capture_C_ms"] >= 10_000
+            ):
                 pre_stop_watermark = _watermark_snapshot(api_url, stream_id)
                 pre_stop_caption_count = len(payload.get("captions", []))
                 try:
@@ -390,6 +427,16 @@ def main() -> int:
         terminal_watermark = _watermark_snapshot(api_url, stream_id)
         terminal_payload = _export(api_url, stream_id)
         terminal_elapsed_s = time.monotonic() - publisher_started
+        stream_metrics_response: dict[str, Any] = {}
+        stream_metrics_error: str | None = None
+        try:
+            stream_metrics_response = _request_json(f"{api_url}/v1/streams/{stream_id}/metrics")
+        except Exception as error:
+            stream_metrics_error = f"{type(error).__name__}: {error}"[:500]
+        stream_metrics = stream_metrics_response.get("metrics")
+        if not isinstance(stream_metrics, dict):
+            stream_metrics = None
+        runtime_metrics_summary = _runtime_metrics_summary(stream_metrics)
 
         source_events = terminal_payload.get("events", [])
         captions = terminal_payload.get("captions", [])
@@ -463,13 +510,14 @@ def main() -> int:
         report = {
             "schema_version": 1,
             "runtime_target": (
-                "CPU, local RTSP loopback, real Tears of Steel A/V, Qwen narrator requested with L3"
+                "CPU, local RTSP loopback, real Tears of Steel A/V, "
+                + ("Qwen narrator requested with L3" if "L3" in levels else "L3/Qwen disabled")
             ),
             "created_at_utc": datetime.now(UTC).isoformat(),
             "source": str(source),
             "source_duration_ms": 90_000,
             "input_looped": args.loop_input,
-            "levels": ["L0", "L1", "L2", "L3"],
+            "levels": levels,
             "threads": args.threads,
             "window_ms": args.window_ms,
             "poll_seconds": args.poll_seconds,
@@ -492,6 +540,9 @@ def main() -> int:
                 else None
             ),
             "terminal_watermark": terminal_watermark,
+            "stream_metrics": stream_metrics,
+            "runtime_metrics_summary": runtime_metrics_summary,
+            "stream_metrics_error": stream_metrics_error,
             "event_count_by_level": counts_by_level,
             "live_event_count_by_level": {
                 level: sum(1 for item in live_event_latencies if item["level"] == level)
@@ -544,6 +595,7 @@ def main() -> int:
                         "live_event_count_by_level",
                         "first_caption_after_stop_s",
                         "post_stop_wait_s",
+                        "runtime_metrics_summary",
                     )
                 },
                 ensure_ascii=False,
