@@ -68,3 +68,10 @@ Checkbox в Todo закрывать **только** после выполнен
 ## 7. F10 training gate
 
 Перед GPU training заполнить [F10-GO template](docs/experiments/F10-GO.template.md) с verified encoder/Qwen/CPU paths, законными source-separated данными, baseline, human labels, pre-registered quality/CPU metrics, ограниченным GPU budget и stop criteria. Unknown означает blocked/NO-GO. Разрешение владельца уже есть, повторно не спрашивать. B0 typed evidence→Qwen сравнивать с B1 learned bridge на одинаковых источниках; PyTorch GPU prototype не доказывает CPU deployment. Не использовать held-out для training или tuning.
+
+
+## F10: нельзя снова забыть IMAGE и VIDEO
+
+Первичная инструкция для tensor contract, data schema, loss, optimizer, sampling и tests — [F10-multimodal-training-design.md](docs/experiments/F10-multimodal-training-design.md). IMAGE-only, VIDEO temporal/entity/action, AUDIO music/transition и AV synchronization — **четыре обязательных обучающих/оценочных режима**, не одна музыкальная модель с необязательными изображениями.
+
+Training: frozen EmbeddingGemma 2 + Qwen3-0.6B, two-branch vision/audio projector/resampler, output grounded events+русский `caption_ru`; target-only token CE, mask prefix/prompt/pad with `-100`; macro-average modes, independent source-separated held-out. Initial hyperparameters — только proposed default. Перед GPU training заполнить технический и data/budget GO. В PR отчётах отдельные IMAGE objects/relations, VIDEO tracking/actions/order, AUDIO instruments/transitions, AV false causality и CPU 1x. Успех только по музыке — NO-GO.
