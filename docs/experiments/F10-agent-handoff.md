@@ -58,3 +58,12 @@ Pooled embedding — контроль, не гарантия, что сохра�
 Снижение train loss без новых grounded facts; красивые выдуманные действия/инструменты; music runner-up→percussion без premise; input claim ошибочно отмечен expressed; 55s/90s file-mode вместо live; post-stop drain вместо pre-stop; test source в training/tuning; PyTorch GPU-only prefix вместо CPU deployment.
 
 **Отчёт каждого коммита:** SHA, exact commands/exit codes, model revisions, tests, source IDs/splits/licenses, manual-label N, TP/FP/FN, unsupported/omitted claims, visual temporal order/music transitions, CPU pre-stop lag/drops/RSS, raw artifacts и GO/NO-GO.
+
+
+## Обязательная конкретизация обучаемого B1: IMAGE, VIDEO, AUDIO, AV
+
+**Новый первичный технический документ: [F10-multimodal-training-design.md](F10-multimodal-training-design.md).** В нём даны input tensor shapes, missing-modality masks, четыре JSONL sample modes, target visual_entities/visual_actions/music_layers/av_relations + `caption_ru`, supervised target-only next-token CE, initial AdamW/grid/step limits, тесты и GO.
+
+Coding-агент обязан реализовать **как минимум две самостоятельные визуальные проверки**: IMAGE-only объектно-пространственное описание одиночного изображения без выдуманного движения; VIDEO-only упорядоченный сюжет с устойчивыми entity IDs, subject/action/object и до/после. AUDIO/music и синхронный AV — отдельные режимы и metrics. Один music_presence/instrument classifier не равен итоговой цели.
+
+**Первые PR:** F10.01 image/frame/audio token feature+Qwen CPU smoke; F10.02 typed dataset/EventGraph/B0 and masks; F10.03 trainable vision+audio projector/resampler after technical/data/budget GO; F10.04 per-mode held-out and 1x CPU live. Если IMAGE или VIDEO не работает, нельзя закрывать F10 достижениями музыки. Последний Deep Research не был завершён, поэтому API и выигрыш только через измерения.
