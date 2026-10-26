@@ -1,10 +1,10 @@
 # Agents.md — правила coding-агента SHSD
 
-> **Версия 0.3 · 26.10.2026.** Перед правкой читать [Workspace.md](Workspace.md), [Todo.md](Todo.md), [протокол](docs/experiments/av-bridge-evaluation-protocol.md). Полный набор прежних v0.1 инструкций сохранён [в архиве](docs/archive/2026-10-26-pre-multimodal-review/Agents.md). Его инженерные инварианты действуют, если не противоречат явно описанному новому плану.
+> **Версия 0.4 · 26.10.2026.** Перед правкой читать [Workspace.md](Workspace.md), [Todo.md](Todo.md), [протокол](docs/experiments/av-bridge-evaluation-protocol.md). Полный набор прежних v0.1 инструкций сохранён [в архиве](docs/archive/2026-10-26-pre-multimodal-review/Agents.md). Его инженерные инварианты действуют, если не противоречат явно описанному новому плану.
 
 ## 1. Неприкосновенные ограничения
 
-1. **Два параллельных трека:** frozen production F7–F9 и trainable bridge R&D F10. Исследование архитектуры/интерфейсов F10.01–02 **обязательно и разрешено сейчас**. Фактическое обучение projector/LoRA, подготовка training corpus и изменение production — только после отдельной принятой ADR и явного решения пользователя. Малые независимые **оценочные** метки допустимы.
+1. **Два параллельных трека:** frozen production F7–F9 и trainable bridge R&D F10. Исследование архитектуры/интерфейсов F10.01–02 **обязательно и разрешено сейчас**. Владелец уже разрешил любое перспективное обучение (projector/LoRA/encoder или LLM fine-tuning/distillation). Запускать после documented technical/data/budget `GO`, без повторного разрешения; production менять только по F10.05 evidence. Малые независимые **оценочные** метки допустимы.
 2. **CPU-only, полностью offline в runtime.** Без обязательной CUDA, внешних LLM API и сетевой telemetry; Qwen3-0.6B остаётся narrator, EmbeddingGemma 2 — encoder. NCM — только архитектурное вдохновение.
 3. **Не подменять evidence сходством.** Cosine — ranking, не вероятность. `accepted` означает прохождение policy, не объективную истину. Claim должен иметь source intervals, model/preprocess version, decision и evidence refs.
 4. **Не утверждать музыку на основании альтернативного кандидата.** `music_possible` разрешает внутренний L2 probe; `music_confirmed` и детальный evidence требуются для factual L3. Разговор на первом плане не исключает фоновую музыку.
@@ -52,6 +52,13 @@ Known limitations / next task: ...
 - Начать **параллельно** с P0, не дожидаясь F9: прочитать [bridge pilot protocol](docs/experiments/bridge-training-pilot.md), проверить официальные model APIs и написать smoke tests для sequence features и Qwen embedding inputs без training.
 - В отчёте различать `hypothesis`, `upstream documented`, `smoke-test verified`, `trained/benchmarked`. Если GGUF/llama.cpp не поддерживает multimodal prefix, это blocker, а не задача, которую можно замолчать.
 - Ни один trained bridge не заменяет evidence/temporal tracking и не оправдывает выдуманные сюжетные детали. Аудио, видео и их время должны проверяться отдельными ablations.
-- Не запускать F10.03/04 и не создавать training data, пока владелец не разрешил обучение. Если разрешение получено, сохранить отдельную ADR, изолировать experimental branch, зафиксировать лицензии и train/val/test source split.
+- **Условное разрешение уже получено и зафиксировано в ADR-002.** Перед F10.03/04 зафиксировать проверенный encoder→Qwen interface, CPU deployment path, законные train/val/test source-separated splits, baseline, pre-registered metrics, bounded GPU budget, stop conditions и `GO`; изолировать experimental branch. Если gate не пройден, `NO-GO` по evidence, а не `blocked by owner`. Более дорогой training требует новой технической гипотезы и budget gate, но не нового разрешения.
 
 Checkbox в Todo закрывать **только** после выполнения указанного DoD. CPU-only production и публичные схемы не менять скрыто.
+
+
+## Условное разрешение на R&D обучение — 26.10.2026
+
+Владелец разрешил **любое обучение, если оно перспективно поможет решить главную боль**: содержательный, достоверный визуальный сюжет, подробные музыкальные слои/переходы и устойчивый CPU-only offline realtime. Это включает adapter/projector, LoRA, encoder/LLM fine-tuning, distillation и альтернативные модели. **Повторного согласования каждого эксперимента не требуется.**
+
+**До GPU training:** (1) подтверждённый interface/conditioning и правдоподобный CPU deploy path; (2) права на данные и source-separated train/val/held-out; (3) зафиксированный baseline и независимые quality metrics; (4) bounded GPU budget, checkpoints и stop conditions; (5) письменный `F10-GO.md` с результатом `GO`. Если что-то не выполнено — `NO-GO`, не скрывать риск. После короткого пилота продолжать лишь при измеренном улучшении без роста ложных утверждений. В production новые веса попадут только после held-out A/B и sustained 1x CPU live. Это разрешение на исследование, **не доказательство, что обучение обязательно поможет**.

@@ -1,13 +1,13 @@
 # Todo.md — SHSD: активный backlog качества и realtime
 
-> **Версия 0.3 · 26.10.2026.** Все новые задачи ниже **открыты** до предъявления воспроизводимых доказательств. Прежний F0–F6 чеклист (исторически 157/159) [архивирован без изменений](docs/archive/2026-10-26-pre-multimodal-review/Todo.md). Эта цифра не измеряет готовность продукта.
+> **Версия 0.4 · 26.10.2026.** Все новые задачи ниже **открыты** до предъявления воспроизводимых доказательств. Прежний F0–F6 чеклист (исторически 157/159) [архивирован без изменений](docs/archive/2026-10-26-pre-multimodal-review/Todo.md). Эта цифра не измеряет готовность продукта.
 >
 > Цель: [Workspace.md](Workspace.md); правила агента: [Agents.md](Agents.md); протокол: [docs/experiments/av-bridge-evaluation-protocol.md](docs/experiments/av-bridge-evaluation-protocol.md).
 
 ## Обязательные правила
 
 - **P0** — достоверность, traceability, оценка качества и live-блокеры; **P1** — детализация; **P2** — исследование альтернатив.
-- CPU-only/offline production; EmbeddingGemma 2 + Qwen3-0.6B сохраняются. **F10 — параллельный исследовательский трек обучаемого моста**. Capability audit и проектирование можно делать сейчас; фактический training/projector/LoRA и подготовка обучающего корпуса — только после явного разрешения владельца проекта и ADR.
+- CPU-only/offline production; EmbeddingGemma 2 + Qwen3-0.6B сохраняются. **F10 — параллельный исследовательский трек обучаемого моста**. Capability audit и проектирование можно делать сейчас; владелец уже разрешил любое перспективное обучение; training/projector/LoRA и подготовка законного обучающего корпуса — после documented feasibility/data/budget `GO` и без повторного разрешения.
 - Малый набор независимых **оценочных** ручных меток обязателен; он не является обучением. Cosine не вероятность; accepted-by-policy не human-verified.
 - Не закрывать checkbox без ссылки на тест/сырые JSON/benchmark, git SHA, версий моделей, конфигурации, точных команд и негативных примеров. `not run` писать явно.
 - Отчёты класть в `benchmarks/reports/`; при изменении схем — документировать совместимость, миграцию и regression tests.
@@ -75,14 +75,14 @@
 
 ### F9.02 — Архитектурный quality/CPU decision [P1]
 - [ ] Сопоставить baseline frozen, улучшенный frozen, и при необходимости специализированные локальные CPU perception модели; не менять EmbeddingGemma 2/Qwen3-0.6B без контролируемого A/B и ADR.
-- [ ] Использовать результаты **параллельного F10**: проверить EmbeddingGemma→Qwen bridge (pooled vs token-level, Qwen inputs_embeds, CPU GGUF deployment, data rights) и сравнить с frozen на независимых метках. Training-этап F10 не запускать до отдельного разрешения.
-- [ ] Если требуется обучение, оформить **отдельный запрос на изменение требований** и получить явное одобрение владельца проекта; текущая [ADR-002](docs/adr/ADR-002-multimodal-bridge-evaluation.md) лишь Proposed.
+- [ ] Использовать результаты **параллельного F10**: проверить EmbeddingGemma→Qwen bridge (pooled vs token-level, Qwen inputs_embeds, CPU GGUF deployment, data rights) и сравнить с frozen на независимых метках. Training-этап F10 запускать после технического `GO` по уже полученному разрешению.
+- [ ] Если требуется обучение, применить уже полученное **условное разрешение владельца** по принятой [ADR-002](docs/adr/ADR-002-multimodal-bridge-evaluation.md); отдельный запрос не нужен, но технический `GO` обязателен.
 - **DoD:** таблица quality/false claims/RU coherence/music transitions/CPU RTF/lag/RSS, решение `continue frozen | propose new ADR | blocked` с evidence.
 - **Depends:** F7.04, F8.01–02, F9.01 и результаты F10.01–02; обученный вариант — только при одобренных F10.03–05.
 
 ## F10 — Обучаемый мультимодальный мост: параллельный R&D-трек
 
-> **Не откладывать F10.01–02 до F9.** Они идут параллельно P0. **Обучение пока не одобрено**: F10.03–05 открыты, но `blocked: owner training approval`. Это конкретный план пилота, не обязательство менять production.
+> **Не откладывать F10.01–02 до F9.** Они идут параллельно P0. **Обучение условно одобрено владельцем**: F10.03 готов к запуску после feasibility/data/budget `GO`; F10.04 — после evidence первого пилота; F10.05 — после quality/CPU сравнения. Это конкретный план пилота, не обязательство менять production.
 
 ### F10.01 — Проверка реальных интерфейсов и ограничений [P1; можно сейчас]
 - [ ] По официальным model cards и **исполняемым smoke tests** выяснить, какие EmbeddingGemma 2 outputs доступны: pooled, patch/token/time-level features, отдельные audio/video paths, timestamps, нормализация и возможность получить sequence representations без неподдерживаемых API.
@@ -94,32 +94,39 @@
 ### F10.02 — Дизайн пилота и независимой оценки [P1; можно сейчас]
 - [ ] Зафиксировать варианты B1: frozen encoder+frozen Qwen+малый projector/resampler; B2: B1+ограниченный LoRA **только если B1 недостаточен**; альтернативу C с компактной pretrained AV/audio perception моделью.
 - [ ] Спроектировать token-level/temporal audio/video conditioning и fusion: 1) что видно и как меняется, 2) какие звуковые/музыкальные слои слышны, 3) что произошло раньше/позже, 4) какие утверждения имеют evidence.
-- [ ] Согласовать законные train/val/test источники **без source leakage**; training data не собирать до одобрения. Разметка F7.03 — только evaluation, не скрытый train set.
+- [ ] Согласовать законные train/val/test источники **без source leakage**; training data собирать после проверки лицензий и source-separated splits. Разметка F7.03 — только evaluation, не скрытый train set.
 - [ ] Утвердить cost/quality metrics и ablations: audio-only, video-only, AV, swapped-audio, shuffled-time, missing modality, negative prompts, 1x cold-cache live, memory, CPU tok/s и prefill.
-- **DoD:** [bridge pilot protocol](docs/experiments/bridge-training-pilot.md), явные критерии остановки, сравнение с frozen A0/A2 и запрос отдельного одобрения обучения.
+- **DoD:** [bridge pilot protocol](docs/experiments/bridge-training-pilot.md), явные критерии остановки, сравнение с frozen A0/A2 и documented technical/data/budget `GO` по уже полученному разрешению.
 - **Depends:** F10.01 и схема F7.03; F7–F9 продолжаются параллельно.
 
-### F10.03 — Минимальный projector-only training pilot [P1; BLOCKED до одобрения]
-- [ ] **Только после явного разрешения**: подготовить лицензированные paired AV→RU event/caption train/val источники, не смешивая их с held-out test.
+### F10.03 — Минимальный projector-only training pilot [P1; разрешено после technical GO]
+- [ ] **После documented technical/data/budget `GO`**: подготовить лицензированные paired AV→RU event/caption train/val источники, не смешивая их с held-out test.
 - [ ] Обучать только малый bridge/resampler при замороженных EmbeddingGemma 2 и Qwen3-0.6B; фиксировать reproducibility, GPU hardware/VRAM, loss, training wall time и checkpoint lineage.
 - [ ] Вывести строго одинаковые outputs и provenance для frozen A и B1; не считать teacher-generated псевдофакты ground truth.
 - **DoD:** reproducible checkpoint, контроль утечки и честный held-out результат; при неподдерживаемом CPU deployment — `no-go`.
-- **Depends:** F10.01–02, отдельное одобрение владельца проекта.
+- **Depends:** F10.01–02 и успешный technical/data/budget `GO`; повторное разрешение не требуется.
 
-### F10.04 — Controlled ablation и при необходимости LoRA [P2; BLOCKED до одобрения]
-- [ ] Сравнить B1 с B2 (LoRA, если отдельно разрешён) и A2/C на одинаковых клипах. Ablations: pooled vs sequence features, temporal order, AV alignment, music+speech, visual actions, unknown/hard negatives.
+### F10.04 — Controlled ablation и при необходимости LoRA [P2; разрешено после evidence первого пилота]
+- [ ] Сравнить B1 с B2 (LoRA или другой метод обучения при доказанной перспективности) и A2/C на одинаковых клипах. Ablations: pooled vs sequence features, temporal order, AV alignment, music+speech, visual actions, unknown/hard negatives.
 - [ ] Отдельно измерить ложные инструменты/действия, factual story coherence, music onset/offset и semantic transitions, русский текст и CPU prefill/decode/lag.
 - **DoD:** report с CI/размером выборки, ablations, failures, latency/coverage; не продвигать модель по одному субъективно удачному примеру.
-- **Depends:** F10.03, независимые метки F7.03, отдельное разрешение при LoRA.
+- **Depends:** F10.03, независимые метки F7.03, обоснованный bounded budget для следующего эксперимента.
 
-### F10.05 — Production decision: frozen vs bridge vs alternative [P1; BLOCKED до результатов]
+### F10.05 — Production decision: frozen vs bridge vs alternative [P1; после результатов]
 - [ ] Сравнить A2/B1/B2/C на sustained 1x CPU с реальными watermarks и bounded queues; проверить лицензии и формат поставки.
 - [ ] Принять `ship frozen | ship bridge | use specialized perception | no-go` только по quality/CPU evidence; изменение production architecture — отдельная ADR.
 - **DoD:** подписанное решение с воспроизводимыми quality/live отчетами; ни один training artifact не становится runtime dependency автоматически.
-- **Depends:** F7.04, F8.02, F9.01, F10.03–04 при разрешённом training.
+- **Depends:** F7.04, F8.02, F9.01, F10.03–04 после технических `GO`.
 
 ## Первое задание coding-агенту
 
-**Два параллельных потока:** (A) F7.01 + F7.02, разметка F7.03 и live F9.01; (B) **F10.01 + F10.02 уже сейчас** — технический аудит EmbeddingGemma 2→Qwen3-0.6B и дизайн обучаемого моста. Обучение F10.03, LoRA F10.04 и сбор training data не начинать до явного одобрения. Затем сравнить A2/B1/C по одному протоколу.
+**Два параллельных потока:** (A) F7.01 + F7.02, разметка F7.03 и live F9.01; (B) **F10.01 + F10.02 уже сейчас** — технический аудит EmbeddingGemma 2→Qwen3-0.6B и дизайн обучаемого моста. Обучение F10.03 и законный training data запускать после technical/data/budget `GO`, без повторного разрешения; LoRA или другое обучение F10.04 — после подтверждения перспективности первого пилота. Затем сравнить A2/B1/C по одному протоколу.
 
 Каждый отчёт: `task ID | status | commit | changed files | exact commands + exit codes | tests | model revisions | independent labels | quality/error metrics | CPU/RSS/lag/drops | raw artifacts | next gate`.
+
+
+## Условное разрешение на R&D обучение — 26.10.2026
+
+Владелец разрешил **любое обучение, если оно перспективно поможет решить главную боль**: содержательный, достоверный визуальный сюжет, подробные музыкальные слои/переходы и устойчивый CPU-only offline realtime. Это включает adapter/projector, LoRA, encoder/LLM fine-tuning, distillation и альтернативные модели. **Повторного согласования каждого эксперимента не требуется.**
+
+**До GPU training:** (1) подтверждённый interface/conditioning и правдоподобный CPU deploy path; (2) права на данные и source-separated train/val/held-out; (3) зафиксированный baseline и независимые quality metrics; (4) bounded GPU budget, checkpoints и stop conditions; (5) письменный `F10-GO.md` с результатом `GO`. Если что-то не выполнено — `NO-GO`, не скрывать риск. После короткого пилота продолжать лишь при измеренном улучшении без роста ложных утверждений. В production новые веса попадут только после held-out A/B и sustained 1x CPU live. Это разрешение на исследование, **не доказательство, что обучение обязательно поможет**.

@@ -1,6 +1,6 @@
 # F10 — план пилота обучаемого мультимодального моста SHSD
 
-> **Статус 26.10.2026:** design + interface validation разрешены. **Training пока не разрешён.** Этот документ описывает **проверяемую гипотезу**, а не доказанные результаты или уже обученную модель. [Todo F10](../../Todo.md) · [ADR-002](../adr/ADR-002-multimodal-bridge-evaluation.md) · [общий evaluation](av-bridge-evaluation-protocol.md).
+> **Статус 26.10.2026:** design + interface validation разрешены. **Владелец условно разрешил любое перспективное обучение; запускать после technical/data/budget `GO`, без повторного запроса.** Этот документ описывает **проверяемую гипотезу**, а не доказанные результаты или уже обученную модель. [Todo F10](../../Todo.md) · [ADR-002](../adr/ADR-002-multimodal-bridge-evaluation.md) · [общий evaluation](av-bridge-evaluation-protocol.md).
 
 ## 1. Проверяемая цель
 
@@ -12,7 +12,7 @@
 - порядок и совместность AV событий без выдумывания причинности, намерений, инструментов и диалогов;
 - отсутствие или неопределённость evidence.
 
-**Deployment остаётся offline CPU-only.** GPU может использоваться **только для отдельно разрешённого обучения**, не в целевом runtime. Возможное железо для оценки ресурсов (уточнить фактическое наличие): CPU Ryzen 9 9900X3D, 2× RTX 5080 для training. Не приписывать им непроверенную производительность.
+**Deployment остаётся offline CPU-only.** GPU может использоваться для обоснованного R&D training после documented `GO`, не в целевом runtime. Возможное железо для оценки ресурсов (уточнить фактическое наличие): CPU Ryzen 9 9900X3D, 2× RTX 5080 для training. Не приписывать им непроверенную производительность.
 
 ## 2. Архитектурные гипотезы
 
@@ -35,7 +35,7 @@ audio windows + video frames + PTS
 1. Реально ли EmbeddingGemma 2 предоставляет **token/patch/time-level** representations для аудио и видео? Если только pooled vector — точные действия, инструменты и переходы могут быть невосстановимы. Нужен shape/probe test на реальном чекпойнте.
 2. Поддерживает ли конкретная реализация Qwen3-0.6B корректный **не-текстовый** conditioning (`inputs_embeds`, prefix, KV, custom token projection)? Проверить обучение и инференс, а не просто совместимость размерностей.
 3. Можно ли перенести этот conditioning в **CPU llama.cpp/GGUF** без неподдерживаемого патча или тяжёлого PyTorch-only runtime? Проверить prefill, KV cache, квантование, RAM.
-4. Достаточны ли маленький projector и frozen Qwen для обучения мультимодального языка? Это гипотеза. Если не обучается, рассмотреть B2 LoRA **только после отдельного разрешения** или C готовую pretrained AV модель.
+4. Достаточны ли маленький projector и frozen Qwen для обучения мультимодального языка? Это гипотеза. Если не обучается, рассмотреть B2 LoRA или более глубокое обучение после evidence первого пилота и отдельного bounded budget gate или C готовую pretrained AV модель.
 5. Как получить легальные, разнообразные AV→RU training targets с независимыми источниками и без утечки в evaluation? Teacher-generated captions **не** ground truth.
 
 ## 3. Этапы с stop/go
@@ -51,18 +51,18 @@ audio windows + video frames + PTS
 - Спроектировать B1: frozen encoder+LLM, минимальный projector/resampler; ограниченный temporal prefix; независимый grounding/verification.
 - Зафиксировать data schema: `source_id, interval_ms, modality, features_version, entity/action/music/transition annotations, caption_ru, evidence_refs, rights, split`.
 - Train/val/test **source-separated**, вручную проверенный held-out и negatives; отсутствие тестовых `Tears of Steel` интервалов в training при использовании их как test.
-- Предварительно выбрать budget токенов/окон, latency, критерии улучшения и условия остановки; отдельное разрешение владельца до F10.03.
+- Предварительно выбрать budget токенов/окон, latency, критерии улучшения и условия остановки; документированный technical/data/budget `GO` до F10.03; разрешение владельца уже получено.
 
-### F10.03 — Adapter-only training (BLOCKED до явного разрешения)
+### F10.03 — Adapter-only training (разрешён после technical GO)
 
 - Учить только B1 projector/resampler, заморозив EmbeddingGemma 2 и Qwen3-0.6B; проверять законность данных и checkpoint provenance.
 - Сравнить small pooled baseline с token-level/time-aware variant **только если реально поддерживаются**.
 - Записывать train/val curves, seed, optimizer, device/VRAM, data manifest и latency; не подгонять по held-out.
 
-### F10.04 — Ablations и B2 (BLOCKED до явного разрешения)
+### F10.04 — Ablations и B2 (разрешён после evidence пилота)
 
 - **No audio / no video / swapped audio / shuffled time / music+speech / conversation-only / image cut without action / unseen source.**
-- Сравнить B1 и, если отдельно разрешено, B2 (adapter + минимальный LoRA). LoRA не включать автоматически.
+- Сравнить B1 и, если есть доказанная перспектива, B2 (adapter + минимальный LoRA) или другие методы (encoder/LLM fine-tuning, distillation) по отдельному bounded budget gate. LoRA не включать автоматически.
 - Измерять precision/recall/abstain по подтверждённым music/instrument/action/transition claims; factuality, hallucinations, русскую сюжетную связность, omission, число generic captions, latency и CPU memory.
 
 ### F10.05 — CPU deployment decision (после обучения, если разрешено)
@@ -88,8 +88,15 @@ audio windows + video frames + PTS
 
 `benchmarks/reports/bridge_f10/`:
 - `capability_matrix.md` — ссылки на upstream API, результаты smoke tests, версии и точные команды;
-- `data_manifest.json` — лицензии, splits, source IDs, предотвращение leakage (после разрешения training);
-- `train_manifest.json` + checkpoints metadata (после разрешения);
+- `data_manifest.json` — лицензии, splits, source IDs, предотвращение leakage (после technical/data `GO`);
+- `train_manifest.json` + checkpoints metadata (после technical/data `GO`);
 - `eval_per_interval.jsonl`, `ablation_results.json`, `cpu_live_report.json`, `decision.md`.
 
-**Следующее действие coding-агента:** F10.01 в параллель с F7.01/F7.02. Отдельно запросить разрешение на F10.03, а не считать сам факт этого плана таким разрешением.
+**Следующее действие coding-агента:** F10.01 в параллель с F7.01/F7.02. Перед F10.03 создать `F10-GO.md` с проверенным интерфейсом, лицензиями, source-separated splits, frozen baseline, заранее определёнными quality/CPU метриками, bounded GPU budget и stop criteria. При неуспехе — `NO-GO`; при успехе — начать обучение без повторного запроса владельца. После B1 продолжать только при измеренном прогрессе; не расходовать ресурсы безлимитно.
+
+
+## Условное разрешение на R&D обучение — 26.10.2026
+
+Владелец разрешил **любое обучение, если оно перспективно поможет решить главную боль**: содержательный, достоверный визуальный сюжет, подробные музыкальные слои/переходы и устойчивый CPU-only offline realtime. Это включает adapter/projector, LoRA, encoder/LLM fine-tuning, distillation и альтернативные модели. **Повторного согласования каждого эксперимента не требуется.**
+
+**До GPU training:** (1) подтверждённый interface/conditioning и правдоподобный CPU deploy path; (2) права на данные и source-separated train/val/held-out; (3) зафиксированный baseline и независимые quality metrics; (4) bounded GPU budget, checkpoints и stop conditions; (5) письменный `F10-GO.md` с результатом `GO`. Если что-то не выполнено — `NO-GO`, не скрывать риск. После короткого пилота продолжать лишь при измеренном улучшении без роста ложных утверждений. В production новые веса попадут только после held-out A/B и sustained 1x CPU live. Это разрешение на исследование, **не доказательство, что обучение обязательно поможет**.

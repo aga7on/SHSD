@@ -1,9 +1,9 @@
 # Workspace.md — SHSD: текущая цель и архитектурная спецификация
 
-> **Версия 0.3 · 26.10.2026 · статус: активный план улучшения качества и CPU realtime.**
+> **Версия 0.4 · 26.10.2026 · статус: активный план улучшения качества и CPU realtime.**
 > Исходная полная спецификация v0.1 сохранена [без изменений в архиве](docs/archive/2026-10-26-pre-multimodal-review/Workspace.md). Задачи — [Todo.md](Todo.md), правила — [Agents.md](Agents.md), протокол измерений — [docs/experiments/av-bridge-evaluation-protocol.md](docs/experiments/av-bridge-evaluation-protocol.md).
 >
-> **Граница:** целевой runtime остаётся offline/CPU-only. Существующая production-ветка пока training-free. **Обучаемый мультимодальный мост — отдельный параллельный R&D-трек F10 с конкретным протоколом**, а не отложенная заметка. Обучение весов требует явного одобрения владельца проекта; до этого разрешены capability audit, design и тесты интерфейсов без training.
+> **Граница:** целевой runtime остаётся offline/CPU-only. Существующая production-ветка пока training-free. **Обучаемый мультимодальный мост — отдельный параллельный R&D-трек F10 с конкретным протоколом**, а не отложенная заметка. **Владелец 26.10.2026 разрешил любое перспективное обучение** для улучшения grounded AV сюжета, музыки и temporal detail. Перед training — documented feasibility/data/budget `GO`, повторное разрешение не требуется.
 
 ## 1. Что строим
 
@@ -23,7 +23,7 @@ SHSD (Streaming Hierarchical Semantic Decoder) должен получать ж�
 - **L0–L3:** L0 — измеримые признаки и evidence; L1 — грубые события; L2 — подтверждённые детали и временные переходы; L3 — связное русское описание без неподтверждённых добавлений.
 - **Temporal Event Memory:** стабильные event/claim IDs, интервалы в source time, PTS/time_base, epoch, ревизии, ссылки на evidence; отдельно фиксировать `observed`, `hypothesis`, `accepted_by_policy`, `human_verified`, `published`.
 - **Поток:** bounded 600-секундный ring, очереди/backpressure, C/E/D/R watermarks и явные skipped/dropped intervals; L3 не блокирует ingest. Совпадение audio onset и video cut не означает причинную связь.
-- **No-training production baseline:** текущие frozen веса не менять без разрешения. F10 параллельно изучает **обучаемый** projector/resampler между EmbeddingGemma 2 и Qwen3-0.6B; отдельный training experiment допускается только после проверки интерфейса, данных, лицензий и явного разрешения. Малый независимый **оценочный** набор нужен уже сейчас.
+- **No-training production baseline:** текущие frozen веса не менять без разрешения. F10 параллельно изучает **обучаемый** projector/resampler между EmbeddingGemma 2 и Qwen3-0.6B; training experiment допускается после проверки интерфейса, данных, лицензий, CPU feasibility и bounded budget по уже полученному условному разрешению владельца. Малый независимый **оценочный** набор нужен уже сейчас.
 
 Подробные исходные схемы API/JSONL/SQLite, контракты интервалов и watermarks — в [архивной v0.1 спецификации](docs/archive/2026-10-26-pre-multimodal-review/Workspace.md). При расхождении описания и реализации агент проверяет актуальный код, тесты и сообщает о несовместимости; не меняет контракт молча.
 
@@ -86,6 +86,13 @@ SHSD (Streaming Hierarchical Semantic Decoder) должен получать ж�
 
 **Сравнение:** frozen baseline A0/A2 vs обучаемый adapter B1 vs при необходимости B2 adapter+LoRA vs компактная готовая модель C; отдельно audio-only, video-only, AV, shuffled-time, swapped-audio, отсутствующая модальность, negatives и held-out sources. Успех измеряется не cosine, а factual visual story, музыкальными переходами, omissions/hallucinations и **1x CPU live**.
 
-**Статус:** F10.01–F10.02 (исследование интерфейсов и проектирование) можно выполнять сейчас параллельно F7–F9. F10.03–F10.05 (обучение/сравнение) описаны как реальные исполнимые этапы, но **заблокированы до явного одобрения обучения**. Детали — [F10](Todo.md#f10--обучаемый-мультимодальный-мост-параллельный-rd-трек) и [план эксперимента](docs/experiments/bridge-training-pilot.md).
+**Статус:** F10.01–F10.02 (исследование интерфейсов и проектирование) можно выполнять сейчас параллельно F7–F9. F10.03 (обучение) разрешено после technical/data/budget `GO`; F10.04 (LoRA, encoder/LLM fine-tuning, distillation или другие методы) разрешено при доказанной перспективности и отдельном ограниченном experimental budget; F10.05 — решение о production только после held-out и sustained 1x CPU live. Детали — [F10](Todo.md#f10--обучаемый-мультимодальный-мост-параллельный-rd-трек) и [план эксперимента](docs/experiments/bridge-training-pilot.md).
 
-Исполнять [Todo.md](Todo.md). [ADR-002](docs/adr/ADR-002-multimodal-bridge-evaluation.md) — формальная рамка выбора; она пока не разрешает запуск обучения.
+Исполнять [Todo.md](Todo.md). [ADR-002](docs/adr/ADR-002-multimodal-bridge-evaluation.md) — формальная рамка выбора; она принимает условное разрешение на обучение; production architecture не выбрана.
+
+
+## Условное разрешение на R&D обучение — 26.10.2026
+
+Владелец разрешил **любое обучение, если оно перспективно поможет решить главную боль**: содержательный, достоверный визуальный сюжет, подробные музыкальные слои/переходы и устойчивый CPU-only offline realtime. Это включает adapter/projector, LoRA, encoder/LLM fine-tuning, distillation и альтернативные модели. **Повторного согласования каждого эксперимента не требуется.**
+
+**До GPU training:** (1) подтверждённый interface/conditioning и правдоподобный CPU deploy path; (2) права на данные и source-separated train/val/held-out; (3) зафиксированный baseline и независимые quality metrics; (4) bounded GPU budget, checkpoints и stop conditions; (5) письменный `F10-GO.md` с результатом `GO`. Если что-то не выполнено — `NO-GO`, не скрывать риск. После короткого пилота продолжать лишь при измеренном улучшении без роста ложных утверждений. В production новые веса попадут только после held-out A/B и sustained 1x CPU live. Это разрешение на исследование, **не доказательство, что обучение обязательно поможет**.
