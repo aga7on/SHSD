@@ -1,6 +1,11 @@
 {
   "schema_version": 1,
-  "purpose": "human review candidates; no labels or answer key included",
+  "purpose": "blind human review candidates; no labels or answer key included",
+  "review_guide": {
+    "file": "benchmarks/review/bridge_f10_examples/review_guide.md",
+    "guide_version": "f10-blind-review-v1",
+    "do_not_open_model_reports_before_submitting_labels": true
+  },
   "video": {
     "clip": "benchmarks/review/bridge_f10_examples/video_only_tears120-130s.mp4",
     "clip_sha256": "4e13f09ce9aef8d9e4410c9af8878070eb618d8bd9562a7409adc3bc4e525638",
@@ -17,7 +22,8 @@
     "source_sha256": "014324f1575464b248acff73c858dec66059b9afb271875dd0c82d5460b7d588",
     "source_license": "Creative Commons Attribution 3.0",
     "source_attribution": "(CC) Blender Foundation | mango.blender.org",
-    "review_task": "Independently note visible entities, actions, objects, and their source-time boundaries."
+    "review_frame_pts_ms": [120000, 121000, 122000, 123000, 124000, 125000, 126000, 127000, 128000, 129000],
+    "review_task": "Independently note visible entities, the main action sequence, objects, and source-time boundaries; cite at least two sampled frame PTS values supporting the action."
   },
   "audio": {
     "clip": "benchmarks/review/bridge_f10_examples/audio_only_tos_185-205s.wav",
@@ -37,7 +43,8 @@
     "source_license": "Creative Commons Attribution 3.0",
     "source_attribution": "(CC) Blender Foundation | mango.blender.org",
     "audio_format": "PCM s16le, mono, 16000 Hz",
-    "review_task": "Describe the audible scene and any changes in music, speech, and their timing."
+    "review_windows_source_ms": [[185000, 190000], [190000, 195000], [195000, 200000], [200000, 205000]],
+    "review_task": "Describe the audible scene and any changes in music, speech, and their timing; cite audio PTS evidence before and after any claimed transition."
   },
   "excluded_control": {
     "description": "A hard splice between separate public-domain music recordings was used for a label-free stress probe. It is not a natural within-composition transition and is excluded from human example scoring."
