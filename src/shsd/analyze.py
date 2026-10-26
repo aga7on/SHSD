@@ -365,6 +365,7 @@ def _narration_graph(
     stream_id: str,
     epoch: int,
     visual_feature_batches: tuple[Any, ...] = (),
+    visual_action_hypotheses: tuple[Any, ...] = (),
     source_pts_offset_ms: int = 0,
 ) -> Any:
     """Build the B0 graph, optionally attaching PTS-preserving visual feature evidence."""
@@ -375,6 +376,7 @@ def _narration_graph(
         stream_id=stream_id,
         epoch=epoch,
         visual_feature_batches=visual_feature_batches,
+        visual_action_hypotheses=visual_action_hypotheses,
         source_pts_offset_ms=source_pts_offset_ms,
     )
 

@@ -1,0 +1,5 @@
+﻿start_ms,end_ms,top_candidate,top_cosine,runner_up_cosine,top_margin,decision,baseline_binary_decision,cosine_music_present,cosine_environment_dominant,cosine_conversation_dominant,cosine_music_and_speech
+0,5000,music_present,0.790637,0.784417,0.006219,uncertain,uncertain,0.790637,0.784417,0.75504,0.738266
+5000,10000,conversation_dominant,0.745637,0.688488,0.057148,accepted,uncertain,0.688488,0.671115,0.745637,0.672041
+10000,15000,conversation_dominant,0.746401,0.663195,0.083206,accepted,uncertain,0.642306,0.663195,0.746401,0.648111
+15000,20000,conversation_dominant,0.753537,0.689794,0.063743,accepted,uncertain,0.68701,0.689794,0.753537,0.676578

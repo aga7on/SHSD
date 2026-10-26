@@ -1,0 +1,367 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-26T23:04:13.594081+00:00",
+  "status": "unverified_model_hypothesis",
+  "diagnostic_only": true,
+  "mode": "VIDEO_ONLY",
+  "audio_passed_to_model": false,
+  "host": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD"
+  },
+  "model": {
+    "id": "microsoft/xclip-base-patch32",
+    "revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+    "license": "MIT",
+    "transformers_version": "5.20.2"
+  },
+  "input": {
+    "video": "X:\\AI\\SHSD\\benchmarks\\fixtures\\real_poc\\tears_of_steel_120_140s.mp4",
+    "timeline": null,
+    "stream_id": "f10-video-only-tears120-140",
+    "epoch": 0,
+    "timeline_interval_ms": [
+      1000,
+      9000
+    ],
+    "source_interval_ms": [
+      121000,
+      129000
+    ],
+    "source_pts_offset_ms": 120000,
+    "frame_pts_ms": [
+      1000,
+      2000,
+      3000,
+      4000,
+      5000,
+      6000,
+      7000,
+      8000
+    ],
+    "source_frame_pts_ms": [
+      121000,
+      122000,
+      123000,
+      124000,
+      125000,
+      126000,
+      127000,
+      128000
+    ],
+    "video_metadata": {
+      "total_num_frames": 480,
+      "fps": 24.0,
+      "duration": 20.0,
+      "frames_indices": [
+        24,
+        48,
+        72,
+        96,
+        120,
+        144,
+        168,
+        192
+      ]
+    }
+  },
+  "xclip": {
+    "latency_ms": 347.577,
+    "candidate_set": [
+      {
+        "candidate_id": "lying_on_bed",
+        "text_en": "A man lies in bed.",
+        "entity": "man",
+        "action": "lies on",
+        "object": "bed",
+        "text_ru": "Мужчина лежит на кровати."
+      },
+      {
+        "candidate_id": "sitting_up_from_bed",
+        "text_en": "A man sits up from lying down on a bed.",
+        "entity": "man",
+        "action": "sits up from",
+        "object": "bed",
+        "text_ru": "Мужчина приподнимается с кровати."
+      },
+      {
+        "candidate_id": "rises_from_bed_to_standing",
+        "text_en": "An older man rises from the bed to stand beside it.",
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "text_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней."
+      },
+      {
+        "candidate_id": "gets_out_of_bed",
+        "text_en": "A man gets out of bed.",
+        "entity": "man",
+        "action": "gets out of",
+        "object": "bed",
+        "text_ru": "Мужчина встаёт с кровати."
+      },
+      {
+        "candidate_id": "reaches_toward_candle",
+        "text_en": "A man reaches toward a candle beside the bed.",
+        "entity": "man",
+        "action": "reaches toward",
+        "object": "candle",
+        "text_ru": "Мужчина тянется к свече рядом с кроватью."
+      },
+      {
+        "candidate_id": "stands_beside_bed",
+        "text_en": "A man stands beside the bed.",
+        "entity": "man",
+        "action": "stands beside",
+        "object": "bed",
+        "text_ru": "Мужчина стоит рядом с кроватью."
+      },
+      {
+        "candidate_id": "walks_away_from_bed",
+        "text_en": "A man walks away from the bed.",
+        "entity": "man",
+        "action": "walks away from",
+        "object": "bed",
+        "text_ru": "Мужчина отходит от кровати."
+      },
+      {
+        "candidate_id": "turns_away_from_bed",
+        "text_en": "A man turns away from the bed.",
+        "entity": "man",
+        "action": "turns away from",
+        "object": "bed",
+        "text_ru": "Мужчина отворачивается от кровати."
+      },
+      {
+        "candidate_id": "soldier_points_rifle",
+        "text_en": "A soldier points a rifle at a man in bed.",
+        "entity": "soldier",
+        "action": "points a rifle at",
+        "object": "man in bed",
+        "text_ru": "Солдат целится из винтовки в мужчину на кровати."
+      }
+    ],
+    "ranked_scores": [
+      {
+        "candidate_id": "rises_from_bed_to_standing",
+        "text_en": "An older man rises from the bed to stand beside it.",
+        "raw_logit": 6.175841808319092,
+        "candidate_set_softmax": 0.3608025908470154
+      },
+      {
+        "candidate_id": "reaches_toward_candle",
+        "text_en": "A man reaches toward a candle beside the bed.",
+        "raw_logit": 5.814914703369141,
+        "candidate_set_softmax": 0.25149017572402954
+      },
+      {
+        "candidate_id": "lying_on_bed",
+        "text_en": "A man lies in bed.",
+        "raw_logit": 4.934445381164551,
+        "candidate_set_softmax": 0.10426487773656845
+      },
+      {
+        "candidate_id": "stands_beside_bed",
+        "text_en": "A man stands beside the bed.",
+        "raw_logit": 4.734726905822754,
+        "candidate_set_softmax": 0.0853888988494873
+      },
+      {
+        "candidate_id": "turns_away_from_bed",
+        "text_en": "A man turns away from the bed.",
+        "raw_logit": 4.679228782653809,
+        "candidate_set_softmax": 0.0807790756225586
+      },
+      {
+        "candidate_id": "walks_away_from_bed",
+        "text_en": "A man walks away from the bed.",
+        "raw_logit": 4.233098983764648,
+        "candidate_set_softmax": 0.051706742495298386
+      },
+      {
+        "candidate_id": "soldier_points_rifle",
+        "text_en": "A soldier points a rifle at a man in bed.",
+        "raw_logit": 3.466050386428833,
+        "candidate_set_softmax": 0.024011660367250443
+      },
+      {
+        "candidate_id": "gets_out_of_bed",
+        "text_en": "A man gets out of bed.",
+        "raw_logit": 3.3788604736328125,
+        "candidate_set_softmax": 0.02200675942003727
+      },
+      {
+        "candidate_id": "sitting_up_from_bed",
+        "text_en": "A man sits up from lying down on a bed.",
+        "raw_logit": 3.260449171066284,
+        "candidate_set_softmax": 0.019549278542399406
+      }
+    ],
+    "top_two_logit_margin": 0.36092710494995117,
+    "softmax_is_conditional_to_candidate_set": true,
+    "softmax_is_calibrated_probability": false
+  },
+  "event_graph": {
+    "record_type": "event_graph",
+    "schema_version": 1,
+    "graph_id": "b4b47c8191a225554c39bf83",
+    "stream_id": "f10-video-only-tears120-140",
+    "epoch": 0,
+    "ordering": "adjacent_event_start_time",
+    "nodes": [],
+    "edges": [],
+    "visual_sequences": [
+      {
+        "sequence_id": "1fa56bdc3f53230e496aac78",
+        "source_id": "f10-video-only-tears120-140",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          1000,
+          9000
+        ],
+        "source_interval_ms": [
+          121000,
+          129000
+        ],
+        "source_pts_offset_ms": 120000,
+        "evidence_status": "encoder_features_only",
+        "semantic_action_inferred": false,
+        "model_revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+        "frames": [
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140:0:121000",
+            "timeline_pts_ms": 1000,
+            "source_pts_ms": 121000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140:0:122000",
+            "timeline_pts_ms": 2000,
+            "source_pts_ms": 122000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140:0:123000",
+            "timeline_pts_ms": 3000,
+            "source_pts_ms": 123000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140:0:124000",
+            "timeline_pts_ms": 4000,
+            "source_pts_ms": 124000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140:0:125000",
+            "timeline_pts_ms": 5000,
+            "source_pts_ms": 125000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140:0:126000",
+            "timeline_pts_ms": 6000,
+            "source_pts_ms": 126000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140:0:127000",
+            "timeline_pts_ms": 7000,
+            "source_pts_ms": 127000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          },
+          {
+            "evidence_ref": "visual-frame:f10-video-only-tears120-140:0:128000",
+            "timeline_pts_ms": 8000,
+            "source_pts_ms": 128000,
+            "token_shape": [
+              254,
+              768
+            ],
+            "preprocess_version": "embeddinggemma2-st-v4-audio-video-metadata"
+          }
+        ]
+      }
+    ],
+    "visual_action_hypotheses": [
+      {
+        "hypothesis_id": "17a47ea5a224bb672dcb548f",
+        "source_id": "f10-video-only-tears120-140",
+        "epoch": 0,
+        "timeline_interval_ms": [
+          1000,
+          9000
+        ],
+        "source_interval_ms": [
+          121000,
+          129000
+        ],
+        "source_pts_offset_ms": 120000,
+        "entity": "older man",
+        "action": "rises from bed to standing beside it",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 6.175841808319092,
+        "score_kind": "xclip_logit",
+        "margin": 0.36092710494995117,
+        "confidence_is_probability": false,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": [
+          "visual-frame:f10-video-only-tears120-140:0:121000",
+          "visual-frame:f10-video-only-tears120-140:0:122000",
+          "visual-frame:f10-video-only-tears120-140:0:123000",
+          "visual-frame:f10-video-only-tears120-140:0:124000",
+          "visual-frame:f10-video-only-tears120-140:0:125000",
+          "visual-frame:f10-video-only-tears120-140:0:126000",
+          "visual-frame:f10-video-only-tears120-140:0:127000",
+          "visual-frame:f10-video-only-tears120-140:0:128000"
+        ],
+        "verification_status": "unverified_model_hypothesis"
+      }
+    ],
+    "limitations": [
+      "Timeline nodes contain emitted claims; visual sequences and action hypotheses are separate evidence records.",
+      "Visual token features preserve frame PTS but are not semantic action labels.",
+      "Visual action hypotheses are unverified and are not passed to Qwen narration.",
+      "Cosine similarity is not probability or human verification.",
+      "Start-time ordering and interval overlap do not imply causality."
+    ]
+  },
+  "narration_request_count": 0,
+  "limitations": [
+    "The model output is an unverified candidate, not a human-verified event.",
+    "The top-two margin and candidate-set softmax are not calibrated confidence.",
+    "The output is an external diagnostic baseline and is not integrated into the default analyze route.",
+    "The candidate is retained in EventGraph but is not sent to Qwen narration."
+  ]
+}

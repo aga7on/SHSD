@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "purpose": "human review candidates; no labels or answer key included",
+  "video": {
+    "clip": "benchmarks/review/bridge_f10_examples/video_only_tears120-130s.mp4",
+    "clip_sha256": "4e13f09ce9aef8d9e4410c9af8878070eb618d8bd9562a7409adc3bc4e525638",
+    "modality": "VIDEO_ONLY",
+    "clip_interval_ms": [
+      0,
+      10000
+    ],
+    "original_source_interval_ms": [
+      120000,
+      130000
+    ],
+    "source_file": "benchmarks/fixtures/real_poc/tears_of_steel_120_140s.mp4",
+    "source_sha256": "014324f1575464b248acff73c858dec66059b9afb271875dd0c82d5460b7d588",
+    "source_license": "Creative Commons Attribution 3.0",
+    "source_attribution": "(CC) Blender Foundation | mango.blender.org",
+    "review_task": "Independently note visible entities, actions, objects, and their source-time boundaries."
+  },
+  "audio": {
+    "clip": "benchmarks/review/bridge_f10_examples/audio_only_tos_185-205s.wav",
+    "clip_sha256": "d4d312555dfc414564eadb70c0aae5e6afaa6e131836a17eff2c7f6d80920946",
+    "modality": "AUDIO_ONLY",
+    "clip_interval_ms": [
+      0,
+      20000
+    ],
+    "original_source_interval_ms": [
+      185000,
+      205000
+    ],
+    "source_pts_offset_ms": 185000,
+    "source_file": "benchmarks/fixtures/real_poc/tears_of_steel_120_210s.mp4",
+    "source_sha256": "2af621c3854de4cc3c29bcb1b9fa2a188c8aeb74477c59ff4140114979b07ae3",
+    "source_license": "Creative Commons Attribution 3.0",
+    "source_attribution": "(CC) Blender Foundation | mango.blender.org",
+    "audio_format": "PCM s16le, mono, 16000 Hz",
+    "review_task": "Describe the audible scene and any changes in music, speech, and their timing."
+  },
+  "excluded_control": {
+    "description": "A hard splice between separate public-domain music recordings was used for a label-free stress probe. It is not a natural within-composition transition and is excluded from human example scoring."
+  }
+}

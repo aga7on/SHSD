@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -152,6 +153,84 @@ class VisualSequenceEvidence:
 
 
 @dataclass(frozen=True, slots=True)
+class VisualActionHypothesis:
+    """An explicitly unverified entity-action-object candidate with frame evidence."""
+
+    hypothesis_id: str
+    source_id: str
+    epoch: int
+    timeline_interval_ms: tuple[int, int]
+    source_pts_offset_ms: int
+    subject: str
+    action: str
+    object: str
+    description_en: str
+    description_ru: str
+    score: float
+    score_kind: str
+    margin: float
+    model_id: str
+    model_revision: str
+    evidence_refs: tuple[str, ...]
+    verification_status: Literal["unverified_model_hypothesis"] = "unverified_model_hypothesis"
+
+    def __post_init__(self) -> None:
+        start_ms, end_ms = self.timeline_interval_ms
+        if not all(
+            (
+                self.hypothesis_id,
+                self.source_id,
+                self.subject,
+                self.action,
+                self.object,
+                self.description_en,
+                self.description_ru,
+                self.score_kind,
+                self.model_id,
+                self.model_revision,
+            )
+        ):
+            raise ValueError("visual action hypotheses require labels and model provenance")
+        if self.epoch < 0 or start_ms < 0 or end_ms <= start_ms or self.source_pts_offset_ms < 0:
+            raise ValueError("visual action hypothesis has an invalid source interval")
+        if not math.isfinite(self.score) or not math.isfinite(self.margin) or self.margin < 0:
+            raise ValueError(
+                "visual action hypothesis scores must be finite with non-negative margin"
+            )
+        if not self.evidence_refs or any(not ref for ref in self.evidence_refs):
+            raise ValueError("visual action hypotheses require frame evidence references")
+        if self.verification_status != "unverified_model_hypothesis":
+            raise ValueError("visual model hypotheses cannot be marked human-verified here")
+
+    def to_dict(self) -> dict[str, Any]:
+        start_ms, end_ms = self.timeline_interval_ms
+        return {
+            "hypothesis_id": self.hypothesis_id,
+            "source_id": self.source_id,
+            "epoch": self.epoch,
+            "timeline_interval_ms": [start_ms, end_ms],
+            "source_interval_ms": [
+                start_ms + self.source_pts_offset_ms,
+                end_ms + self.source_pts_offset_ms,
+            ],
+            "source_pts_offset_ms": self.source_pts_offset_ms,
+            "entity": self.subject,
+            "action": self.action,
+            "object": self.object,
+            "description_en": self.description_en,
+            "description_ru": self.description_ru,
+            "score": self.score,
+            "score_kind": self.score_kind,
+            "margin": self.margin,
+            "confidence_is_probability": False,
+            "model_id": self.model_id,
+            "model_revision": self.model_revision,
+            "evidence_refs": list(self.evidence_refs),
+            "verification_status": self.verification_status,
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class GroundedEventGraph:
     """Latest timeline revisions plus explicit start-order links for a single source."""
 
@@ -160,6 +239,7 @@ class GroundedEventGraph:
     events: tuple[TimelineEvent, ...]
     edges: tuple[TemporalGraphEdge, ...]
     visual_sequences: tuple[VisualSequenceEvidence, ...] = ()
+    visual_action_hypotheses: tuple[VisualActionHypothesis, ...] = ()
     schema_version: int = 1
 
     def __post_init__(self) -> None:
@@ -178,6 +258,26 @@ class GroundedEventGraph:
             raise ValueError("visual feature evidence belongs to a different graph source or epoch")
         if len({item.sequence_id for item in self.visual_sequences}) != len(self.visual_sequences):
             raise ValueError("visual feature sequence IDs must be unique")
+        if any(
+            item.source_id != self.stream_id or item.epoch != self.epoch
+            for item in self.visual_action_hypotheses
+        ):
+            raise ValueError(
+                "visual action hypothesis belongs to a different graph source or epoch"
+            )
+        hypothesis_ids = [item.hypothesis_id for item in self.visual_action_hypotheses]
+        if len(set(hypothesis_ids)) != len(hypothesis_ids):
+            raise ValueError("visual action hypothesis IDs must be unique")
+        visual_evidence_refs = {
+            frame["evidence_ref"]
+            for sequence in self.visual_sequences
+            for frame in sequence.to_dict()["frames"]
+        }
+        if any(
+            not set(item.evidence_refs).issubset(visual_evidence_refs)
+            for item in self.visual_action_hypotheses
+        ):
+            raise ValueError("visual action hypotheses must reference graph frame evidence")
 
     @classmethod
     def from_events(
@@ -187,6 +287,7 @@ class GroundedEventGraph:
         stream_id: str,
         epoch: int,
         visual_feature_batches: tuple[AVFeatureBatch, ...] = (),
+        visual_action_hypotheses: tuple[VisualActionHypothesis, ...] = (),
         source_pts_offset_ms: int = 0,
     ) -> GroundedEventGraph:
         """Keep the newest revision for each event and link nodes by start-time order."""
@@ -229,7 +330,14 @@ class GroundedEventGraph:
             )
             for batch in visual_feature_batches
         )
-        return cls(stream_id, epoch, ordered, edges, visual_sequences)
+        return cls(
+            stream_id=stream_id,
+            epoch=epoch,
+            events=ordered,
+            edges=edges,
+            visual_sequences=visual_sequences,
+            visual_action_hypotheses=visual_action_hypotheses,
+        )
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize graph evidence without translating hypotheses into verified facts."""
@@ -240,6 +348,11 @@ class GroundedEventGraph:
                 "\0".join(
                     [self.stream_id, str(self.epoch)]
                     + [f"{event.event_id}:{event.revision}" for event in self.events]
+                    + [f"visual-sequence:{item.sequence_id}" for item in self.visual_sequences]
+                    + [
+                        f"visual-action-hypothesis:{item.hypothesis_id}"
+                        for item in self.visual_action_hypotheses
+                    ]
                 ).encode("utf-8")
             ).hexdigest()[:24],
             "stream_id": self.stream_id,
@@ -248,12 +361,14 @@ class GroundedEventGraph:
             "nodes": [self._node_dict(event) for event in self.events],
             "edges": [edge.to_dict() for edge in self.edges],
             "visual_sequences": [item.to_dict() for item in self.visual_sequences],
+            "visual_action_hypotheses": [item.to_dict() for item in self.visual_action_hypotheses],
             "limitations": [
                 (
-                    "This graph contains emitted timeline claims only; it does not infer "
-                    "visual entities or actions."
+                    "Timeline nodes contain emitted claims; visual sequences and action "
+                    "hypotheses are separate evidence records."
                 ),
                 "Visual token features preserve frame PTS but are not semantic action labels.",
+                "Visual action hypotheses are unverified and are not passed to Qwen narration.",
                 "Cosine similarity is not probability or human verification.",
                 "Start-time ordering and interval overlap do not imply causality.",
             ],

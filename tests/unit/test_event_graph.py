@@ -8,7 +8,12 @@ import numpy as np
 import pytest
 
 from shsd.bridge.features import AVFeatureBatch
-from shsd.memory import GroundedEventGraph, TimelineClaim, TimelineEvent
+from shsd.memory import (
+    GroundedEventGraph,
+    TimelineClaim,
+    TimelineEvent,
+    VisualActionHypothesis,
+)
 
 
 def _claim(claim_id: str, *, decision: str = "accepted") -> TimelineClaim:
@@ -72,6 +77,29 @@ def _video_features() -> AVFeatureBatch:
         interval_ms=(0, 2_000),
         frame_records=records,
     )
+
+
+def _visual_action_hypothesis(**overrides: object) -> VisualActionHypothesis:
+    values: dict[str, object] = {
+        "hypothesis_id": "visual-action-1",
+        "source_id": "source-1",
+        "epoch": 0,
+        "timeline_interval_ms": (0, 1_000),
+        "source_pts_offset_ms": 120_000,
+        "subject": "older man",
+        "action": "rises from bed to standing",
+        "object": "bed",
+        "description_en": "An older man rises from the bed to stand beside it.",
+        "description_ru": "Пожилой мужчина поднимается с кровати и встаёт рядом с ней.",
+        "score": 6.18,
+        "score_kind": "xclip_logit",
+        "margin": 0.37,
+        "model_id": "microsoft/xclip-base-patch32",
+        "model_revision": "a2e27a78a2b5d802e894b8a1ef14f3a8ce490963",
+        "evidence_refs": ("visual-frame:source-1:0:120000",),
+    }
+    values.update(overrides)
+    return VisualActionHypothesis(**values)  # type: ignore[arg-type]
 
 
 def test_graph_keeps_latest_revisions_and_orders_without_claiming_causality() -> None:
@@ -193,4 +221,50 @@ def test_graph_rejects_visual_features_from_another_source_or_epoch() -> None:
             stream_id="source-1",
             epoch=0,
             visual_feature_batches=(batch,),
+        )
+
+
+def test_graph_links_unverified_visual_action_hypothesis_without_sending_it_to_qwen() -> None:
+    graph = GroundedEventGraph.from_events(
+        [],
+        stream_id="source-1",
+        epoch=0,
+        visual_feature_batches=(_video_features(),),
+        visual_action_hypotheses=(_visual_action_hypothesis(),),
+        source_pts_offset_ms=120_000,
+    )
+
+    payload = graph.to_dict()
+    candidate = payload["visual_action_hypotheses"][0]
+    assert candidate["source_interval_ms"] == [120_000, 121_000]
+    assert candidate["entity"] == "older man"
+    assert candidate["action"] == "rises from bed to standing"
+    assert candidate["object"] == "bed"
+    assert candidate["verification_status"] == "unverified_model_hypothesis"
+    assert candidate["confidence_is_probability"] is False
+    assert candidate["evidence_refs"] == ["visual-frame:source-1:0:120000"]
+    assert graph.narration_requests() == []
+
+
+def test_graph_rejects_visual_action_hypothesis_from_another_source() -> None:
+    with pytest.raises(ValueError, match="different graph source or epoch"):
+        GroundedEventGraph.from_events(
+            [],
+            stream_id="source-1",
+            epoch=0,
+            visual_feature_batches=(_video_features(),),
+            visual_action_hypotheses=(_visual_action_hypothesis(source_id="another-source"),),
+            source_pts_offset_ms=120_000,
+        )
+
+
+def test_graph_rejects_visual_action_hypothesis_with_unlinked_frame_evidence() -> None:
+    with pytest.raises(ValueError, match="must reference graph frame evidence"):
+        GroundedEventGraph.from_events(
+            [],
+            stream_id="source-1",
+            epoch=0,
+            visual_feature_batches=(_video_features(),),
+            visual_action_hypotheses=(_visual_action_hypothesis(evidence_refs=("missing-frame",)),),
+            source_pts_offset_ms=120_000,
         )
