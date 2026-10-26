@@ -75,6 +75,10 @@ def _validate_sample(
     if not _has_text(sample_id):
         errors.append(f"{prefix}: sample_id must be non-empty")
         sample_id = None
+    else:
+        if sample_id != sample_id.strip():
+            errors.append(f"{prefix}: sample_id must not have leading or trailing whitespace")
+        sample_id = sample_id.strip()
     mode, split = record.get("mode"), record.get("split")
     if not _integer(record.get("schema_version")) or record["schema_version"] != 1:
         errors.append(f"{prefix}: schema_version must be 1")
@@ -91,8 +95,15 @@ def _validate_sample(
     if not _has_text(source_group_id):
         errors.append(f"{prefix}: source_group_id is required for source-separated splits")
         source_group_id = None
-    if not _has_text(record.get("source_id")):
+    else:
+        if source_group_id != source_group_id.strip():
+            errors.append(f"{prefix}: source_group_id must not have leading or trailing whitespace")
+        source_group_id = source_group_id.strip()
+    source_id = record.get("source_id")
+    if not _has_text(source_id):
         errors.append(f"{prefix}: source_id must be non-empty")
+    elif source_id != source_id.strip():
+        errors.append(f"{prefix}: source_id must not have leading or trailing whitespace")
     digest = record.get("source_sha256")
     if not isinstance(digest, str) or re.fullmatch(r"[0-9a-fA-F]{64}", digest) is None:
         errors.append(f"{prefix}: source_sha256 must contain 64 hexadecimal characters")
@@ -573,6 +584,7 @@ def validate_manifests(
                     )
                 sample_id = record.get("sample_id")
                 if _has_text(sample_id):
+                    sample_id = sample_id.strip()
                     previous_split = seen_sample_ids.setdefault(sample_id, expected_split)
                     if previous_split != expected_split:
                         errors.append(
@@ -583,12 +595,14 @@ def validate_manifests(
                     value = record.get(field)
                     if not _has_text(value):
                         continue
-                    normalized = value.casefold() if field == "source_sha256" else value
+                    normalized = value.strip()
+                    if field == "source_sha256":
+                        normalized = normalized.casefold()
                     identity = (field, normalized)
                     previous = seen_sources.setdefault(identity, (expected_split, location))
                     if previous[0] != expected_split:
                         errors.append(
-                            f"{location}: {field} {value} leaks across "
+                            f"{location}: {field} {normalized} leaks across "
                             f"{previous[0]}/{expected_split}"
                         )
     return DatasetReport(samples, tuple(errors))

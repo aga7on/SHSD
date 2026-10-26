@@ -258,6 +258,34 @@ def test_cross_manifest_source_leakage_is_rejected(tmp_path: Path, identity_fiel
     )
 
 
+@pytest.mark.parametrize("identity_field", ["source_group_id", "source_id"])
+def test_cross_manifest_leakage_normalizes_identity_whitespace(
+    tmp_path: Path, identity_field: str
+) -> None:
+    paths: dict[str, Path] = {}
+    for split in ("train", "val", "test"):
+        record = _sample(
+            split=split,
+            sample_id=f"sample-{split}",
+            source_group_id=f"group-{split}",
+            source_id=f"source-{split}",
+            source_sha256=("a" if split == "train" else "b" if split == "val" else "c") * 64,
+        )
+        if split == "train":
+            record[identity_field] = "shared-source"
+        elif split == "val":
+            record[identity_field] = " shared-source "
+        path = tmp_path / f"{split}.jsonl"
+        _write_manifest(path, [record])
+        paths[split] = path
+
+    report = validate_manifests(paths)
+
+    assert any(
+        f"{identity_field} shared-source leaks across train/val" in error for error in report.errors
+    )
+
+
 def test_manifest_split_mismatch_and_duplicate_sample_id_are_rejected(tmp_path: Path) -> None:
     paths: dict[str, Path] = {}
     for split in ("train", "val", "test"):
