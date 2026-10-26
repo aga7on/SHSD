@@ -104,3 +104,8 @@ SHSD (Streaming Hierarchical Semantic Decoder) должен получать ж�
 **Инженерная рекомендация, не доказанный результат обучения:** исправить музыкальную предпосылку, L2→L3 claim accounting и live backlog; создать grounded temporal graph объектов, действий и музыкальных слоёв; сравнить B0 (graph→текстовый Qwen) с B1 (обучаемый bridge→Qwen). Если EmbeddingGemma не содержит нужных token/time-level фактов, сравнить специализированные visual action/audio music encoders, а не учить Qwen придумывать отсутствующие факты.
 
 Обучение B1/LoRA/fine-tune разрешено владельцем **при документированном technical/data/CPU/budget GO**; не нужно повторно запрашивать разрешение. Нельзя объявлять GPU prototype production-ready без sustained CPU 1x. Последний Deep Research был остановлен до отчёта: конкретные API и численные улучшения остаются непроверенными до smoke tests. Следовать [F10 handoff](docs/experiments/F10-agent-handoff.md).
+
+
+## F10 — исполняемое обучение IMAGE, VIDEO, AUDIO и AV
+
+Обязательная спецификация: [F10-multimodal-training-design.md](docs/experiments/F10-multimodal-training-design.md). Проект обучает не только музыку: IMAGE — объекты и отношения на одном изображении; VIDEO — упорядоченные кадры, действия, отслеживание сущностей и последовательность событий; AUDIO — инструменты, музыкальные слои и переходы; AV — синхронизация визуальной истории и звука. Дизайн определяет FeatureBatch, два projector branches, временные и missing-modality masks, source-separated JSONL, CE по целевым токенам JSON+русского описания, начальные параметры обучения и раздельные проверки качества. Улучшение одной музыки без понимания изображений/видео не закрывает F10. Это проектная спецификация, а не измеренный результат.
