@@ -146,3 +146,19 @@
 4. **D:** сравнение B0/B1/специализированных perception моделей, sustained 1x live и решение о production. LoRA/другой fine-tune только при измеренном сигнале перспективности.
 
 Полный контракт: [F10 handoff](docs/experiments/F10-agent-handoff.md).
+
+
+## F10.06 — Мультимодальное обучение: IMAGE и VIDEO не менее важны, чем AUDIO [P0]
+
+**Обязательная исполняемая спецификация: [F10-multimodal-training-design.md](docs/experiments/F10-multimodal-training-design.md).** Предыдущее F10 описывало архитектуру, но не loss, JSONL, masks и training schedule. Новый документ — первичный для деталей обучения. Музыка не может заменить выполнение задач по видео/изображениям.
+
+- [ ] IMAGE-only: одиночное изображение, entities/attributes/spatial relations, grounded русский текст; отрицательный тест на придуманные движения/звуки.
+- [ ] VIDEO-only: **упорядоченные кадры с PTS**, entity tracking, subject-action-object, temporal before/after, shuffled frames negatives и связный русский сюжет; frame tags недостаточно.
+- [ ] AUDIO-only: speech/music/ambience overlap, инструменты/бас/ударные/вокал, музыкальные слои, onset/offset, не выдумывать видимых людей.
+- [ ] AV: синхронизированная визуальная последовательность + музыка/звук с timestamp evidence; shifted/swapped-audio negatives и отсутствие ложной причинности.
+- [ ] Реализовать `FeatureBatch`, two-branch vision/audio projector+temporal resampler, missing modality masks, source-separated JSONL, grounded events+caption target, Qwen target-only CE с `labels=-100` для prefix/prompt/pad и macro-balanced four-mode evaluation.
+- [ ] B1: frozen EmbeddingGemma 2 и Qwen3-0.6B, bridge-only AdamW (initial lr=1e-4 и остальные гиперпараметры в design, **не validated**), короткий train-only sanity, bounded pilot только после documented GO; LoRA при необходимости.
+- [ ] Held-out quality отдельно для IMAGE, VIDEO, AUDIO и AV, hallucinations/unsupported claims и cold unique-media CPU 1x lag/drops.
+- **DoD:** реальный код/tests, source/rights/training config, независимая ручная разметка и raw сравнение A0/B0/B1. **Music-only improvement при визуальном провале = NO-GO.**
+
+**Сразу агенту:** PR1 проверка API и feature shapes для image/video/audio и CPU Qwen; PR2 JSONL/data/masks/EventGraph/B0; PR3 B1 training после GO; PR4 per-mode A/B+CPU realtime. [Поручение](docs/experiments/F10-agent-handoff.md).
