@@ -1,5 +1,7 @@
 # SHSD
 
+> **Актуальный план (26.10.2026):** [Workspace.md](Workspace.md) · [Todo.md](Todo.md) · [Agents.md](Agents.md) · [протокол оценки](docs/experiments/av-bridge-evaluation-protocol.md). Приоритеты: достоверность music L2, передача claims в Qwen, независимые метки и 1x CPU live. Обучение **не разрешено**; [ADR-002](docs/adr/ADR-002-multimodal-bridge-evaluation.md) только Proposed. [Архив предыдущих документов](docs/archive/2026-10-26-pre-multimodal-review/INDEX.md).
+
 SHSD (Streaming Hierarchical Semantic Decoder) is a local, CPU-first audio/video timeline PoC. The project specification and implementation rules are in [Workspace.md](Workspace.md), [Todo.md](Todo.md), and [Agents.md](Agents.md).
 
 The current implementation includes exact rational PTS conversion, a streaming PyAV reader for audio/video packets, a bounded 600-second media ring, fast/realtime replay control, model-free change detectors, a CPU EmbeddingGemma provider, semantic candidate matching with abstention, a revisioned SQLite timeline, a local bounded Qwen narrator, separate asynchronous L1/L2/L3 job queues, and interval-based progressive watermarks. `shsd analyze` runs a local L0/L1/L2/L3 file pass and writes evidence, revision, caption, and watermark JSONL records.
@@ -146,3 +148,8 @@ The unit tests cover package import/version, help output, PTS/epoch behavior, al
 ## Latest full-stack measurements (2026-10-26)
 
 Detailed feature comparisons are in [`benchmarks/reports/fullstack_feature_ab.md`](benchmarks/reports/fullstack_feature_ab.md), with machine-readable values in the adjacent JSON. Qwen L3 measured 30.9 tokens/s at 2x and 12.3 at 5x, while its per-stream RTF exceeded 1 at both scales. The source-only template fallback stayed below RTF 1 and took under 0.05 ms p95 to construct. GigaAM ASR and dynamic hypothesis generation remain opt-in based on their measured runtime, memory, and proposal timeouts. The earlier 10-minute run is historical because its end-of-file scheduler rejects preceded the `current_depth` fix; `fullstack_pressure_recheck.md` records the corrected zero-reject result. The 30-minute baseline and next-version decision are recorded in `benchmarks/reports/fullstack_av_30m_soak.md` and `docs/adr/ADR-001-next-version-performance.md`. Adaptive sampling is available as `shsd analyze --sampling-profile adaptive`; its exploratory natural-window and synthetic silence A/B results are in `benchmarks/reports/adaptive_sampling_natural.md` and `benchmarks/reports/adaptive_sampling_silence_ab/sampling_profiles_ab.md`. Keep it opt-in because the natural set showed no embedding reduction. `F6.01` and `F6.02` remain active.
+
+
+## Quality and realtime status (2026-10-26)
+
+The 90-second offline `Tears of Steel` run yielded 1 policy-accepted, not independently verified percussion detail and 3 mostly generic Russian L3 captions ([review](benchmarks/reports/music_multiclass_l2_20261026/real_video_quality_review.md)). The 60-second 1x live Qwen v2 test reached only 41.828 seconds of capture, with 503 shared-prefetch drops and L1 median lag 22.27 seconds ([report](benchmarks/reports/live_qwen_v2_60s_20261026/report.md)). These are **not** proof of music accuracy or realtime. The new F7–F9 roadmap and evaluation protocol are in [Todo.md](Todo.md).
