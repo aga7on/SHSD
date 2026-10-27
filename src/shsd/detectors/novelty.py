@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from shsd.detectors.types import SignalObservation
 
+import math
+
 AUDIO_DELTA_METHOD_VERSION = "audio-window-delta-v1"
 
 
@@ -77,3 +79,40 @@ def compare_audio_windows(
         )
         for subtype, value, unit in measurements
     ]
+
+
+def detect_audio_transitions(
+    windows: list[list[SignalObservation]],
+    *,
+    centroid_threshold_hz: float = 200.0,
+    loudness_threshold_db: float = 6.0,
+) -> list[tuple[int, int, float, float]]:
+    """Detect adjacent audio windows with a significant spectral or loudness change.
+
+    Returns (start_ms, end_ms, centroid_delta_hz, loudness_delta_db) for each
+    transition. This is an acoustic change signal, not a semantic music claim.
+    """
+    if not windows or len(windows) < 2:
+        return []
+    if centroid_threshold_hz < 0 or loudness_threshold_db < 0:
+        raise ValueError("transition thresholds must be non-negative")
+    transitions: list[tuple[int, int, float, float]] = []
+    for previous, current in zip(windows, windows[1:], strict=False):
+        deltas = compare_audio_windows(previous, current)
+        if not deltas:
+            continue
+        centroid_delta = 0.0
+        loudness_delta = 0.0
+        for item in deltas:
+            if item.subtype == "spectral_centroid_delta_hz":
+                centroid_delta = float(item.value)
+            elif item.subtype == "loudness_delta_db":
+                loudness_delta = float(item.value)
+        if (
+            abs(centroid_delta) >= centroid_threshold_hz
+            or abs(loudness_delta) >= loudness_threshold_db
+        ):
+            transitions.append(
+                (min(i.start_ms for i in current), max(i.end_ms for i in current), centroid_delta, loudness_delta)
+            )
+    return transitions
