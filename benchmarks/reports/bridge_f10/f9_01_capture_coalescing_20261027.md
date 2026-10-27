@@ -17,6 +17,8 @@ Windows 11 Pro for Workstations, AMD Ryzen 9 9900X3D, 4 configured CPU threads, 
 
 The final run had 0 ring ingest drops, 3.435 GB peak process-tree RSS, and L2 reported zero confirmed refinements. Its 3 pre-stop captions and 17.704 s median lag are a small sample; they do not prove a stable latency reduction. Shared-queue item counts are **not directly comparable** after aggregation: one item can now represent multiple capture packets. Neither the queue counter nor the unchanged capture/embedding coverage demonstrates that loss of useful media work was eliminated. This run does not meet sustained 1x and does not establish visual-action or music-transition accuracy. Two Qwen fallback outputs occurred across all five captions including post-stop output; no L2 music transition was confirmed.
 
+Startup is a concrete part of the lag: the first nonzero capture cursor was observed 20.732 s after publisher start, at C=5.037 s; model and candidate-profile initialization reported 9.863 s. The exact source-time relationship at connection has not been independently aligned, so these numbers alone do not establish how much initial media was lost. From the samples near 29.94 s to 59.15 s, C advanced from 14.287 s to 41.787 s and E from 10.037 s to 35.110 s. Investigate startup and capture/embedding separately; do not treat cursor movement after startup as full coverage of the original publisher timeline.
+
 Raw records: [previous baseline](live_qwen_current_20261027/report.json), [rejected direct update](live_capture_direct_20261027/report.json), [coalesced first run](live_capture_coalesced_20261027/report.json), [coalesced final run](live_capture_coalesced_final_20261027/report.json).
 
 ## Reproduction and checks
