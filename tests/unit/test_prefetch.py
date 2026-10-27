@@ -18,9 +18,7 @@ def test_iter_merge_by_key_interleaves_sorted_modalities() -> None:
     audio = [(0, "audio-0"), (5_000, "audio-5"), (10_000, "audio-10")]
     video = [(1_000, "video-1"), (6_000, "video-6"), (11_000, "video-11")]
 
-    result = list(
-        iter_merge_by_key((audio, video), key=lambda item: item[0])
-    )
+    result = list(iter_merge_by_key((audio, video), key=lambda item: item[0]))
 
     assert [item[1] for item in result] == [
         "audio-0",
@@ -80,6 +78,23 @@ def test_iter_merge_by_key_closes_sources_when_consumer_stops_early() -> None:
     merged.close()
 
     assert sorted(closed) == ["audio", "video"]
+
+
+def test_bounded_prefetch_closes_source_after_consumer_cancellation() -> None:
+    closed = Event()
+
+    def source() -> Iterator[int]:
+        try:
+            yield 1
+            while True:
+                yield 2
+        finally:
+            closed.set()
+
+    rows = iter_bounded_prefetch(source, telemetry=PrefetchTelemetry(capacity=1))
+    assert next(rows) == 1
+    rows.close()
+    assert closed.wait(timeout=2)
 
 
 @pytest.mark.parametrize(

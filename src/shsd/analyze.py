@@ -605,6 +605,54 @@ def _timed_video_work(
             close()
 
 
+def _coalesce_capture_updates(
+    items: Iterable[tuple[Modality, CaptureSpan | DecodedFrame]],
+    *,
+    on_pending: Callable[[CaptureSpan], None],
+    max_span_ms: int = 250,
+) -> Iterator[tuple[Modality, CaptureSpan | DecodedFrame]]:
+    """Combine contiguous capture coverage without filling gaps or losing stop-time spans."""
+    if max_span_ms < 1:
+        raise ValueError("max_span_ms must be positive")
+    pending: dict[Modality, CaptureSpan] = {}
+    iterator = iter(items)
+    try:
+        for modality, item in iterator:
+            if not isinstance(item, CaptureSpan):
+                yield modality, item
+                continue
+            previous = pending.get(modality)
+            if (
+                previous is not None
+                and previous.status == item.status
+                and previous.reason == item.reason
+                and previous.start_ms <= item.start_ms <= previous.end_ms
+            ):
+                pending[modality] = CaptureSpan(
+                    modality,
+                    previous.start_ms,
+                    max(previous.end_ms, item.end_ms),
+                    item.status,
+                    item.reason,
+                )
+            else:
+                pending[modality] = item
+                if previous is not None:
+                    yield modality, previous
+            current = pending[modality]
+            if current.end_ms - current.start_ms >= max_span_ms:
+                del pending[modality]
+                yield modality, current
+        for modality in tuple(pending):
+            yield modality, pending.pop(modality)
+    finally:
+        for span in pending.values():
+            on_pending(span)
+        close = getattr(iterator, "close", None)
+        if callable(close):
+            close()
+
+
 def _timed_shared_media_work(
     items: Iterable[tuple[Modality, CaptureSpan | DecodedFrame]],
     *,
@@ -628,29 +676,34 @@ def _timed_shared_media_work(
     )
     last_ready_ms = 0
 
-    for modality, item in items:
-        if modality == "audio" and audio_builder is not None:
-            transformed = audio_builder.push(item)
-            for audio_work in transformed:
-                ready_ms = (
-                    audio_work.end_ms if isinstance(audio_work, CaptureSpan) else audio_work[1]
-                )
-                last_ready_ms = max(last_ready_ms, ready_ms)
-                yield last_ready_ms, "audio", audio_work
-        elif modality == "video" and video_selector is not None:
-            for video_work in video_selector.push(item):
-                ready_ms = (
-                    video_work.end_ms
-                    if isinstance(video_work, CaptureSpan)
-                    else video_work.frame_ms
-                )
-                last_ready_ms = max(last_ready_ms, ready_ms)
-                yield last_ready_ms, "video", video_work
+    try:
+        for modality, item in items:
+            if modality == "audio" and audio_builder is not None:
+                transformed = audio_builder.push(item)
+                for audio_work in transformed:
+                    ready_ms = (
+                        audio_work.end_ms if isinstance(audio_work, CaptureSpan) else audio_work[1]
+                    )
+                    last_ready_ms = max(last_ready_ms, ready_ms)
+                    yield last_ready_ms, "audio", audio_work
+            elif modality == "video" and video_selector is not None:
+                for video_work in video_selector.push(item):
+                    ready_ms = (
+                        video_work.end_ms
+                        if isinstance(video_work, CaptureSpan)
+                        else video_work.frame_ms
+                    )
+                    last_ready_ms = max(last_ready_ms, ready_ms)
+                    yield last_ready_ms, "video", video_work
 
-    if audio_builder is not None:
-        for work in audio_builder.finish():
-            last_ready_ms = max(last_ready_ms, work[1])
-            yield last_ready_ms, "audio", work
+        if audio_builder is not None:
+            for work in audio_builder.finish():
+                last_ready_ms = max(last_ready_ms, work[1])
+                yield last_ready_ms, "audio", work
+    finally:
+        close = getattr(items, "close", None)
+        if callable(close):
+            close()
 
 
 def _mark_prefetch_drop_coverage(
@@ -2071,13 +2124,18 @@ def analyze_media(
         shared_prefetch: Generator[tuple[int, str, object], None, None] | None = None
         if remote_source:
             shared_items = _timed_shared_media_work(
-                iter_decoded_media_from_ring(
-                    source,
-                    stream_id=stream_id,
-                    modalities=media.available_modalities,
-                    telemetry=ingest_telemetry,
-                    load_controller=load_controller,
-                    stop_event=stop_event,
+                _coalesce_capture_updates(
+                    iter_decoded_media_from_ring(
+                        source,
+                        stream_id=stream_id,
+                        modalities=media.available_modalities,
+                        telemetry=ingest_telemetry,
+                        load_controller=load_controller,
+                        stop_event=stop_event,
+                    ),
+                    on_pending=lambda span: mark_ingest_capture(
+                        span.modality, span.start_ms, span.end_ms, span.status, span.reason
+                    ),
                 ),
                 modalities=set(media.available_modalities),
                 window_ms=window_ms,

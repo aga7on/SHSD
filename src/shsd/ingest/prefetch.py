@@ -84,9 +84,7 @@ def iter_bounded_prefetch(
         raise ValueError("overflow_policy must be block, drop_newest, or drop_oldest")
     telemetry.overflow_policy = overflow_policy
 
-    messages: Queue[tuple[_MessageKind, object | None]] = Queue(
-        maxsize=telemetry.capacity
-    )
+    messages: Queue[tuple[_MessageKind, object | None]] = Queue(maxsize=telemetry.capacity)
     stop = Event()
     drop_lock = Lock()
 
@@ -159,9 +157,15 @@ def iter_bounded_prefetch(
 
     def produce() -> None:
         try:
-            for item in factory():
-                if not offer("item", item):
-                    return
+            source = iter(factory())
+            try:
+                for item in source:
+                    if not offer("item", item):
+                        return
+            finally:
+                close = getattr(source, "close", None)
+                if callable(close):
+                    close()
         except BaseException as error:
             offer_control("error", error)
         finally:

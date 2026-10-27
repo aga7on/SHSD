@@ -10,6 +10,7 @@ import pytest
 from shsd.analyze import (
     _active_levels,
     _AudioWindowBuilder,
+    _coalesce_capture_updates,
     _mark_initial_capture_gap,
     _mark_prefetch_drop_coverage,
     _match_window,
@@ -173,10 +174,41 @@ def test_timed_video_work_does_not_move_back_before_its_capture_packet() -> None
     assert [item[0] for item in work] == [33, 33, 66, 66]
 
 
-def test_prefetch_drops_create_audio_and_speech_coverage_gaps() -> None:
-    tracker = WatermarkTracker(
-        "audio-drop", required_modalities={"audio", "speech"}
+def test_capture_updates_coalesce_without_filling_gaps_or_drops() -> None:
+    spans = [
+        CaptureSpan("video", 0, 100, "done"),
+        CaptureSpan("audio", 0, 20, "done"),
+        CaptureSpan("video", 100, 200, "done"),
+        CaptureSpan("video", 250, 300, "dropped", "ring_overflow"),
+    ]
+    frame = DecodedFrame(type("Frame", (), {"pts": 0, "time_base": None})())
+    source = [(span.modality, span) for span in spans] + [("video", frame)]
+    observed: list[CaptureSpan] = []
+    work = list(_coalesce_capture_updates(source, on_pending=observed.append))
+    captures = [item for _, item in work if isinstance(item, CaptureSpan)]
+    assert captures == [
+        CaptureSpan("video", 0, 200, "done"),
+        CaptureSpan("video", 250, 300, "dropped", "ring_overflow"),
+        CaptureSpan("audio", 0, 20, "done"),
+    ]
+    assert ("video", frame) in work
+    assert observed == []
+
+
+def test_capture_coalescer_reports_pending_coverage_on_close() -> None:
+    span = CaptureSpan("video", 0, 33, "done")
+    frame = DecodedFrame(type("Frame", (), {"pts": 0, "time_base": None})())
+    observed: list[CaptureSpan] = []
+    work = _coalesce_capture_updates(
+        [("video", span), ("video", frame)], on_pending=observed.append
     )
+    assert next(work) == ("video", frame)
+    work.close()
+    assert observed == [span]
+
+
+def test_prefetch_drops_create_audio_and_speech_coverage_gaps() -> None:
+    tracker = WatermarkTracker("audio-drop", required_modalities={"audio", "speech"})
 
     _mark_prefetch_drop_coverage(
         tracker,
@@ -203,11 +235,14 @@ def test_initial_live_capture_offsets_are_reported_as_gaps_without_stalling_c() 
 
     snapshot = tracker.snapshot(through_ms=1_394)
     assert snapshot.C_ms == 1_184
-    assert [(issue.modality, issue.start_ms, issue.end_ms, issue.reason)
-            for issue in snapshot.issues if issue.stage == "C" and issue.status == "gap"] == [
-                ("audio", 0, 394, "not_observed_by_decoder"),
-                ("video", 0, 184, "not_observed_by_decoder"),
-            ]
+    assert [
+        (issue.modality, issue.start_ms, issue.end_ms, issue.reason)
+        for issue in snapshot.issues
+        if issue.stage == "C" and issue.status == "gap"
+    ] == [
+        ("audio", 0, 394, "not_observed_by_decoder"),
+        ("video", 0, 184, "not_observed_by_decoder"),
+    ]
 
 
 def test_capture_tracker_infers_missing_packet_durations_from_next_pts() -> None:
@@ -228,9 +263,7 @@ def test_prefetch_drops_only_mark_selected_video_embeddings() -> None:
     assert tracker.spans("E", modality="video") == ()
 
     embedding_frame = _SelectedVideoWork(object(), 5_000, False, True)
-    _mark_prefetch_drop_coverage(
-        tracker, "video", embedding_frame, "prefetch_queue_full"
-    )
+    _mark_prefetch_drop_coverage(tracker, "video", embedding_frame, "prefetch_queue_full")
 
     spans = tracker.spans("E", modality="video")
     assert [(span.start_ms, span.end_ms, span.status) for span in spans] == [
@@ -259,9 +292,7 @@ def test_dropped_video_embedding_releases_stride_for_retry() -> None:
     assert selected.on_embedding_drop is not None
 
     tracker = WatermarkTracker("video-retry", required_modalities={"video"})
-    _mark_prefetch_drop_coverage(
-        tracker, "video", selected, "prefetch_queue_full"
-    )
+    _mark_prefetch_drop_coverage(tracker, "video", selected, "prefetch_queue_full")
     retry_frame = DecodedFrame(
         type("Frame", (), {"pts": 20_100, "time_base": Fraction(1, 1_000)})()
     )
@@ -269,9 +300,9 @@ def test_dropped_video_embedding_releases_stride_for_retry() -> None:
 
     assert isinstance(retried, _SelectedVideoWork)
     assert retried.embedding_selected
-    assert [(span.start_ms, span.end_ms, span.status) for span in tracker.spans(
-        "E", modality="video"
-    )] == [(20_000, 20_001, "dropped")]
+    assert [
+        (span.start_ms, span.end_ms, span.status) for span in tracker.spans("E", modality="video")
+    ] == [(20_000, 20_001, "dropped")]
 
 
 def test_adaptive_video_reuses_the_low_resolution_frame_for_l0() -> None:
@@ -482,22 +513,23 @@ def test_speech_opt_in_emits_revisions_without_changing_audio_observations(
     monkeypatch.setattr(analyze_module, "GigaAMTranscriber", failed_transcriber)
     audio_failure_rows, failure_metrics = run("speech-failure", True)
     audio_baseline = [
-        row for row in baseline_rows
+        row
+        for row in baseline_rows
         if row.get("record_type") == "observation" and row.get("modality") == "audio"
     ]
     audio_speech = [
-        row for row in speech_rows
+        row
+        for row in speech_rows
         if row.get("record_type") == "observation" and row.get("modality") == "audio"
     ]
     segments = [row for row in speech_rows if row.get("record_type") == "speech_segment"]
-    pressure_segments = [
-        row for row in pressure_rows if row.get("record_type") == "speech_segment"
-    ]
+    pressure_segments = [row for row in pressure_rows if row.get("record_type") == "speech_segment"]
     baseline_matches = [row for row in baseline_rows if row.get("record_type") == "window_match"]
     speech_matches = [row for row in speech_rows if row.get("record_type") == "window_match"]
     failure_matches = [
         row for row in audio_failure_rows if row.get("record_type") == "window_match"
     ]
+
     def signature(rows: list[dict[str, Any]]) -> list[tuple[Any, ...]]:
         return [
             (
@@ -527,7 +559,8 @@ def test_speech_opt_in_emits_revisions_without_changing_audio_observations(
     assert pressure_metrics["speech_worker"]["admission_dropped"] == 0
     assert [segment["status"] for segment in pressure_segments] == ["partial", "final"]
     audio_failed = [
-        row for row in audio_failure_rows
+        row
+        for row in audio_failure_rows
         if row.get("record_type") == "observation" and row.get("modality") == "audio"
     ]
     failed_segments = [
