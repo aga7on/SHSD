@@ -14,6 +14,8 @@
 - Не закрывать checkbox без ссылки на тест/сырые JSON/benchmark, git SHA, версий моделей, конфигурации, точных команд и негативных примеров. `not run` писать явно.
 - Отчёты класть в `benchmarks/reports/`; при изменении схем — документировать совместимость, миграцию и regression tests.
 
+**Текущий приоритет владельца:** сначала получить проверяемый работающий концепт содержательного описания видео и аудио на реальных примерах, затем оптимизировать realtime. Отсутствие независимых меток ограничивает оценку точности, но не останавливает разработку и исследование восприятия.
+
 ## F7 — Достоверность музыки и смысловой traceability
 
 ### F7.01 — Разделить music_possible и music_confirmed [P0]
@@ -54,6 +56,7 @@
 ## F8 — Динамика и сюжет
 
 ### F8.01 — Семантические музыкальные переходы [P1]
+- [ ] Frozen MusicNN diagnostic: two repeat runs match, but the model ranks guitar on digital silence and vocal on synthetic speech; do not publish its scores as confirmed facts. Real-film and splice scores, controls and source times: [probe report](benchmarks/reports/bridge_f10/f8_01_musicnn_probe_20261027.md).
 - [ ] Проверять на соседних окнах появление/исчезновение/смену музыкального слоя; сохранять temporal support и стабильный ID слоя, отличать acoustic novelty от semantic transition.
 - [ ] Раздельные оси: percussion, bass, vocals, timbre, instrument family, energy, tempo feel; никаких выводов о точном BPM/инструменте без подтверждения.
 - [ ] Добавить тесты с известным onset/offset и negative windows (речь, шум, монтаж), измерить precision/recall на размеченных примерах.
@@ -61,6 +64,8 @@
 - **Depends:** F7.01, F7.03.
 
 ### F8.02 — Визуальные действия и связное русское описание [P1]
+- [ ] Frozen SmolVLM2 500M generated unsupported scene details and an incorrect final action on the real clip, plus a gun claim on a repeated static frame. Keep its output unverified: [sequence probe](benchmarks/reports/bridge_f10/f8_02_smolvlm_video_probe_20261027.md).
+- [ ] Generic frame-state probe: `no_person` ranked first in 5/8 frames with visible people; among positive postures, `lying` ranked first on 7/8. No action was accepted: [diagnostic](benchmarks/reports/bridge_f10/f8_02_visual_state_probe_20261027.md).
 - [ ] Отличать change/cut detectors от подтверждённых entity/action events, хранить temporal order и повторное появление сущностей.
 - [ ] Дать Qwen grounded scene sequence, а не только `image_change`; проверить связность, фактологичность, таймкоды и отсутствие вымышленных мотивов.
 - [ ] Оценить 20–90-с последовательности, повторяемость generic captions и hallucinations по независимым меткам.
@@ -109,7 +114,7 @@
 - [x] Add a typed temporal claim graph and route it into B0 narration requests; JSONL now emits `event_graph` with source evidence, revisions, confidence type, and start-order edges: [graph.py](src/shsd/memory/graph.py).
 - [x] Define IMAGE/VIDEO/AUDIO/AV sample JSON Schema and implement a JSONL validator for PTS/evidence references, modality masks, license-permitted split use, human verification, and source-group leakage: [schema](configs/schemas/av_bridge_sample_v1.schema.json), [validator](scripts/validate_bridge_dataset.py).
 - [x] Add an alignment-safe `AVFeatureBatch` adapter that retains one unpooled IMAGE sequence per exact frame PTS and an independent interval AUDIO sequence: [features.py](src/shsd/bridge/features.py).
-- [x] Add unit tests for `dataset.py`, `AVFeatureBatch`, EventGraph links, action-scan windows, raw pixel-change summaries, blind-review CSV validation, and human-reviewed B0 conversion: modality masks, PTS evidence and offset integrity, annotation provenance, EAO fields, transition bracketing, Qwen-request rehydration, and narration output plumbing; the eight F10 bridge/review modules → **77 passed**, full `tests/unit` → **279 passed**; Ruff clean. See [bridge tests](tests/unit/test_bridge_dataset.py), [graph tests](tests/unit/test_event_graph.py), [review validator tests](tests/unit/test_validate_f10_review_labels.py), [reviewed graph tests](tests/unit/test_build_f10_reviewed_graphs.py), and [memory tests](tests/unit/test_memory.py).
+- [x] Add unit tests for `dataset.py`, `AVFeatureBatch`, EventGraph links, action-scan windows, raw pixel-change summaries, blind-review CSV validation, and human-reviewed B0 conversion: modality masks, PTS evidence and offset integrity, annotation provenance, EAO fields, transition bracketing, Qwen-request rehydration, and narration output plumbing; the eight F10 bridge/review modules → **77 passed**, full `tests/unit` → **294 passed**; Ruff clean. See [bridge tests](tests/unit/test_bridge_dataset.py), [graph tests](tests/unit/test_event_graph.py), [review validator tests](tests/unit/test_validate_f10_review_labels.py), [reviewed graph tests](tests/unit/test_build_f10_reviewed_graphs.py), and [memory tests](tests/unit/test_memory.py).
 - [x] Validate train/val/test manifests together; reject split-field mismatches, duplicate sample IDs, and cross-split collisions in trimmed `source_group_id`/`source_id` and normalized `source_sha256`; support `--train`, `--val`, `--test` in the CLI.
 - [x] Connect ordered `AVFeatureBatch` frame sequences through the B0 `GroundedEventGraph`; test PTS offset, per-frame token shapes, source/epoch matching, event-to-frame references, and explicit no-action-inference. The optional graph can retain unverified model hypotheses separately. The offline importer turns only `human_verified` review rows into accepted, provenance-tagged visual-action/music-transition claims, links visual claims to exact sequence frame refs, and can run pinned CPU Qwen with `--narrate-qwen` to save actual L3 results with coverage/fallback metadata: [builder](scripts/build_f10_reviewed_graphs.py). Builder integration tests use synthetic rows only; no real output is considered verified.
 - [ ] **P0 — Visual semantic grounding:** replace or constrain the external action baseline before treating it as B0 evidence. In a 13-window scan it ranked “rises from bed” in 12 windows, including late frames with little pixel change; the logit rose to 12.984 as mean frame difference fell. Keep hypotheses unverified and outside Qwen/default `analyze`; obtain independent labels before accepting entity/action/object events. See [scan JSON](benchmarks/reports/bridge_f10/video_action_sequence_xclip_tears120-140.json) and [semantic candidates report](benchmarks/reports/bridge_f10/f10_03_semantic_candidates_20261027.md).

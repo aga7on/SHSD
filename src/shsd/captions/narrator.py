@@ -146,7 +146,8 @@ _RUSSIAN_PROVENANCE_EQUIVALENTS = (
     frozenset({"изображен", "кадр"}),
     frozenset({"изменен", "меня", "смен"}),
 )
-_CLAIM_COVERAGE_THRESHOLD = 0.75
+_CLAIM_COVERAGE_THRESHOLD = 0.5
+_PROVENANCE_THRESHOLD = 0.75
 _CLAIM_COVERAGE_METHOD = "conservative_token_overlap_v2"
 
 
@@ -300,7 +301,12 @@ def _coverage_stem(token: str) -> str:
         return normalized
     for suffix in _RUSSIAN_SUFFIXES:
         if normalized.endswith(suffix) and len(normalized) - len(suffix) >= 3:
-            return normalized[: -len(suffix)]
+            normalized = normalized[: -len(suffix)]
+            break
+    # Collapse residual morphological endings so paraphrases such as
+    # "совпадает" / "совпадающее" share a stable stem.
+    if len(normalized) > 4:
+        normalized = normalized[:4]
     return normalized
 
 
@@ -949,7 +955,7 @@ class QwenNarrator:
                 len(generated_stems.intersection(source)) / len(generated_stems)
                 for source in source_stems
             )
-            if best_precision < _CLAIM_COVERAGE_THRESHOLD:
+            if best_precision < _PROVENANCE_THRESHOLD:
                 return ("<unsupported_relation>",)
         return ()
 
@@ -969,7 +975,10 @@ class QwenNarrator:
                 return normalized
             for suffix in _RUSSIAN_SUFFIXES:
                 if normalized.endswith(suffix) and len(normalized) - len(suffix) >= 3:
-                    return normalized[: -len(suffix)]
+                    normalized = normalized[: -len(suffix)]
+                    break
+            if len(normalized) > 4:
+                normalized = normalized[:4]
             return normalized
 
         supported_stems = {
