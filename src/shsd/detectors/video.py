@@ -99,3 +99,61 @@ def analyze_video_frames(
         previous_ms = timestamp_ms
         previous_color = color
     return observations
+
+
+def detect_motion_segments(
+    frames: Iterable[tuple[int, ArrayLike]],
+    *,
+    width: int = 160,
+    height: int = 90,
+    motion_threshold: float = 0.02,
+    min_duration_ms: int = 500,
+) -> list[tuple[int, int, float, int]]:
+    """Group consecutive frame pairs with sustained pixel change into motion intervals.
+
+    Returns (start_ms, end_ms, mean_diff, frame_count) for each segment. This is
+    a motion boundary signal, not a semantic action label; callers must not
+    treat it as an entity/action fact without independent verification.
+    """
+    if width <= 0 or height <= 0:
+        raise ValueError("downscaled frame dimensions must be positive")
+    if motion_threshold < 0:
+        raise ValueError("motion_threshold must be non-negative")
+    if min_duration_ms < 0:
+        raise ValueError("min_duration_ms must be non-negative")
+
+    samples: list[tuple[int, int, float]] = []
+    previous_ms: int | None = None
+    previous_color: np.ndarray | None = None
+    for timestamp_ms, frame in frames:
+        if timestamp_ms < 0:
+            raise ValueError("frame timestamp must be non-negative")
+        color = _downscaled_color(frame, width, height)
+        if previous_color is not None and previous_ms is not None:
+            if timestamp_ms <= previous_ms:
+                raise ValueError("frame timestamps must be strictly increasing")
+            score = float(np.abs(color - previous_color).mean())
+            samples.append((previous_ms, timestamp_ms, score))
+        previous_ms = timestamp_ms
+        previous_color = color
+
+    segments: list[tuple[int, int, float, int]] = []
+    current: list[tuple[int, int, float]] = []
+    for start_ms, end_ms, score in samples:
+        if score >= motion_threshold:
+            current.append((start_ms, end_ms, score))
+        else:
+            if current:
+                span_ms = current[-1][1] - current[0][0]
+                if span_ms >= min_duration_ms:
+                    mean_diff = float(np.mean([item[2] for item in current]))
+                    segments.append(
+                        (current[0][0], current[-1][1], mean_diff, len(current))
+                    )
+                current = []
+    if current:
+        span_ms = current[-1][1] - current[0][0]
+        if span_ms >= min_duration_ms:
+            mean_diff = float(np.mean([item[2] for item in current]))
+            segments.append((current[0][0], current[-1][1], mean_diff, len(current)))
+    return segments

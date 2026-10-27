@@ -3,7 +3,12 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from shsd.detectors import SignalObservation, analyze_audio, analyze_video_frames
+from shsd.detectors import (
+    SignalObservation,
+    analyze_audio,
+    analyze_video_frames,
+    detect_motion_segments,
+)
 
 
 def test_audio_silence_is_inactive_and_tone_has_rms_and_novelty() -> None:
@@ -83,6 +88,34 @@ def test_video_detects_a_cut_that_changes_only_part_of_the_frame() -> None:
     difference = next(item for item in observations if item.subtype == "frame_difference")
     assert 0.08 <= difference.value < 0.25
     assert any(item.subtype == "scene_cut" and item.value is True for item in observations)
+
+
+def test_detect_motion_segments_groups_sustained_motion() -> None:
+    # Frame 0 and 1: static; frames 2-4: motion; frames 5-6: static.
+    frames = []
+    base = np.zeros((8, 8, 3), dtype=np.uint8)
+    frames.append((0, base.copy()))
+    frames.append((100, base.copy()))
+    # Sustained motion: each frame shifts the white square.
+    for i, ts in enumerate((200, 300, 400)):
+        f = base.copy()
+        f[2 + i : 6 + i, 2 + i : 6 + i, :] = 255
+        frames.append((ts, f))
+    frames.append((500, base.copy()))
+    frames.append((600, base.copy()))
+    segments = detect_motion_segments(frames, motion_threshold=0.05, min_duration_ms=100)
+    assert len(segments) == 1
+    start, end, mean_diff, count = segments[0]
+    assert start == 100
+    assert end == 500
+    assert mean_diff > 0.05
+    assert count == 4
+
+
+def test_detect_motion_segments_rejects_invalid_threshold() -> None:
+    frame = np.zeros((4, 4, 3), dtype=np.uint8)
+    with pytest.raises(ValueError):
+        detect_motion_segments([(0, frame), (100, frame)], motion_threshold=-0.1)
 
 
 def test_observation_contract_is_json_compatible() -> None:
