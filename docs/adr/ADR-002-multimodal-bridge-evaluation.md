@@ -18,7 +18,7 @@
 
 ## Gate перспективности
 
-Общее embedding-пространство не означает способности строить визуальный сюжет или музыкальные переходы. До обучения подтвердить доступные audio/video features, Qwen non-text conditioning и CPU deploy path; легальные source-separated данные; независимые visual/music quality metrics и ограниченный budget. B1 small projector — первый пилот; B2 LoRA/глубокое обучение — только при подтверждённой перспективности. Если pooled EmbeddingGemma теряет действия/инструменты, сравнить независимые perception models. [F10 handoff](docs/experiments/F10-agent-handoff.md) · [GO template](docs/experiments/F10-GO.template.md).
+Общее embedding-пространство не означает способности строить визуальный сюжет или музыкальные переходы. До обучения подтвердить доступные audio/video features, Qwen non-text conditioning и CPU deploy path; легальные source-separated данные; независимые visual/music quality metrics и ограниченный budget. B1 small projector — первый пилот; B2 LoRA/глубокое обучение — только при подтверждённой перспективности. Если pooled EmbeddingGemma теряет действия/инструменты, сравнить независимые perception models. [F10 handoff](../experiments/F10-agent-handoff.md) · [GO template](../experiments/F10-GO.template.md).
 
 ## Решение на сегодня
 

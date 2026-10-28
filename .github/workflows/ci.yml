@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: ruff + pytest (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # PyAV 19.x requires Python >= 3.12 even though the package metadata still
+        # advertises 3.11; see docs/audit/2026-10-28-repository-audit.md.
+        python-version: ["3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install CPU development dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+      - name: Ruff
+        run: ruff check .
+      - name: Unit tests
+        run: python -m pytest -q
+      # Advisory until the strict-mypy backlog is closed: 27 errors remain in
+      # narrator.py, bridge/dataset.py, analyze.py, memory/graph.py and optional
+      # dependency stubs. Do not make this blocking without fixing them first.
+      - name: mypy (advisory)
+        continue-on-error: true
+        run: mypy

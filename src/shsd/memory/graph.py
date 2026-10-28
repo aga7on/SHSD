@@ -488,10 +488,10 @@ class GroundedEventGraph:
         requests: list[NarrationRequest] = []
         for offset in range(0, len(sources), 3):
             refs_by_id: dict[str, NarrationEventRef] = {}
-            claims: list[NarrationClaim] = []
+            narration_claims: list[NarrationClaim] = []
             for event, claim in sources[offset : offset + 3]:
                 refs_by_id[event.event_id] = NarrationEventRef(event.event_id, event.revision)
-                claims.append(
+                narration_claims.append(
                     NarrationClaim(
                         claim_id=f"{event.event_id}:{claim.claim_id}",
                         event_id=event.event_id,
@@ -507,7 +507,7 @@ class GroundedEventGraph:
                     stream_id=self.stream_id,
                     epoch=self.epoch,
                     event_refs=tuple(refs_by_id.values()),
-                    claims=tuple(claims),
+                    claims=tuple(narration_claims),
                 )
             )
         return requests
