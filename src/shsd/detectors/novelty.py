@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from shsd.detectors.types import SignalObservation
 
-import math
-
 AUDIO_DELTA_METHOD_VERSION = "audio-window-delta-v1"
 
 
@@ -112,7 +110,9 @@ def detect_audio_transitions(
             abs(centroid_delta) >= centroid_threshold_hz
             or abs(loudness_delta) >= loudness_threshold_db
         ):
+            start_ms = min(i.start_ms for i in current)
+            end_ms = max(i.end_ms for i in current)
             transitions.append(
-                (min(i.start_ms for i in current), max(i.end_ms for i in current), centroid_delta, loudness_delta)
+                (start_ms, end_ms, centroid_delta, loudness_delta)
             )
     return transitions
