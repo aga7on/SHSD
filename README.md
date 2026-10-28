@@ -143,7 +143,9 @@ ruff check .
 mypy
 ```
 
-The unit tests cover package import/version, help output, PTS/epoch behavior, all media fixtures, offline artifact errors, and ring capacity/leases.
+The unit tests cover package import/version, help output, PTS/epoch behavior, all media fixtures, offline artifact errors, and ring capacity/leases. `tests/unit/test_package_imports.py` imports every shipped module so a source package that is missing from the repository fails immediately instead of surfacing as unrelated collection errors. Tests that need the optional PyTorch stack are skipped in a `dev`-only install.
+
+`mypy` is configured as `strict` and is not yet green; the remaining errors and the full repository audit are in [`docs/audit/2026-10-28-repository-audit.md`](docs/audit/2026-10-28-repository-audit.md). `.github/workflows/ci.yml` runs Ruff and pytest as blocking steps and `mypy` as advisory until that backlog is closed.
 
 ## Latest full-stack measurements (2026-10-26)
 

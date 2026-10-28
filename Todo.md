@@ -17,7 +17,7 @@
 ## F7 — Достоверность музыки и смысловой traceability
 
 ### F7.01 — Разделить music_possible и music_confirmed [P0]
-- [x] Проверить `src/shsd/semantic/temporal.py::_music_scene_supports_details`, `analyze.py` и текущие hypothesis configs. Сохранить исходный baseline и повторить `Tears of Steel`; см. [`real_video_quality_review.md`](benchmarks/reports/music_quality_v2/real_video_quality_review.md).
+- [x] Проверить `src/shsd/semantic/temporal.py::_music_scene_supports_details`, `analyze.py` и текущие hypothesis configs. Сохранить исходный baseline и повторить `Tears of Steel`; см. [`real_video_quality_review.md`](benchmarks/reports/music_quality_v2/real_video_quality_review_b0_graph.md).
 - [x] Сохранить возможность **внутреннего** coarse-to-fine поиска при `music_possible`, но **не публиковать** детали без отдельно подтверждённой музыкальной предпосылки и собственного evidence по оси. На 01:10–01:25 ударные получили `exploratory_support`, публикация подавлена.
 - [x] Учесть наложение речи и фоновой музыки: conversation-dominant не считается music-absent; подтверждённые music+speech детали проходят независимый premise/evidence gate.
 - [x] Явно сохранять premise state и provenance в claim/event; старый JSONL остаётся читаемым при отсутствующих полях.
@@ -31,7 +31,7 @@
 - [x] Ставить подтверждённые L2 музыкальные детали выше общей сцены в narrator input; остальные принятые утверждения и осознанные пропуски сохраняются отдельно.
 - [x] Проверять unsupported слова, отрицания и clause-to-source grounding, а не только общий словарь; fallback сохраняет точные claims и ASR-цитаты. Применяется к audio/video claims.
 - [x] Регрессия: 01:10–01:25 Qwen говорит только о разговоре; percussion и две cross-modal связи перечислены как omitted, не как expressed. Unit negative case покрывает разговор + percussion.
-- **DoD:** выходная схема, UI/API/JSONL и Markdown export согласованы; omission измерим; `used_claim_ids` совпадает с выраженными; unit/regression команда и полный реальный прогон отражены в [`real_video_quality_review.md`](benchmarks/reports/music_quality_v2/real_video_quality_review.md). Coverage — консервативная текстовая эвристика, не NLI; независимая ручная оценка остаётся в F7.03.
+- **DoD:** выходная схема, UI/API/JSONL и Markdown export согласованы; omission измерим; `used_claim_ids` совпадает с выраженными; unit/regression команда и полный реальный прогон отражены в [`real_video_quality_review.md`](benchmarks/reports/music_quality_v2/real_video_quality_review_b0_graph.md). Coverage — консервативная текстовая эвристика, не NLI; независимая ручная оценка остаётся в F7.03.
 - [x] 90s L1/L2/L3 audit with integrated B0 graph: 62 L1 + 62 L2 events, 3 captions; 100 window matches (95 `uncertain`, 5 accepted); L2 had 11 abstained, 1 confirmed, 50 skipped, and zero newly accepted details or semantic transitions. One generated caption substantively describes dialogue; two are safe temporal-coincidence fallbacks. The graph contains 62 claim-event nodes and 61 start-order edges, with no causal edges. See [review](benchmarks/reports/music_quality_v2/real_video_quality_review_b0_graph.md), [JSONL](benchmarks/reports/music_quality_v2/f701_real_tos_l3_b0_graph.jsonl), and [diagnostic](benchmarks/reports/semantic_matcher_diagnostic_20261026/semantic_matcher_diagnostic.md). This run reused cached audio and image embeddings and took 27.91s; it is offline and not realtime. A prior cache-stable reference pass took 50.56s with 2/8 image cache hits.
 - **Depends:** F7.01 для publishable claims.
 
@@ -179,3 +179,20 @@ F10 — не музыкальный классификатор и не музы�
 - **DoD:** реальный код/tests, source/rights/training config, независимая ручная разметка и raw сравнение A0/B0/B1. **Music-only improvement при визуальном провале = NO-GO.**
 
 **Сразу агенту:** PR1 проверка API и feature shapes для image/video/audio и CPU Qwen; PR2 JSONL/data/masks/EventGraph/B0; PR3 B1 training после GO; PR4 per-mode A/B+CPU realtime. [Поручение](docs/experiments/F10-agent-handoff.md).
+
+## Аудит репозитория — 28.10.2026
+
+Полный отчёт: [`docs/audit/2026-10-28-repository-audit.md`](docs/audit/2026-10-28-repository-audit.md).
+
+### A-01 — Пакет `src/shsd/models/` отсутствовал в Git [P0; закрыт]
+- [x] Причина: `.gitignore`-паттерн `models/` без якоря исключал `src/shsd/models/`, поэтому импорт `shsd.embeddings`/`analyze`/`api` падал с `ModuleNotFoundError`, а 15 тестовых модулей не собирались. Дефект присутствовал и в upstream `main`.
+- [x] Исправлено: `/models/` в `.gitignore`, восстановлен `src/shsd/models/artifacts.py` (`MissingModelFiles`, `verify_local_artifacts` по контракту `test_model_artifacts.py`), добавлен регрессионный тест `tests/unit/test_package_imports.py` с проверенным негативным контролем.
+- **Evidence:** `python -m pytest -q` → 277 passed, 1 skipped; `ruff check .` → clean; `shsd replay`/`shsd analyze` работают; отчёт аудита, раздел 3.
+
+### Открытые пункты аудита
+- [ ] **A-02 [P0]:** `pyproject.toml` объявляет `requires-python = ">=3.11"`, но `av>=19.0.1` требует ≥3.12 — установка по README на 3.11 невозможна. Нужно решение: поднять минимальный Python или разрешить `av>=18,<20`.
+- [ ] **A-03 [P1]:** `llama-cli.exe` захардкожен (narrator, proposer, 2 скрипта), в `models.lock.json` только win-cpu-x64 рантайм — Qwen-путь недоступен на Linux при заявленном Linux-таргете.
+- [ ] **A-05 [P1]:** 209 битых ссылок на сырые артефакты; `benchmarks/reports/**/*.jsonl` игнорируются, но отчёты на них ссылаются. Нужна политика публикации evidence.
+- [ ] **A-06/A-07/A-08 [P1/P2]:** API без аутентификации принимает произвольные локальные пути и URL (при не-loopback bind — чтение файлов + SSRF); `Location` от refine указывает на несуществующий GET-эндпоинт; WebSocket-цикл не детектирует отключение клиента.
+- [ ] **A-04 [P1]:** остаток strict-mypy (27 ошибок), затем сделать шаг блокирующим в CI.
+- [ ] **A-09…A-12 [P2/P3]:** нет `LICENSE`; 32 МБ недокументированной фикстуры; декомпозиция `analyze.py` (2202-строчный `analyze_media`); тесты для benchmark-скриптов.

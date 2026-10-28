@@ -8,7 +8,7 @@ import re
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath, PureWindowsPath
-from typing import Any
+from typing import Any, TypeGuard
 
 _PRESENCE = {"present", "absent", "unknown"}
 _COVERAGE = {"complete", "partial", "not_applicable"}
@@ -44,11 +44,13 @@ def _array(value: Any) -> list[Any] | None:
     return value if isinstance(value, list) else None
 
 
-def _integer(value: Any) -> bool:
+def _integer(value: Any) -> TypeGuard[int]:
+    """Narrow ``Any`` JSON values to a real ``int`` (bools are not integers here)."""
     return isinstance(value, int) and not isinstance(value, bool)
 
 
-def _has_text(value: Any) -> bool:
+def _has_text(value: Any) -> TypeGuard[str]:
+    """Narrow ``Any`` JSON values to a non-empty string."""
     return isinstance(value, str) and bool(value.strip())
 
 

@@ -5,9 +5,13 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-import torch
+import pytest
 
-from shsd.embeddings.provider import (
+torch = pytest.importorskip(
+    "torch", reason="sequence-embedding tests need the optional torch runtime"
+)
+
+from shsd.embeddings.provider import (  # noqa: E402
     JOINT_PREPROCESS_VERSION,
     PREPROCESS_VERSION,
     VIDEO_PREPROCESS_VERSION,
